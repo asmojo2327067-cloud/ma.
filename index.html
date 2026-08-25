@@ -936,8 +936,9 @@ select{
   z-index:9999;
   display:none;
   align-items:center;
-  gap:7px;
-  padding:8px 10px;
+  gap:5px;
+  padding:7px 8px;
+  max-width:calc(100vw - 16px);
   border:1px solid #d9d5cc;
   border-radius:16px;
   background:rgba(255,253,249,.97);
@@ -949,7 +950,7 @@ select{
   display:flex;
 }
 .math-toolbar button{
-  min-width:42px;
+  min-width:38px;
   height:38px;
   padding:0 11px;
   border:1px solid #d7d3ca;
@@ -2073,15 +2074,44 @@ function setupMathToolbar(){
   const toolbar = document.getElementById('mathToolbar');
   if(!toolbar) return;
 
+  function positionToolbar(){
+    if(!toolbar.classList.contains('show')) return;
+
+    if(window.visualViewport){
+      const vv = window.visualViewport;
+      const h = toolbar.offsetHeight || 54;
+      const top = Math.max(6, vv.offsetTop + vv.height - h - 8);
+      toolbar.style.top = `${top}px`;
+      toolbar.style.bottom = 'auto';
+    }else{
+      toolbar.style.top = 'auto';
+      toolbar.style.bottom = 'calc(10px + env(safe-area-inset-bottom))';
+    }
+  }
+
+  function showToolbar(input){
+    activeMathInput = input;
+    toolbar.classList.add('show');
+    requestAnimationFrame(()=>{
+      positionToolbar();
+      setTimeout(positionToolbar,80);
+      setTimeout(positionToolbar,250);
+    });
+  }
+
+  function hideToolbar(){
+    toolbar.classList.remove('show');
+    toolbar.style.top = '';
+    toolbar.style.bottom = '';
+  }
+
   document.addEventListener('focusin', e=>{
     const input = e.target.closest?.('input[data-math-input]');
     if(!input) return;
-    activeMathInput = input;
-    toolbar.classList.add('show');
+    showToolbar(input);
   });
 
   toolbar.addEventListener('pointerdown', e=>{
-    // Keep the dimension field focused while tapping operators.
     e.preventDefault();
   });
 
@@ -2089,11 +2119,12 @@ function setupMathToolbar(){
     const opButton = e.target.closest('[data-math-op]');
     if(opButton){
       insertMathText(activeMathInput, opButton.dataset.mathOp);
+      positionToolbar();
       return;
     }
 
     if(e.target.closest('[data-math-done]')){
-      toolbar.classList.remove('show');
+      hideToolbar();
       if(activeMathInput){
         activeMathInput.blur();
         activeMathInput = null;
@@ -2104,12 +2135,17 @@ function setupMathToolbar(){
   document.addEventListener('pointerdown', e=>{
     if(e.target.closest('#mathToolbar')) return;
     if(e.target.closest('input[data-math-input]')) return;
-
     if(activeMathInput){
-      toolbar.classList.remove('show');
+      hideToolbar();
       activeMathInput = null;
     }
   });
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', positionToolbar);
+    window.visualViewport.addEventListener('scroll', positionToolbar);
+  }
+  window.addEventListener('orientationchange', ()=>setTimeout(positionToolbar,150));
 }
 
 setupEnterNavigation();
