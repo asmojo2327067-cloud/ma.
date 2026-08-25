@@ -997,22 +997,22 @@ select{
   <div class="grid" style="margin-top:12px">
     <div>
       <label>切りしろ mm</label>
-      <input id="kerf" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input value="3">
+      <input id="kerf" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input value="3">
     </div>
     <div>
       <label>端落とし mm</label>
-      <input id="margin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input value="10">
+      <input id="margin" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input value="10">
     </div>
     <div>
       <label>貼りしろ mm / 全体</label>
-      <input id="pasteAllowance" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input value="0">
+      <input id="pasteAllowance" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input value="0">
     </div>
   </div>
 </section>
 
 <section class="card">
   <div class="section-title"><span>02</span><h2>部材表</h2></div>
-  <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。 寸法欄はスマホで数字キーボードを基本表示します。＋・−・×・÷は画面下の計算ボタンから入力でき、「800+10」のような計算もそのまま使えます。</p>
+  <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。 寸法欄はスマホで数字キーボードを優先表示します。＋・−・×・÷は画面下の計算ボタンから入力でき、「800+10」のような計算もそのまま使えます。</p>
   <div class="matrix-mobile-nav" aria-label="図面列の移動">
     <button type="button" class="secondary" id="matrixPrev">← 前の図面</button>
     <span>横にスワイプできます</span>
@@ -1136,8 +1136,8 @@ function renderSheetTypes(){
         </select>
       </div>
       ${isCustom ? `
-      <div><label>長さ mm</label><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input data-sheet-w="${s.id}" value="${s.w||''}" placeholder=""></div>
-      <div><label>幅 mm</label><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input data-sheet-h="${s.id}" value="${s.h||''}" placeholder=""></div>
+      <div><label>長さ mm</label><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input data-sheet-w="${s.id}" value="${s.w||''}" placeholder=""></div>
+      <div><label>幅 mm</label><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input data-sheet-h="${s.id}" value="${s.h||''}" placeholder=""></div>
       <div class="sheet-size-preview">${s.w && s.h ? `${s.w} × ${s.h} mm` : '寸法を入力'}</div>
       ` : `
       <div class="sheet-size-preview">${s.w} × ${s.h} mm</div>
