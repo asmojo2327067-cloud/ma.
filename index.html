@@ -737,19 +737,110 @@ button:active{transform:scale(.985)}
 }
 
 @media print{
-  @page{size:A4 landscape;margin:8mm}
-  body{background:#fff}
-  header,.calc-sticky,#shareResult,#addDrawing,#addPart,
-  .toolbar,.danger,.note,#recommendation,#comparison{display:none !important}
-  main{padding:0;max-width:none}
-  .card{border:0;padding:0;margin:0;box-shadow:none}
-  section.card:not(:last-of-type){display:none}
-  .result-header{display:block}
-  .summary{margin:0 0 8mm}
-  #result{padding:0 !important}
-  .sheet-wrap{break-inside:avoid;page-break-inside:avoid;margin:0 0 8mm}
-  .sheet{border:1px solid #444;box-shadow:none}
-  .piece{background:#fff !important}
+  @page{
+    size:A4 landscape;
+    margin:8mm;
+  }
+
+  *{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+
+  body{
+    background:#fff !important;
+    margin:0;
+  }
+
+  /* PDFでは木取り図だけを表示 */
+  header,
+  section.card:not(:last-of-type),
+  .result-header,
+  .summary,
+  #recommendation,
+  #comparison,
+  .color-note,
+  #shareResult,
+  .calc-sticky{
+    display:none !important;
+  }
+
+  main{
+    max-width:none;
+    padding:0;
+    margin:0;
+  }
+
+  section.card:last-of-type{
+    display:block !important;
+    border:0;
+    padding:0;
+    margin:0;
+    box-shadow:none;
+    background:#fff;
+  }
+
+  #result{
+    display:block !important;
+    padding:0 !important;
+    margin:0 !important;
+    color:#2f312f !important;
+    text-align:left !important;
+  }
+
+  .sheet-wrap{
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    width:100%;
+    height:auto;
+    margin:0;
+    padding:0;
+    break-inside:avoid;
+    page-break-inside:avoid;
+    break-after:page;
+    page-break-after:always;
+  }
+
+  .sheet-wrap:last-child{
+    break-after:auto;
+    page-break-after:auto;
+  }
+
+  .sheet-title{
+    display:block;
+    min-height:0;
+    margin:0 0 4mm;
+    font-size:14pt;
+    font-weight:800;
+    color:#2f312f;
+  }
+
+  .sheet{
+    width:100%;
+    max-height:174mm;
+    border:1.2pt solid #665f55;
+    border-radius:0;
+    box-shadow:none;
+    background:
+      linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),
+      var(--wood) !important;
+  }
+
+  .piece{
+    padding:1.5mm;
+    border-width:.8pt;
+    border-radius:1mm;
+    color:#292a27 !important;
+    font-size:8pt;
+    line-height:1.25;
+  }
+
+  .piece strong{
+    margin-bottom:.5mm;
+    font-size:8pt;
+    font-weight:800;
+  }
 }
 
 
@@ -902,7 +993,7 @@ select{
 <section class="card">
   <div class="result-header">
     <div class="section-title" style="margin:0"><span>03</span><h2>結果</h2></div>
-    <button id="shareResult" class="share-btn">PDFを共有</button>
+    <button id="shareResult" class="share-btn">木取り図をPDF共有</button>
   </div>
   <div class="summary" style="margin-top:12px">
     <div class="stat"><b id="sheetCount">-</b><span>原板枚数</span></div>
@@ -1856,8 +1947,8 @@ document.getElementById('shareResult').onclick=()=>{
     const pieces=getPieces();
     if(!pieces.length)throw new Error('先に木取り計算してください');
 
-    // 最新の入力内容で結果を描画してから、iPhone/Safariの印刷画面へ。
-    // Safariでは共有メニューまたは印刷プレビューからPDFとして保存・共有できます。
+    // 最新の入力内容で木取り図を描画してから印刷画面へ。
+    // 印刷用CSSでは原板の図形と部材配置だけをPDFに出します。
     document.getElementById('calc').click();
     setTimeout(()=>window.print(),120);
   }catch(e){
