@@ -873,7 +873,7 @@ select{
 
 <section class="card">
   <div class="section-title"><span>02</span><h2>部材表</h2></div>
-  <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。 寸法欄は「800+10」「900-25」のような計算式もそのまま入力できます。</p>
+  <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。 寸法欄は「800+10」「900-25」「450*2」「450x2」のような半角・全角の計算式をそのまま入力できます。</p>
   <div class="matrix-mobile-nav" aria-label="図面列の移動">
     <button type="button" class="secondary" id="matrixPrev">← 前の図面</button>
     <span>横にスワイプできます</span>
@@ -1184,7 +1184,7 @@ function normalizeMathExpression(value){
   s = s.replace(/[０-９]/g, ch => String(full.indexOf(ch)))
        .replace(/＋/g,'+')
        .replace(/[－−]/g,'-')
-       .replace(/[×＊]/g,'*')
+       .replace(/[×＊xX]/g,'*')
        .replace(/[÷／]/g,'/')
        .replace(/（/g,'(')
        .replace(/）/g,')')
