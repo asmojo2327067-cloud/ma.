@@ -1261,8 +1261,8 @@ function renderMatrix(){
       td.style.background = hexToRgba(dc.bg, .45);
       td.innerHTML=`
         <div class="cell-grid">
-          <div><label>長さ</label><input type="text" inputmode="text" autocomplete="off" spellcheck="false" value="${c.w}" data-math-input data-cell="${p.id}|${d.id}|w" style="border-color:${hexToRgba(dc.border,.6)}"></div>
-          <div><label>幅</label><input type="text" inputmode="text" autocomplete="off" spellcheck="false" value="${c.h}" data-math-input data-cell="${p.id}|${d.id}|h" style="border-color:${hexToRgba(dc.border,.6)}"></div>
+          <div><label>長さ</label><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="${c.w}" data-math-input data-cell="${p.id}|${d.id}|w" style="border-color:${hexToRgba(dc.border,.6)}"></div>
+          <div><label>幅</label><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="${c.h}" data-math-input data-cell="${p.id}|${d.id}|h" style="border-color:${hexToRgba(dc.border,.6)}"></div>
           <div class="qty"><label>枚数</label><input type="number" min="0" value="${c.qty}" data-cell="${p.id}|${d.id}|qty" style="border-color:${hexToRgba(dc.border,.6)}"></div>
           <div class="rotate"><label>回転</label>
             <select data-cell="${p.id}|${d.id}|rotate" style="border-color:${hexToRgba(dc.border,.6)}">
