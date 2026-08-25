@@ -997,15 +997,15 @@ select{
   <div class="grid" style="margin-top:12px">
     <div>
       <label>切りしろ mm</label>
-      <input id="kerf" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input value="3">
+      <input id="kerf" type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" data-math-input value="3">
     </div>
     <div>
       <label>端落とし mm</label>
-      <input id="margin" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input value="10">
+      <input id="margin" type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" data-math-input value="10">
     </div>
     <div>
       <label>貼りしろ mm / 全体</label>
-      <input id="pasteAllowance" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input value="0">
+      <input id="pasteAllowance" type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" data-math-input value="0">
     </div>
   </div>
 </section>
@@ -1136,8 +1136,8 @@ function renderSheetTypes(){
         </select>
       </div>
       ${isCustom ? `
-      <div><label>長さ mm</label><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input data-sheet-w="${s.id}" value="${s.w||''}" placeholder=""></div>
-      <div><label>幅 mm</label><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" data-math-input data-sheet-h="${s.id}" value="${s.h||''}" placeholder=""></div>
+      <div><label>長さ mm</label><input type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" data-math-input data-sheet-w="${s.id}" value="${s.w||''}" placeholder=""></div>
+      <div><label>幅 mm</label><input type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" data-math-input data-sheet-h="${s.id}" value="${s.h||''}" placeholder=""></div>
       <div class="sheet-size-preview">${s.w && s.h ? `${s.w} × ${s.h} mm` : '寸法を入力'}</div>
       ` : `
       <div class="sheet-size-preview">${s.w} × ${s.h} mm</div>
@@ -1261,8 +1261,8 @@ function renderMatrix(){
       td.style.background = hexToRgba(dc.bg, .45);
       td.innerHTML=`
         <div class="cell-grid">
-          <div><label>長さ</label><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="${c.w}" data-math-input data-cell="${p.id}|${d.id}|w" style="border-color:${hexToRgba(dc.border,.6)}"></div>
-          <div><label>幅</label><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="${c.h}" data-math-input data-cell="${p.id}|${d.id}|h" style="border-color:${hexToRgba(dc.border,.6)}"></div>
+          <div><label>長さ</label><input type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" value="${c.w}" data-math-input data-cell="${p.id}|${d.id}|w" style="border-color:${hexToRgba(dc.border,.6)}"></div>
+          <div><label>幅</label><input type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" value="${c.h}" data-math-input data-cell="${p.id}|${d.id}|h" style="border-color:${hexToRgba(dc.border,.6)}"></div>
           <div class="qty"><label>枚数</label><input type="number" min="0" value="${c.qty}" data-cell="${p.id}|${d.id}|qty" style="border-color:${hexToRgba(dc.border,.6)}"></div>
           <div class="rotate"><label>回転</label>
             <select data-cell="${p.id}|${d.id}|rotate" style="border-color:${hexToRgba(dc.border,.6)}">
