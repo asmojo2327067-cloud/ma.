@@ -1,17 +1,12 @@
-ma. GitHub Pages版 v32
+ma. GitHub Pages版 v33
 
-1. GitHubで新しいPublicリポジトリを作成（例: ma）
-2. このZIPを解凍
-3. 中のファイルをすべてリポジトリ直下にアップロード
-4. GitHubの Settings > Pages
-5. Build and deployment:
-   Source: Deploy from a branch
-   Branch: main
-   Folder: / (root)
-6. Save
-7. 数分後に https://ユーザー名.github.io/ma/ で公開
+スマホ表示修正
+- 部材名の固定列をスマホ時のみ細く調整
+- 図面列の横スクロールを強化
+- 「前の図面」「次の図面」ボタンを追加
+- 横スワイプの案内を追加
+- Service Workerキャッシュをv33へ更新
 
-iPhone:
-Safariで公開URLを開く
-→ 共有
-→ ホーム画面に追加
+更新方法
+GitHubの ma リポジトリで、ZIPを解凍した中身をすべて上書きアップロードして Commit changes。
+GitHub Pagesはそのまま自動更新されます。

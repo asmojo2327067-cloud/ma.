@@ -657,6 +657,85 @@ button:active{transform:scale(.985)}
   }
 }
 
+
+.matrix-mobile-nav{
+  display:none;
+}
+
+@media(max-width:520px){
+  main{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .card{
+    padding:12px;
+  }
+
+  .matrix-wrap{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overflow-x:scroll;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;
+    scroll-behavior:smooth;
+  }
+
+  .matrix{
+    min-width:max-content;
+  }
+
+  .matrix .part-head,
+  .matrix .part-name{
+    width:96px;
+    min-width:96px;
+    max-width:96px;
+  }
+
+  .drawing-head,
+  .cell{
+    width:172px;
+    min-width:172px;
+  }
+
+  .part-name-wrap{
+    grid-template-columns:1fr;
+  }
+
+  .part-name-wrap input{
+    width:100%;
+  }
+
+  .row-controls{
+    grid-template-columns:1fr;
+  }
+
+  .matrix-mobile-nav{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:6px;
+    margin:0 0 8px;
+  }
+
+  .matrix-mobile-nav button{
+    min-height:34px;
+    padding:6px 8px;
+    font-size:10px;
+    white-space:nowrap;
+  }
+
+  .matrix-mobile-nav span{
+    text-align:center;
+    font-size:9px;
+    color:var(--muted);
+    line-height:1.25;
+  }
+}
+
 @media print{
   @page{size:A4 landscape;margin:8mm}
   body{background:#fff}
@@ -795,7 +874,12 @@ select{
 <section class="card">
   <div class="section-title"><span>02</span><h2>部材表</h2></div>
   <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。</p>
-  <div class="matrix-wrap">
+  <div class="matrix-mobile-nav" aria-label="図面列の移動">
+    <button type="button" class="secondary" id="matrixPrev">← 前の図面</button>
+    <span>横にスワイプできます</span>
+    <button type="button" class="secondary" id="matrixNext">次の図面 →</button>
+  </div>
+  <div class="matrix-wrap" id="matrixWrap">
     <table class="matrix" id="matrix">
       <thead>
         <tr id="drawingHeader">
@@ -836,6 +920,25 @@ select{
 <script>
 const headerEl = document.getElementById('drawingHeader');
 const bodyEl = document.getElementById('matrixBody');
+const matrixWrapEl = document.getElementById('matrixWrap');
+const matrixPrevEl = document.getElementById('matrixPrev');
+const matrixNextEl = document.getElementById('matrixNext');
+
+function scrollMatrixByDrawing(direction){
+  if(!matrixWrapEl) return;
+  const stickyPart = window.matchMedia('(max-width:520px)').matches ? 96 : 142;
+  const drawingWidth = window.matchMedia('(max-width:520px)').matches ? 172 : 196;
+  const current = matrixWrapEl.scrollLeft;
+  let target;
+  if(direction > 0){
+    target = Math.max(stickyPart, current + drawingWidth);
+  }else{
+    target = Math.max(0, current - drawingWidth);
+  }
+  matrixWrapEl.scrollTo({left:target, behavior:'smooth'});
+}
+matrixPrevEl?.addEventListener('click',()=>scrollMatrixByDrawing(-1));
+matrixNextEl?.addEventListener('click',()=>scrollMatrixByDrawing(1));
 const resultEl = document.getElementById('result');
 
 let sheetTypes = [];
