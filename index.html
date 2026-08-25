@@ -858,22 +858,22 @@ select{
   <div class="grid" style="margin-top:12px">
     <div>
       <label>切りしろ mm</label>
-      <input id="kerf" type="number" value="3">
+      <input id="kerf" type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input value="3">
     </div>
     <div>
       <label>端落とし mm</label>
-      <input id="margin" type="number" value="10">
+      <input id="margin" type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input value="10">
     </div>
     <div>
       <label>貼りしろ mm / 全体</label>
-      <input id="pasteAllowance" type="number" min="0" value="0">
+      <input id="pasteAllowance" type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input value="0">
     </div>
   </div>
 </section>
 
 <section class="card">
   <div class="section-title"><span>02</span><h2>部材表</h2></div>
-  <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。</p>
+  <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。 寸法欄は「800+10」「900-25」のような計算式もそのまま入力できます。</p>
   <div class="matrix-mobile-nav" aria-label="図面列の移動">
     <button type="button" class="secondary" id="matrixPrev">← 前の図面</button>
     <span>横にスワイプできます</span>
@@ -997,8 +997,8 @@ function renderSheetTypes(){
         </select>
       </div>
       ${isCustom ? `
-      <div><label>長さ mm</label><input type="number" data-sheet-w="${s.id}" value="${s.w||''}" placeholder=""></div>
-      <div><label>幅 mm</label><input type="number" data-sheet-h="${s.id}" value="${s.h||''}" placeholder=""></div>
+      <div><label>長さ mm</label><input type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input data-sheet-w="${s.id}" value="${s.w||''}" placeholder=""></div>
+      <div><label>幅 mm</label><input type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input data-sheet-h="${s.id}" value="${s.h||''}" placeholder=""></div>
       <div class="sheet-size-preview">${s.w && s.h ? `${s.w} × ${s.h} mm` : '寸法を入力'}</div>
       ` : `
       <div class="sheet-size-preview">${s.w} × ${s.h} mm</div>
@@ -1021,7 +1021,7 @@ function renderSheetTypes(){
 }
 function getValidSheetTypes(){
   return sheetTypes.map(s=>({
-    ...s,w:Number(s.w),h:Number(s.h),
+    ...s,w:mathValue(s.w,'原板の長さ'),h:mathValue(s.h,'原板の幅'),
     label:(s.preset==='custom' ? `${s.w}×${s.h}` : (s.name||`${s.w}×${s.h}`)).trim()
   })).filter(s=>s.w>0&&s.h>0);
 }
@@ -1122,8 +1122,8 @@ function renderMatrix(){
       td.style.background = hexToRgba(dc.bg, .45);
       td.innerHTML=`
         <div class="cell-grid">
-          <div><label>長さ</label><input type="number" value="${c.w}" data-cell="${p.id}|${d.id}|w" style="border-color:${hexToRgba(dc.border,.6)}"></div>
-          <div><label>幅</label><input type="number" value="${c.h}" data-cell="${p.id}|${d.id}|h" style="border-color:${hexToRgba(dc.border,.6)}"></div>
+          <div><label>長さ</label><input type="text" inputmode="text" autocomplete="off" spellcheck="false" value="${c.w}" data-math-input data-cell="${p.id}|${d.id}|w" style="border-color:${hexToRgba(dc.border,.6)}"></div>
+          <div><label>幅</label><input type="text" inputmode="text" autocomplete="off" spellcheck="false" value="${c.h}" data-math-input data-cell="${p.id}|${d.id}|h" style="border-color:${hexToRgba(dc.border,.6)}"></div>
           <div class="qty"><label>枚数</label><input type="number" min="0" value="${c.qty}" data-cell="${p.id}|${d.id}|qty" style="border-color:${hexToRgba(dc.border,.6)}"></div>
           <div class="rotate"><label>回転</label>
             <select data-cell="${p.id}|${d.id}|rotate" style="border-color:${hexToRgba(dc.border,.6)}">
@@ -1177,18 +1177,129 @@ function bindMatrix(){
   document.querySelectorAll('[data-add-below]').forEach(el=>el.onclick=()=>addPartBelow(el.dataset.addBelow));
 }
 
+
+function normalizeMathExpression(value){
+  const full = '０１２３４５６７８９';
+  let s = String(value ?? '').trim();
+  s = s.replace(/[０-９]/g, ch => String(full.indexOf(ch)))
+       .replace(/＋/g,'+')
+       .replace(/[－−]/g,'-')
+       .replace(/[×＊]/g,'*')
+       .replace(/[÷／]/g,'/')
+       .replace(/（/g,'(')
+       .replace(/）/g,')')
+       .replace(/．/g,'.')
+       .replace(/，/g,'');
+  return s;
+}
+
+function evalMathExpression(value){
+  const s = normalizeMathExpression(value);
+  if(!s) return NaN;
+
+  let i = 0;
+
+  function skipSpaces(){
+    while(i < s.length && /\s/.test(s[i])) i++;
+  }
+
+  function parseNumber(){
+    skipSpaces();
+    const start = i;
+    let dots = 0;
+    while(i < s.length && /[0-9.]/.test(s[i])){
+      if(s[i] === '.') dots++;
+      if(dots > 1) throw new Error('数式が正しくありません');
+      i++;
+    }
+    if(start === i) throw new Error('数式が正しくありません');
+    const n = Number(s.slice(start, i));
+    if(!Number.isFinite(n)) throw new Error('数式が正しくありません');
+    return n;
+  }
+
+  function parseFactor(){
+    skipSpaces();
+
+    if(s[i] === '+'){
+      i++;
+      return parseFactor();
+    }
+    if(s[i] === '-'){
+      i++;
+      return -parseFactor();
+    }
+    if(s[i] === '('){
+      i++;
+      const value = parseExpression();
+      skipSpaces();
+      if(s[i] !== ')') throw new Error('カッコが閉じていません');
+      i++;
+      return value;
+    }
+    return parseNumber();
+  }
+
+  function parseTerm(){
+    let value = parseFactor();
+    while(true){
+      skipSpaces();
+      const op = s[i];
+      if(op !== '*' && op !== '/') break;
+      i++;
+      const rhs = parseFactor();
+      if(op === '*') value *= rhs;
+      else{
+        if(rhs === 0) throw new Error('0では割れません');
+        value /= rhs;
+      }
+    }
+    return value;
+  }
+
+  function parseExpression(){
+    let value = parseTerm();
+    while(true){
+      skipSpaces();
+      const op = s[i];
+      if(op !== '+' && op !== '-') break;
+      i++;
+      const rhs = parseTerm();
+      value = op === '+' ? value + rhs : value - rhs;
+    }
+    return value;
+  }
+
+  const result = parseExpression();
+  skipSpaces();
+  if(i !== s.length || !Number.isFinite(result)){
+    throw new Error('数式が正しくありません');
+  }
+  return result;
+}
+
+function mathValue(value, label='寸法'){
+  try{
+    return evalMathExpression(value);
+  }catch(e){
+    throw new Error(`${label}「${value}」を計算できません`);
+  }
+}
+
 function getPieces(){
   const pieces=[];
-  const allowance=Math.max(0,Number(document.getElementById('pasteAllowance')?.value||0));
+  const allowance=Math.max(0,mathValue(document.getElementById('pasteAllowance')?.value||0,'貼りしろ'));
 
   parts.forEach(p=>{
     drawings.forEach(d=>{
       const c=p.cells[d.id];
       if(!c)return;
 
-      const finishW=Number(c.w);
-      const finishH=Number(c.h);
       const qty=Number(c.qty||0);
+      if(!String(c.w ?? '').trim() || !String(c.h ?? '').trim() || !(qty>0)) return;
+
+      const finishW=mathValue(c.w,'長さ');
+      const finishH=mathValue(c.h,'幅');
 
       if(finishW>0 && finishH>0 && qty>0){
         const cutW=finishW + allowance;
@@ -1670,8 +1781,8 @@ document.getElementById('calc').onclick=()=>{
   try{
     const pieces=getPieces();
     if(!pieces.length)throw new Error('寸法と枚数を入力してください');
-    const kerf=Math.max(0,Number(document.getElementById('kerf').value));
-    const margin=Math.max(0,Number(document.getElementById('margin').value));
+    const kerf=Math.max(0,mathValue(document.getElementById('kerf').value,'切りしろ'));
+    const margin=Math.max(0,mathValue(document.getElementById('margin').value,'端落とし'));
     const types=getValidSheetTypes();
     if(!types.length)throw new Error('原板サイズを1つ以上入力してください');
 
@@ -1679,7 +1790,7 @@ document.getElementById('calc').onclick=()=>{
     renderComparison(best);
     renderSheets(best.sheets,pieces);
 
-    localStorage.setItem('kidoriMatrix_v30',JSON.stringify({drawings,parts,sheetTypes,pasteAllowance:Number(document.getElementById('pasteAllowance').value||0)}));
+    localStorage.setItem('kidoriMatrix_v30',JSON.stringify({drawings,parts,sheetTypes,pasteAllowance:document.getElementById('pasteAllowance').value||'0'}));
   }catch(e){alert(e.message)}
 };
 
@@ -1687,8 +1798,8 @@ async function createShareImage(){
   const pieces=getPieces();
   if(!pieces.length)throw new Error('先に木取り計算してください');
 
-  const kerf=Math.max(0,Number(document.getElementById('kerf').value));
-  const margin=Math.max(0,Number(document.getElementById('margin').value));
+  const kerf=Math.max(0,mathValue(document.getElementById('kerf').value,'切りしろ'));
+  const margin=Math.max(0,mathValue(document.getElementById('margin').value,'端落とし'));
   const types=getValidSheetTypes();
   const best=findBestSheetMix(pieces,types,kerf,margin);
   const sheets=best.sheets;
@@ -1756,8 +1867,8 @@ document.getElementById('shareResult').onclick=()=>{
 
 
 function setupEnterNavigation(){
-  // iPhoneなどで「次へ」と表示されやすくする
-  document.querySelectorAll('input[type="number"]').forEach(input=>{
+  // 数式対応の寸法欄と枚数欄で「次へ」を出しやすくする
+  document.querySelectorAll('input[type="number"], input[data-math-input]').forEach(input=>{
     input.setAttribute('enterkeyhint','next');
   });
 }
@@ -1767,9 +1878,9 @@ document.addEventListener('keydown', e=>{
   if(e.key !== 'Enter') return;
   const current = e.target;
   if(!(current instanceof HTMLInputElement)) return;
-  if(current.type !== 'number') return;
+  if(current.type !== 'number' && !current.hasAttribute('data-math-input')) return;
 
-  const inputs = [...document.querySelectorAll('input[type="number"]')]
+  const inputs = [...document.querySelectorAll('input[type="number"], input[data-math-input]')]
     .filter(el=>{
       const style = window.getComputedStyle(el);
       return !el.disabled &&
