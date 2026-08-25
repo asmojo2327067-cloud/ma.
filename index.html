@@ -2149,7 +2149,13 @@ function setupMathToolbar(){
 }
 
 setupEnterNavigation();
-setupMathToolbar();
+
+// mathToolbar 本体はこの script より後ろにあるため、DOM 構築後に有効化する
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', setupMathToolbar, {once:true});
+}else{
+  setupMathToolbar();
+}
 
 
 // 初期化
