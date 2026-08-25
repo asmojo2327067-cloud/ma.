@@ -927,6 +927,54 @@ select{
   }
 }
 
+
+.math-toolbar{
+  position:fixed;
+  left:50%;
+  bottom:calc(10px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  gap:7px;
+  padding:8px 10px;
+  border:1px solid #d9d5cc;
+  border-radius:16px;
+  background:rgba(255,253,249,.97);
+  box-shadow:0 8px 28px rgba(30,32,30,.16);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.math-toolbar.show{
+  display:flex;
+}
+.math-toolbar button{
+  min-width:42px;
+  height:38px;
+  padding:0 11px;
+  border:1px solid #d7d3ca;
+  border-radius:11px;
+  background:#f5f3ee;
+  color:#303330;
+  font:700 18px/1 "Nunito",sans-serif;
+}
+.math-toolbar button:active{
+  transform:scale(.96);
+}
+.math-toolbar .math-done{
+  min-width:auto;
+  padding:0 14px;
+  background:#303330;
+  color:#fff;
+  border-color:#303330;
+  font-size:13px;
+}
+@media(min-width:760px){
+  .math-toolbar{
+    bottom:18px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -949,22 +997,22 @@ select{
   <div class="grid" style="margin-top:12px">
     <div>
       <label>切りしろ mm</label>
-      <input id="kerf" type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input value="3">
+      <input id="kerf" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input value="3">
     </div>
     <div>
       <label>端落とし mm</label>
-      <input id="margin" type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input value="10">
+      <input id="margin" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input value="10">
     </div>
     <div>
       <label>貼りしろ mm / 全体</label>
-      <input id="pasteAllowance" type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input value="0">
+      <input id="pasteAllowance" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input value="0">
     </div>
   </div>
 </section>
 
 <section class="card">
   <div class="section-title"><span>02</span><h2>部材表</h2></div>
-  <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。 寸法欄は「800+10」「900-25」「450*2」「450x2」のような半角・全角の計算式をそのまま入力できます。</p>
+  <p class="note">横に図面番号、縦に部材名。図面番号の順番は固定し、部材名は上下に並べ替えできます。各行の「＋ 下に追加」で途中にも部材を差し込めます。 寸法欄はスマホで数字キーボードを基本表示します。＋・−・×・÷は画面下の計算ボタンから入力でき、「800+10」のような計算もそのまま使えます。</p>
   <div class="matrix-mobile-nav" aria-label="図面列の移動">
     <button type="button" class="secondary" id="matrixPrev">← 前の図面</button>
     <span>横にスワイプできます</span>
@@ -1088,8 +1136,8 @@ function renderSheetTypes(){
         </select>
       </div>
       ${isCustom ? `
-      <div><label>長さ mm</label><input type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input data-sheet-w="${s.id}" value="${s.w||''}" placeholder=""></div>
-      <div><label>幅 mm</label><input type="text" inputmode="text" autocomplete="off" spellcheck="false" data-math-input data-sheet-h="${s.id}" value="${s.h||''}" placeholder=""></div>
+      <div><label>長さ mm</label><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input data-sheet-w="${s.id}" value="${s.w||''}" placeholder=""></div>
+      <div><label>幅 mm</label><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-math-input data-sheet-h="${s.id}" value="${s.h||''}" placeholder=""></div>
       <div class="sheet-size-preview">${s.w && s.h ? `${s.w} × ${s.h} mm` : '寸法を入力'}</div>
       ` : `
       <div class="sheet-size-preview">${s.w} × ${s.h} mm</div>
@@ -1999,7 +2047,73 @@ document.addEventListener('keydown', e=>{
 // 動的に追加される行・原板入力にも適用
 const enterNavObserver = new MutationObserver(()=>setupEnterNavigation());
 enterNavObserver.observe(document.body,{childList:true,subtree:true});
+
+let activeMathInput = null;
+
+function insertMathText(input, text){
+  if(!input) return;
+
+  const value = input.value || '';
+  const start = typeof input.selectionStart === 'number' ? input.selectionStart : value.length;
+  const end = typeof input.selectionEnd === 'number' ? input.selectionEnd : value.length;
+
+  input.value = value.slice(0,start) + text + value.slice(end);
+
+  const nextPos = start + text.length;
+  try{
+    input.setSelectionRange(nextPos,nextPos);
+  }catch(e){}
+
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+  input.dispatchEvent(new Event('change',{bubbles:true}));
+  input.focus({preventScroll:true});
+}
+
+function setupMathToolbar(){
+  const toolbar = document.getElementById('mathToolbar');
+  if(!toolbar) return;
+
+  document.addEventListener('focusin', e=>{
+    const input = e.target.closest?.('input[data-math-input]');
+    if(!input) return;
+    activeMathInput = input;
+    toolbar.classList.add('show');
+  });
+
+  toolbar.addEventListener('pointerdown', e=>{
+    // Keep the dimension field focused while tapping operators.
+    e.preventDefault();
+  });
+
+  toolbar.addEventListener('click', e=>{
+    const opButton = e.target.closest('[data-math-op]');
+    if(opButton){
+      insertMathText(activeMathInput, opButton.dataset.mathOp);
+      return;
+    }
+
+    if(e.target.closest('[data-math-done]')){
+      toolbar.classList.remove('show');
+      if(activeMathInput){
+        activeMathInput.blur();
+        activeMathInput = null;
+      }
+    }
+  });
+
+  document.addEventListener('pointerdown', e=>{
+    if(e.target.closest('#mathToolbar')) return;
+    if(e.target.closest('input[data-math-input]')) return;
+
+    if(activeMathInput){
+      toolbar.classList.remove('show');
+      activeMathInput = null;
+    }
+  });
+}
+
 setupEnterNavigation();
+setupMathToolbar();
 
 
 // 初期化
@@ -2042,6 +2156,17 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+
+<div id="mathToolbar" class="math-toolbar" aria-label="寸法計算入力">
+  <button type="button" data-math-op="+">＋</button>
+  <button type="button" data-math-op="-">−</button>
+  <button type="button" data-math-op="*">×</button>
+  <button type="button" data-math-op="/">÷</button>
+  <button type="button" data-math-op="(">(</button>
+  <button type="button" data-math-op=")">)</button>
+  <button type="button" class="math-done" data-math-done>完了</button>
+</div>
 
 </body>
 </html>
