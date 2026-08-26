@@ -2183,7 +2183,11 @@ function setupMathToolbar(){
 }
 
 setupEnterNavigation();
-setupMathToolbar();
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', setupMathToolbar, {once:true});
+}else{
+  setupMathToolbar();
+}
 
 
 // 初期化
