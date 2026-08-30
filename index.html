@@ -251,6 +251,166 @@
   .drawing-name-input{min-width:68px;font-size:9px}
 }
 
+
+.custom-sheet-fields{
+  display:none;
+  gap:5px;
+  flex-wrap:wrap;
+  width:100%;
+  margin-top:4px;
+}
+.custom-sheet-fields.show{display:flex}
+.custom-sheet-fields .field input{width:92px;min-width:92px}
+.cell-title-input{
+  height:30px;
+  border:1px solid #d4d1c9!important;
+  border-radius:7px!important;
+  background:#fff!important;
+  padding:4px 6px!important;
+  margin-bottom:5px;
+  font-size:10px;
+}
+.part-name-input{
+  border-bottom:1px solid rgba(48,51,48,.18)!important;
+  padding:2px 1px!important;
+}
+.material-6{background:#f7eadf!important;border-color:#d5ae8e!important}
+.material-7{background:#e5eff3!important;border-color:#8eb1c0!important}
+.material-8{background:#eef0dc!important;border-color:#aeb58a!important}
+.material-9{background:#f0e3ef!important;border-color:#b894b6!important}
+.material-10{background:#e6ece1!important;border-color:#9eae93!important}
+.material-11{background:#f2e6d8!important;border-color:#c2a17d!important}
+.result.material-6{background:#f7eadf;border-color:#d5ae8e}
+.result.material-7{background:#e5eff3;border-color:#8eb1c0}
+.result.material-8{background:#eef0dc;border-color:#aeb58a}
+.result.material-9{background:#f0e3ef;border-color:#b894b6}
+.result.material-10{background:#e6ece1;border-color:#9eae93}
+.result.material-11{background:#f2e6d8;border-color:#c2a17d}
+.result.material-6 .board{background:#ecd7c5}
+.result.material-7 .board{background:#d6e7ee}
+.result.material-8 .board{background:#e3e7c8}
+.result.material-9 .board{background:#e7d4e5}
+.result.material-10 .board{background:#d9e4d3}
+.result.material-11 .board{background:#ead6bf}
+
+
+.offcut{
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:2px;
+  border:1.5px dashed rgba(48,51,48,.52);
+  background:rgba(255,255,255,.34);
+  color:#4f534d;
+  font-size:7px;
+  font-weight:800;
+  line-height:1.15;
+  pointer-events:none;
+  z-index:2;
+}
+.offcut-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  margin-top:4px;
+  font-size:8px;
+  color:#676b64;
+}
+.offcut-summary strong{
+  color:#303330;
+  font-size:9px;
+}
+.result > p{
+  margin-bottom:6px;
+}
+@media(max-width:700px){
+  .offcut{font-size:6px}
+  .offcut-summary{font-size:7px}
+}
+
+
+.cutting-settings{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.setting-field label{
+  display:block;
+  margin-bottom:3px;
+  font-size:8px;
+  color:var(--muted);
+}
+.setting-field input{
+  width:78px;
+  height:34px;
+  border:1px solid #d4d1c9;
+  border-radius:8px;
+  background:#fff;
+  padding:5px 7px;
+  font-size:16px;
+}
+.setting-note{
+  font-size:8px;
+  color:var(--muted);
+  line-height:1.45;
+  padding-bottom:4px;
+}
+.material-standard{
+  min-width:155px!important;
+}
+.standard-hint{
+  width:100%;
+  margin-top:2px;
+  font-size:8px;
+  color:var(--muted);
+}
+.input-next-flash{
+  box-shadow:0 0 0 2px rgba(111,129,109,.24)!important;
+}
+
+
+.save-data-btn{
+  position:absolute;
+  right:0;
+  top:10px;
+  border:1px solid #bfc8bc;
+  background:#edf2eb;
+  color:#506050;
+  border-radius:9px;
+  padding:6px 9px;
+  font-size:8px;
+  font-weight:800;
+}
+.save-data-btn:active{transform:scale(.97)}
+.save-status{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(8px);
+  z-index:10001;
+  padding:7px 11px;
+  border-radius:999px;
+  background:#303330;
+  color:#fff;
+  font-size:9px;
+  font-weight:800;
+  opacity:0;
+  pointer-events:none;
+  transition:.18s ease;
+  white-space:nowrap;
+}
+.save-status.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+@media(max-width:700px){
+  .save-data-btn{right:2px;top:8px;padding:5px 7px;font-size:7px}
+}
+
 @media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}body>*{visibility:hidden!important}#cutting,#cutting *{visibility:visible!important}#cutting{display:block!important;position:absolute;left:0;top:0;width:100%;border:0}.actions{display:none!important}.results{grid-template-columns:1fr}.result{page-break-after:always;border:0}.result:last-child{page-break-after:auto}}
 
 body{
@@ -268,19 +428,34 @@ button,input,select{
 </head>
 <body>
 <div class="app">
-<header><button class="reset-btn" onclick="resetAll()">↺ 入力リセット</button><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
+<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
 <section class="card"><div class="section-head"><div class="no">01</div><div><h2>材料</h2><p>材料は追加・編集できる</p></div></div><div class="materials" id="materials">
-<div class="material" data-material-index="0" data-name="18 ランバー" data-type="芯材" data-thickness="18" data-sheet="4×8 / 3×6" data-grain="なし" data-allowance="0" onclick="editMaterial(this)"><strong><span class="dot o"></span>18 ランバー</strong><small>18mm｜4×8 / 3×6<br>芯材｜方向なし</small></div>
-<div class="material" data-material-index="1" data-name="メラミン TJ-4123" data-type="仕上材" data-thickness="0.95" data-sheet="4×8" data-grain="長手" data-allowance="10" onclick="editMaterial(this)"><strong><span class="dot b"></span>メラミン TJ-4123</strong><small>0.95mm｜4×8<br>仕上材｜木目：長手</small></div>
-<div class="material" data-material-index="2" data-name="白ポリ" data-type="仕上材" data-thickness="2.5" data-sheet="4×8" data-grain="なし" data-allowance="10" onclick="editMaterial(this)"><strong><span class="dot s"></span>白ポリ</strong><small>2.5mm｜4×8<br>仕上材｜方向なし</small></div>
+<div class="material" data-material-index="0" data-name="18 ランバー" data-type="芯材" data-thickness="18" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="なし" onclick="editMaterial(this)"><strong><span class="dot o"></span>18 ランバー</strong><small>18mm｜4×8 2430×1220<br>芯材｜方向なし</small></div>
+<div class="material" data-material-index="1" data-name="メラミン TJ-4123" data-type="仕上材" data-thickness="0.95" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="長手" onclick="editMaterial(this)"><strong><span class="dot b"></span>メラミン TJ-4123</strong><small>0.95mm｜4×8<br>仕上材｜木目：長手</small></div>
+<div class="material" data-material-index="2" data-name="白ポリ" data-type="仕上材" data-thickness="2.5" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="なし" onclick="editMaterial(this)"><strong><span class="dot s"></span>白ポリ</strong><small>2.5mm｜4×8<br>仕上材｜方向なし</small></div>
 </div><div class="actions"><button class="soft" onclick="openMaterialAdd()">＋ 材料を追加</button></div></section>
 <section class="card"><div class="section-head"><div class="no">02</div><div><h2>材料構成パターン</h2><p>よく使う構成を登録して部材へ当てはめる</p></div></div><div class="patterns" id="patterns">
 <div class="pattern" data-code="P1" data-name="標準箱" data-core="18 ランバー" data-layers="1層" data-face="メラミン TJ-4123" data-back="白ポリ" onclick="editPattern(this)"><h3>P1｜標準箱</h3><p>18L ×1層<br>表：メラミン / 裏：白ポリ</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div></div>
 <div class="pattern" data-code="P2" data-name="厚物" data-core="18 ランバー" data-layers="2層" data-face="メラミン TJ-4123" data-back="白ポリ" onclick="editPattern(this)"><h3>P2｜厚物</h3><p>18L ×2層<br>表：メラミン / 裏：白ポリ</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div></div>
 <div class="pattern" data-code="P3" data-name="両面メラミン" data-core="18 ランバー" data-layers="1層" data-face="メラミン TJ-4123" data-back="メラミン TJ-4123" onclick="editPattern(this)"><h3>P3｜両面メラミン</h3><p>18L ×1層<br>表：メラミン / 裏：メラミン</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div></div>
 </div><div class="actions"><button class="soft" onclick="openPatternAdd()">＋ パターンを追加</button></div></section>
+<section class="card" id="cutSettings">
+<div class="section-head"><div class="no">03</div><div><h2>木取り設定</h2><p>切りしろと貼りしろをまとめて設定</p></div></div>
+<div class="cutting-settings">
+  <div class="setting-field">
+    <label>切りしろ mm</label>
+    <input id="globalKerf" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="3">
+  </div>
+  <div class="setting-field">
+    <label>貼りしろ mm</label>
+    <input id="globalPasteAllowance" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="10">
+  </div>
+  <div class="setting-note">貼りしろは仕上材に適用。木目方向は材料ごとの設定を木取りに反映します。</div>
+</div>
+</section>
+
 <section class="card" id="jobSection">
-<div class="section-head"><div class="no">03</div><div><h2>図面・部材</h2><p>部材名・図面内の部材名は自由に変更できます</p></div></div>
+<div class="section-head"><div class="no">04</div><div><h2>図面・部材</h2><p>部材名・図面内の部材名は自由に変更できます</p></div></div>
 <div class="table-wrap">
 <table class="matrix" id="partMatrix">
 <thead>
@@ -308,26 +483,72 @@ button,input,select{
 <div class="generate-note" id="generateNote"></div>
 </section>
 <section class="card" id="cutting">
-<div class="section-head"><div class="no">04</div><div><h2>材料別 木取り</h2><p>背景＝材料色 / 部材＝図面番号色</p></div></div>
+<div class="section-head"><div class="no">05</div><div><h2>材料別 木取り</h2><p>背景＝材料色 / 部材＝図面番号色</p></div></div>
 <div class="results" id="cuttingResults"></div>
 <div class="actions"><button class="dark" onclick="window.print()">木取り表を共有 / PDF</button></div>
 </section>
 </div>
 
-<div class="overlay" id="detailO"><div class="sheet"><div class="handle"></div><div class="sheet-head"><div><h3>側板 A｜材料構成</h3><small>パターンとの差分だけ変更</small></div><button class="close" onclick="closeO('detailO')">×</button></div><div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span><span>積層</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>18 ランバー</option></select><span class="lab">×</span><select class="mini layers"><option>2層</option><option>1層</option><option>3層</option></select><span class="lab">貼しろ</span><input class="mini allow math" type="tel" inputmode="numeric" value="0"></div></div></div><div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表面</span><span>追加可</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>全面</option><option>貼り分け</option></select><span class="lab">+mm</span><input class="mini allow math" type="tel" inputmode="numeric" value="10"></div><button class="add-line">＋ 表面材を追加</button></div></div><div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏面</span><span>貼り分け対応</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>白ポリ</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="600+10"></div><div class="line" style="margin-top:5px"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="300+10"></div><button class="add-line">＋ 裏面材を追加</button></div></div><button class="save" onclick="closeO('detailO')">この部材だけ変更して保存</button></div></div>
+<div class="overlay" id="detailO"><div class="sheet"><div class="handle"></div><div class="sheet-head"><div><h3>側板 A｜材料構成</h3><small>パターンとの差分だけ変更</small></div><button class="close" onclick="closeO('detailO')">×</button></div><div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span><span>積層</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>18 ランバー</option></select><span class="lab">×</span><select class="mini layers"><option>2層</option><option>1層</option><option>3層</option></select></div></div></div><div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表面</span><span>追加可</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>全面</option><option>貼り分け</option></select></div><button class="add-line">＋ 表面材を追加</button></div></div><div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏面</span><span>貼り分け対応</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>白ポリ</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="600+10"></div><div class="line" style="margin-top:5px"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="300+10"></div><button class="add-line">＋ 裏面材を追加</button></div></div><button class="save" onclick="closeO('detailO')">この部材だけ変更して保存</button></div></div>
 
-<div class="overlay" id="matO"><div class="sheet"><div class="handle"></div><div class="sheet-head"><div><h3 id="matModalTitle">材料を追加</h3><small>登録後も編集できます</small></div><button class="close" onclick="closeO('matO')">×</button></div><div class="form-grid">
-<div class="field"><label>材料名</label><input id="matName" value="新規メラミン"></div>
-<div class="field"><label>種類</label><select id="matType"><option>仕上材</option><option>芯材</option></select></div>
-<div class="field"><label>厚み mm</label><input id="matThickness" class="math" type="tel" inputmode="numeric" value="1"></div>
-<div class="field"><label>原板</label><select id="matSheet"><option>4×8</option><option>3×6</option><option>4×8 / 3×6</option><option>カスタム</option></select></div>
-<div class="field"><label>木目方向</label><select id="matGrain"><option>なし</option><option>長手</option><option>短手</option></select></div>
-<div class="field"><label>貼りしろ mm</label><input id="matAllowance" class="math" type="tel" inputmode="numeric" value="10"></div>
-</div><button class="save" id="matSaveBtn" style="margin-top:8px" onclick="saveMaterial()">追加</button></div></div>
+<div class="overlay" id="matO"><div class="sheet"><div class="handle"></div>
+<div class="sheet-head"><div><h3 id="matModalTitle">材料を追加</h3><small>材料規格・原板規格・木目方向を設定</small></div><button class="close" onclick="closeO('matO')">×</button></div>
+<div class="form-grid">
+  <div class="field">
+    <label>材料規格</label>
+    <select id="matStandard" class="material-standard" onchange="applyMaterialStandard()">
+      <option value="">選択</option>
+      <option value="lumber15">15 ランバー｜15mm</option>
+      <option value="lumber18">18 ランバー｜18mm</option>
+      <option value="lumber21">21 ランバー｜21mm</option>
+      <option value="melamine095">メラミン｜0.95mm</option>
+      <option value="poly25">ポリ板｜2.5mm</option>
+      <option value="custom">カスタム</option>
+    </select>
+  </div>
+  <div class="field"><label>材料名</label><input id="matName" class="next-field" value="" placeholder="材料名" enterkeyhint="next"></div>
+  <div class="field"><label>種類</label><select id="matType" class="next-field"><option value="">選択</option><option>芯材</option><option>仕上材</option></select></div>
+  <div class="field"><label>厚み mm</label><input id="matThickness" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="厚み"></div>
+  <div class="field"><label>原板規格</label><select id="matSheetPreset" class="next-field" onchange="toggleCustomSheetFields()">
+    <option value="">選択</option>
+    <option value="3×6">3×6｜1820×910</option>
+    <option value="4×8">4×8｜2430×1220</option>
+    <option value="3×8">3×8｜2430×910</option>
+    <option value="4×6">4×6｜1820×1220</option>
+    <option value="4×10">4×10｜3050×1220</option>
+    <option value="custom">カスタム</option>
+  </select></div>
+  <div class="field"><label>木目方向</label><select id="matGrain" class="next-field">
+    <option value="">選択</option>
+    <option value="なし">方向なし</option>
+    <option value="長手">長手方向</option>
+    <option value="短手">短手方向</option>
+  </select></div>
+  <div class="custom-sheet-fields" id="customSheetFields">
+    <div class="field"><label>長さ mm</label><input id="matCustomW" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="長さ"></div>
+    <div class="field"><label>幅 mm</label><input id="matCustomH" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="done" value="" placeholder="幅"></div>
+  </div>
+  <div class="standard-hint">規格を選ぶと材料名・種類・厚みを自動入力。材料名は品番などを追記できます。</div>
+</div>
+<button class="save" id="matSaveBtn" style="margin-top:8px" onclick="saveMaterial()">追加</button>
+</div></div>
 
-<div class="overlay" id="patO"><div class="sheet"><div class="handle"></div><div class="sheet-head"><div><h3 id="patModalTitle">構成パターンを追加</h3><small>登録後も編集できます</small></div><button class="close" onclick="closeO('patO')">×</button></div><div class="field" style="margin-bottom:7px"><label>パターン名</label><input id="patName" value="厚物・両面メラミン"></div><div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span></div><div class="layer-body"><div class="line"><select class="mini mat" id="patCore"><option>18 ランバー</option></select><select class="mini layers" id="patLayers"><option>1層</option><option selected>2層</option><option>3層</option></select></div></div></div><div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表</span></div><div class="layer-body"><select class="mini mat" id="patFace"><option>メラミン TJ-4123</option><option>白ポリ</option></select></div></div><div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏</span></div><div class="layer-body"><select class="mini mat" id="patBack"><option>メラミン TJ-4123</option><option>白ポリ</option></select></div></div><div class="pattern-thickness-preview" id="patThicknessPreview">仕上厚 --mm</div><button class="save" id="patSaveBtn" onclick="savePattern()">パターンを追加</button></div></div>
+<div class="overlay" id="patO"><div class="sheet"><div class="handle"></div>
+<div class="sheet-head"><div><h3 id="patModalTitle">構成パターンを追加</h3><small>材料を選んで構成を登録</small></div><button class="close" onclick="closeO('patO')">×</button></div>
+<div class="field" style="margin-bottom:7px"><label>パターン名</label><input id="patName" value="" placeholder="パターン名"></div>
+<div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span></div>
+<div class="layer-body"><div class="line">
+<select class="mini mat" id="patCore"></select>
+<select class="mini layers" id="patLayers"><option value="">層数</option><option>1層</option><option>2層</option><option>3層</option><option>4層</option></select>
+</div></div></div>
+<div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表</span></div><div class="layer-body"><select class="mini mat" id="patFace"></select></div></div>
+<div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏</span></div><div class="layer-body"><select class="mini mat" id="patBack"></select></div></div>
+<div class="pattern-thickness-preview" id="patThicknessPreview">仕上厚 --mm</div>
+<button class="save" id="patSaveBtn" onclick="savePattern()">パターンを追加</button>
+</div></div>
 
-<div class="mathbar" id="mathbar"><button data-op="+">＋</button><button data-op="-">−</button><button data-op="*">×</button><button data-op="/">÷</button><button data-op="(">(</button><button data-op=")">)</button><button class="done">完了</button></div>
+<div id="saveStatus" class="save-status">保存しました</div>
+<div class="mathbar" id="mathbar"><button data-op="+">＋</button><button data-op="-">−</button><button data-op="*">×</button><button data-op="/">÷</button><button data-op="(">(</button><button data-op=")">)</button><button class="done">次へ</button></div>
 <script>
 
 const DRAWING_COLORS = [
@@ -335,13 +556,128 @@ const DRAWING_COLORS = [
   '#d7ece8','#f0d9e6','#e8e4c9','#dce1f2','#e2efd6',
   '#f4dfd0','#d8e8e0'
 ];
-const MATERIAL_COLOR_CLASSES = ['0','1','2','3','4','5'];
+const MATERIAL_COLOR_CLASSES = ['0','1','2','3','4','5','6','7','8','9','10','11'];
 let drawingCount = 1;
 let partCount = 1;
 let materialCount = 3;
 let patternCount = 3;
 let editingMaterial = null;
 let editingPattern = null;
+
+
+const APP_STORAGE_KEY='ma_app_state_v49';
+let saveTimer=null;
+let saveStatusTimer=null;
+
+function showSaveStatus(text='保存しました'){
+  const el=document.getElementById('saveStatus');
+  if(!el)return;
+  el.textContent=text;
+  el.classList.add('show');
+  clearTimeout(saveStatusTimer);
+  saveStatusTimer=setTimeout(()=>el.classList.remove('show'),1100);
+}
+
+function serializeAppHtml(){
+  const app=document.querySelector('.app');
+  if(!app)return '';
+
+  const clone=app.cloneNode(true);
+  const originals=[...app.querySelectorAll('input,select,textarea')];
+  const copies=[...clone.querySelectorAll('input,select,textarea')];
+
+  originals.forEach((src,i)=>{
+    const dst=copies[i];
+    if(!dst)return;
+
+    if(src instanceof HTMLInputElement){
+      dst.setAttribute('value',src.value);
+      if(src.type==='checkbox'||src.type==='radio'){
+        if(src.checked)dst.setAttribute('checked','');
+        else dst.removeAttribute('checked');
+      }
+    }else if(src instanceof HTMLTextAreaElement){
+      dst.textContent=src.value;
+    }else if(src instanceof HTMLSelectElement){
+      [...dst.options].forEach((o,oi)=>{
+        if(oi===src.selectedIndex)o.setAttribute('selected','');
+        else o.removeAttribute('selected');
+      });
+    }
+  });
+
+  return clone.innerHTML;
+}
+
+function recountStateFromDom(){
+  drawingCount=document.querySelectorAll('#drawingHeader .drawing-head').length||1;
+  partCount=document.querySelectorAll('#partBody tr').length||1;
+  materialCount=document.querySelectorAll('#materials .material').length;
+
+  const nums=[...document.querySelectorAll('#patterns .pattern')]
+    .map(p=>Number(String(p.dataset.code||'').replace(/\D/g,'')))
+    .filter(Number.isFinite);
+  patternCount=nums.length?Math.max(...nums):0;
+}
+
+function saveAppState(showMessage=false){
+  try{
+    const state={
+      version:49,
+      html:serializeAppHtml(),
+      savedAt:Date.now()
+    };
+    localStorage.setItem(APP_STORAGE_KEY,JSON.stringify(state));
+    if(showMessage)showSaveStatus('保存しました');
+    return true;
+  }catch(err){
+    console.error('save failed',err);
+    if(showMessage)showSaveStatus('保存できませんでした');
+    return false;
+  }
+}
+
+function scheduleAutoSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>saveAppState(false),180);
+}
+
+function restoreAppState(){
+  try{
+    const raw=localStorage.getItem(APP_STORAGE_KEY);
+    if(!raw)return false;
+    const state=JSON.parse(raw);
+    if(!state?.html)return false;
+
+    const app=document.querySelector('.app');
+    if(!app)return false;
+
+    app.innerHTML=state.html;
+    recountStateFromDom();
+    return true;
+  }catch(err){
+    console.error('restore failed',err);
+    return false;
+  }
+}
+
+function setupAutoSave(){
+  document.addEventListener('input',e=>{
+    if(e.target.closest('.app'))scheduleAutoSave();
+  });
+  document.addEventListener('change',e=>{
+    if(e.target.closest('.app'))scheduleAutoSave();
+  });
+  document.addEventListener('click',e=>{
+    if(e.target.closest('.app'))setTimeout(scheduleAutoSave,0);
+  });
+
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='hidden')saveAppState(false);
+  });
+  window.addEventListener('pagehide',()=>saveAppState(false));
+  window.addEventListener('beforeunload',()=>saveAppState(false));
+}
 
 function applyDrawingColors(){
   document.querySelectorAll('[data-drawing-index]').forEach(el=>{
@@ -392,36 +728,38 @@ function addPart(){
   for(let i=0;i<drawingCount;i++) tr.appendChild(emptyDrawingCell(i));
   document.getElementById('partBody').appendChild(tr);
   applyDrawingColors();
+
+  // 部材追加時は最初の図面に入力欄まで自動で作る
+  const firstPlus=tr.querySelector('.drawing-cell .cell-plus');
+  if(firstPlus) addCellPart(firstPlus);
 }
 
 function patternOptionsHtml(){
-  return [...document.querySelectorAll('.pattern')].map(p=>{
+  const items=[...document.querySelectorAll('.pattern')].map(p=>{
     const code=p.dataset.code, name=p.dataset.name;
-    return `<option value="${code}">${code}｜${name}</option>`;
+    return `<option value="${escapeHtml(code)}">${escapeHtml(code)}｜${escapeHtml(name)}</option>`;
   }).join('');
+  return `<option value="">パターンを選択</option>${items}`;
 }
 
 function addCellPart(btn){
   const td=btn.closest('.drawing-cell');
   td.querySelector('.empty-cell-note')?.remove();
-  const rowName=td.closest('tr')?.querySelector('.part-name-input')?.value?.trim()||'';
   const entry=document.createElement('div');
   entry.className='cell-entry';
   entry.innerHTML=`
-    <input class="cell-title-input" value="${escapeHtml(rowName)}" placeholder="部材名" aria-label="図面内の部材名">
+    <input class="cell-title-input" value="" placeholder="部材名を入力" aria-label="図面内の部材名">
     <div class="dims">
-      <input class="dim math" type="tel" inputmode="numeric" value="" placeholder="長さ">
+      <input class="dim math" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="長さ">
       <span class="times">×</span>
-      <input class="dim math" type="tel" inputmode="numeric" value="" placeholder="幅">
+      <input class="dim math" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="幅">
       <span class="times">×</span>
-      <input class="dim qty" type="tel" inputmode="numeric" value="1" placeholder="枚数">
+      <input class="dim qty math" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="枚数">
     </div>
     <select class="pat-select psel" onchange="sum(this)">${patternOptionsHtml()}</select>
     <button class="detail" onclick="openO('detailO')">詳細</button>
     <div class="summary"></div>`;
   td.insertBefore(entry,btn);
-  const sel=entry.querySelector('.psel');
-  if(sel) sum(sel);
 }
 
 function escapeHtml(v){
@@ -483,16 +821,20 @@ function getMaterialByName(name){
   return [...document.querySelectorAll('.material')].find(m=>m.dataset.name===name)||null;
 }
 
-function materialAllowance(name){
-  const m=getMaterialByName(name);
-  const n=evalMathExpression(m?.dataset.allowance||'0');
+function getGlobalKerf(){
+  const n=evalMathExpression(document.getElementById('globalKerf')?.value||'0');
+  return Number.isFinite(n)?Math.max(0,n):0;
+}
+
+function getGlobalPasteAllowance(){
+  const n=evalMathExpression(document.getElementById('globalPasteAllowance')?.value||'0');
   return Number.isFinite(n)?Math.max(0,n):0;
 }
 
 function pushExpanded(list, materialName, baseW, baseH, qty, drawingIndex, drawingName, partName){
   const mat=getMaterialByName(materialName);
   if(!mat)return;
-  const allowance=materialAllowance(materialName);
+  const allowance=mat.dataset.type==='仕上材'?getGlobalPasteAllowance():0;
   const w=baseW+allowance;
   const h=baseH+allowance;
   for(let i=0;i<qty;i++){
@@ -543,10 +885,14 @@ const SHEET_SIZES={
 };
 
 function candidateSheets(mat){
-  const raw=String(mat?.dataset.sheet||'4×8');
-  const names=raw.split('/').map(s=>s.trim()).filter(Boolean);
-  const arr=names.map(n=>SHEET_SIZES[n]).filter(Boolean);
-  return arr.length?arr:[SHEET_SIZES['4×8']];
+  if(!mat) return [];
+  const w=Number(mat.dataset.sheetW||0);
+  const h=Number(mat.dataset.sheetH||0);
+  const name=mat.dataset.sheet||mat.dataset.sheetPreset||'カスタム';
+  if(w>0&&h>0) return [{name,w,h}];
+
+  const preset=mat.dataset.sheetPreset||mat.dataset.sheet||'';
+  return SHEET_SIZES[preset]?[SHEET_SIZES[preset]]:[];
 }
 
 function intersects(a,b){
@@ -567,51 +913,228 @@ function splitFreeRects(freeRects,used){
   return out.filter(r=>r.w>0&&r.h>0).filter((r,i,a)=>!a.some((o,j)=>j!==i&&contains(o,r)));
 }
 
-function bestPlacement(sheet,piece,allowRotate){
+function placementScore(sheet,r,v,mode){
+  const currentMaxX=sheet.placements.reduce((m,p)=>Math.max(m,p.x+(p.packW||p.w)),0);
+  const currentMaxY=sheet.placements.reduce((m,p)=>Math.max(m,p.y+(p.packH||p.h)),0);
+  const newMaxX=Math.max(currentMaxX,r.x+v.w);
+  const newMaxY=Math.max(currentMaxY,r.y+v.h);
+  const boundArea=newMaxX*newMaxY;
+  const boundEdge=newMaxX+newMaxY;
+  const waste=r.w*r.h-v.w*v.h;
+  const shortLeft=Math.min(r.w-v.w,r.h-v.h);
+  const longLeft=Math.max(r.w-v.w,r.h-v.h);
+  const position=r.y*sheet.type.w+r.x;
+
+  if(mode==='compact'){
+    // 使用領域を左上へ寄せ、大きな四角い端材を右/下に残しやすくする
+    return [boundArea,boundEdge,position,waste,shortLeft,longLeft];
+  }
+  if(mode==='edge'){
+    // 原板端から順に詰める
+    return [position,boundArea,waste,shortLeft,longLeft];
+  }
+  // 従来型: 隙間へぴったり収める
+  return [waste,shortLeft,longLeft,position,boundArea];
+}
+
+function scoreLess(a,b){
+  if(!b)return true;
+  for(let i=0;i<a.length;i++){
+    if(a[i]<b[i])return true;
+    if(a[i]>b[i])return false;
+  }
+  return false;
+}
+
+function bestPlacement(sheet,piece,mode='compact'){
   let best=null;
-  const variants=[{w:piece.w,h:piece.h,rot:false}];
-  if(allowRotate&&piece.w!==piece.h)variants.push({w:piece.h,h:piece.w,rot:true});
+  let bestScore=null;
+  const kerf=getGlobalKerf();
+
+  let orientations;
+  if(piece.grain==='短手'){
+    // 部材の長さ方向を原板の短手へ向ける
+    orientations=[{drawW:piece.h,drawH:piece.w,rot:true}];
+  }else if(piece.grain==='長手'){
+    // 部材の長さ方向を原板の長手へ固定
+    orientations=[{drawW:piece.w,drawH:piece.h,rot:false}];
+  }else{
+    orientations=[{drawW:piece.w,drawH:piece.h,rot:false}];
+    if(piece.w!==piece.h)orientations.push({drawW:piece.h,drawH:piece.w,rot:true});
+  }
+
   sheet.free.forEach((r,ri)=>{
-    variants.forEach(v=>{
-      if(v.w<=r.w&&v.h<=r.h){
-        const waste=r.w*r.h-v.w*v.h;
-        if(!best||waste<best.waste)best={ri,x:r.x,y:r.y,w:v.w,h:v.h,rot:v.rot,waste};
+    orientations.forEach(o=>{
+      // 原板端までぴったりの場合、その端側の切りしろは不要
+      const packW=o.drawW+(o.drawW<r.w?kerf:0);
+      const packH=o.drawH+(o.drawH<r.h?kerf:0);
+      if(packW<=r.w&&packH<=r.h){
+        const v={w:packW,h:packH};
+        const score=placementScore(sheet,r,v,mode);
+        if(scoreLess(score,bestScore)){
+          bestScore=score;
+          best={
+            ri,x:r.x,y:r.y,
+            drawW:o.drawW,drawH:o.drawH,
+            packW,packH,
+            rot:o.rot,score
+          };
+        }
       }
     });
   });
   return best;
 }
 
-function packOnSheetType(pieces,type,allowRotate){
-  const ordered=[...pieces].sort((a,b)=>(b.w*b.h)-(a.w*a.h));
+function pieceOrders(pieces){
+  const orders=[
+    [...pieces].sort((a,b)=>(b.w*b.h)-(a.w*a.h)),
+    [...pieces].sort((a,b)=>Math.max(b.w,b.h)-Math.max(a.w,a.h)),
+    [...pieces].sort((a,b)=>b.w-a.w||b.h-a.h),
+    [...pieces].sort((a,b)=>b.h-a.h||b.w-a.w)
+  ];
+
+  // 同じ並びを除外
+  const seen=new Set();
+  return orders.filter(order=>{
+    const key=order.map(p=>`${p.w}x${p.h}:${p.partName}:${p.drawingIndex}`).join('|');
+    if(seen.has(key))return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function packOrderedPieces(ordered,type,mode){
   const sheets=[];
   for(const p of ordered){
-    let chosen=null, chosenSheet=null;
-    for(const s of sheets){
-      const c=bestPlacement(s,p,allowRotate&&p.grain==='なし');
-      if(c&&(!chosen||c.waste<chosen.waste)){chosen=c;chosenSheet=s}
+    let chosen=null,chosenSheet=null,chosenSheetIndex=-1;
+
+    for(let si=0;si<sheets.length;si++){
+      const s=sheets[si];
+      const c=bestPlacement(s,p,mode);
+      if(!c)continue;
+
+      // 既存の若い原板を優先して、最後の原板へ散らさない
+      const candidateRank=[si,...c.score];
+      const chosenRank=chosen?[chosenSheetIndex,...chosen.score]:null;
+      if(!chosen||scoreLess(candidateRank,chosenRank)){
+        chosen=c;
+        chosenSheet=s;
+        chosenSheetIndex=si;
+      }
     }
+
     if(!chosen){
-      const s={type,free:[{x:0,y:0,w:type.w,h:type.h}],placements:[]};
-      const c=bestPlacement(s,p,allowRotate&&p.grain==='なし');
+      const s={
+        type,
+        free:[{x:0,y:0,w:type.w,h:type.h}],
+        placements:[]
+      };
+      const c=bestPlacement(s,p,mode);
       if(!c)return null;
-      sheets.push(s);chosen=c;chosenSheet=s;
+      sheets.push(s);
+      chosen=c;
+      chosenSheet=s;
+      chosenSheetIndex=sheets.length-1;
     }
-    const used={x:chosen.x,y:chosen.y,w:chosen.w,h:chosen.h};
-    chosenSheet.placements.push({...p,...used,rotated:chosen.rot});
+
+    const used={x:chosen.x,y:chosen.y,w:chosen.packW,h:chosen.packH};
+    chosenSheet.placements.push({
+      ...p,
+      x:chosen.x,y:chosen.y,
+      w:chosen.drawW,h:chosen.drawH,
+      packW:chosen.packW,packH:chosen.packH,
+      rotated:chosen.rot
+    });
     chosenSheet.free=splitFreeRects(chosenSheet.free,used);
   }
-  const usedArea=pieces.reduce((sum,p)=>sum+p.w*p.h,0);
+
+  const usedArea=ordered.reduce((sum,p)=>sum+p.w*p.h,0);
   const sheetArea=sheets.length*type.w*type.h;
-  return {type,sheets,usedArea,sheetArea,yieldPct:sheetArea?usedArea/sheetArea*100:0};
+
+  return {
+    type,
+    sheets,
+    usedArea,
+    sheetArea,
+    yieldPct:sheetArea?usedArea/sheetArea*100:0,
+    mode
+  };
+}
+
+function largestReusableOffcut(sheet,minSide=100){
+  const candidates=(sheet.free||[])
+    .filter(r=>r.w>=minSide&&r.h>=minSide)
+    .sort((a,b)=>(b.w*b.h)-(a.w*a.h));
+
+  if(!candidates.length)return null;
+  const r=candidates[0];
+  return {...r,area:r.w*r.h};
+}
+
+function analyzeOffcuts(pack){
+  let largestArea=0;
+  let reusableAreaScore=0;
+  let shapeScore=0;
+
+  pack.sheets.forEach(sheet=>{
+    const r=largestReusableOffcut(sheet);
+    if(!r)return;
+    largestArea=Math.max(largestArea,r.area);
+    reusableAreaScore+=r.area;
+
+    // 細長い端材より、短辺が大きい端材を優先
+    shapeScore+=Math.min(r.w,r.h);
+  });
+
+  return {largestArea,reusableAreaScore,shapeScore};
+}
+
+function comparePacked(a,b){
+  if(!b)return true;
+
+  // 1. 必要な原板総面積を最優先
+  if(a.sheetArea!==b.sheetArea)return a.sheetArea<b.sheetArea;
+
+  // 2. 枚数
+  if(a.sheets.length!==b.sheets.length)return a.sheets.length<b.sheets.length;
+
+  // 3. 同じ歩留まりなら「使いやすい大きな端材」を優先
+  const ao=analyzeOffcuts(a);
+  const bo=analyzeOffcuts(b);
+
+  if(ao.reusableAreaScore!==bo.reusableAreaScore)
+    return ao.reusableAreaScore>bo.reusableAreaScore;
+
+  if(ao.largestArea!==bo.largestArea)
+    return ao.largestArea>bo.largestArea;
+
+  if(ao.shapeScore!==bo.shapeScore)
+    return ao.shapeScore>bo.shapeScore;
+
+  // 4. 最後に歩留まり
+  return a.yieldPct>b.yieldPct;
+}
+
+function packOnSheetType(pieces,type){
+  let best=null;
+  const modes=['compact','edge','snug'];
+
+  for(const order of pieceOrders(pieces)){
+    for(const mode of modes){
+      const packed=packOrderedPieces(order,type,mode);
+      if(packed&&comparePacked(packed,best))best=packed;
+    }
+  }
+  return best;
 }
 
 function choosePacking(pieces,mat){
   let best=null;
   for(const type of candidateSheets(mat)){
-    const packed=packOnSheetType(pieces,type,true);
+    const packed=packOnSheetType(pieces,type);
     if(!packed)continue;
-    if(!best||packed.sheetArea<best.sheetArea||(packed.sheetArea===best.sheetArea&&packed.sheets.length<best.sheets.length))best=packed;
+    if(comparePacked(packed,best))best=packed;
   }
   return best;
 }
@@ -621,22 +1144,51 @@ function renderMaterialResult(materialName,pieces){
   if(!mat)return '';
   const pack=choosePacking(pieces,mat);
   if(!pack)return '';
+
   const mi=Number(mat.dataset.materialIndex||0)%MATERIAL_COLOR_CLASSES.length;
+
   const boards=pack.sheets.map((sheet,si)=>{
     const items=sheet.placements.map(p=>{
-      const left=p.x/sheet.type.w*100,top=p.y/sheet.type.h*100,width=p.w/sheet.type.w*100,height=p.h/sheet.type.h*100;
+      const left=p.x/sheet.type.w*100;
+      const top=p.y/sheet.type.h*100;
+      const width=p.w/sheet.type.w*100;
+      const height=p.h/sheet.type.h*100;
       const color=DRAWING_COLORS[p.drawingIndex%DRAWING_COLORS.length];
       const label=`${escapeHtml(p.drawingName)}<br>${escapeHtml(p.partName)}<br>${Math.round(p.w)}×${Math.round(p.h)}`;
       return `<div class="piece drawing-piece" data-drawing-index="${p.drawingIndex}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;background:${color}">${label}</div>`;
     }).join('');
-    return `<div class="board-item"><div class="board-title"><span>${sheet.type.name} ${sheet.type.w}×${sheet.type.h}</span><span>${si+1}枚目</span></div><div class="board" style="aspect-ratio:${sheet.type.w}/${sheet.type.h}">${items}</div></div>`;
+
+    const offcut=largestReusableOffcut(sheet);
+    let offcutHtml='';
+    let offcutInfo='<span>再利用端材なし</span>';
+
+    if(offcut){
+      const ol=offcut.x/sheet.type.w*100;
+      const ot=offcut.y/sheet.type.h*100;
+      const ow=offcut.w/sheet.type.w*100;
+      const oh=offcut.h/sheet.type.h*100;
+      offcutHtml=`<div class="offcut" style="left:${ol}%;top:${ot}%;width:${ow}%;height:${oh}%">端材<br>${Math.round(offcut.w)}×${Math.round(offcut.h)}</div>`;
+      offcutInfo=`<span>最大端材</span><strong>${Math.round(offcut.w)}×${Math.round(offcut.h)} mm</strong>`;
+    }
+
+    return `<div class="board-item">
+      <div class="board-title"><span>${sheet.type.name} ${sheet.type.w}×${sheet.type.h}</span><span>${si+1}枚目</span></div>
+      <div class="board" style="aspect-ratio:${sheet.type.w}/${sheet.type.h}">${items}${offcutHtml}</div>
+      <div class="offcut-summary">${offcutInfo}</div>
+    </div>`;
   }).join('');
+
   const thickness=mat.dataset.thickness||'';
+  const offcutAnalysis=analyzeOffcuts(pack);
+
   return `<div class="result material-${mi}">
     <h3>${escapeHtml(materialName)}${thickness?` ${escapeHtml(thickness)}mm`:''}</h3>
-    <p>${pieces.length}片を材料別に展開</p>
+    <p>${pieces.length}片を材料別に展開｜端材を大きく残す配置を優先</p>
     <div class="board-list">${boards}</div>
-    <div class="stats"><span>${pack.type.name} × ${pack.sheets.length}枚</span><b>${pack.yieldPct.toFixed(1)}%</b></div>
+    <div class="stats">
+      <span>${pack.type.name} × ${pack.sheets.length}枚</span>
+      <b>${pack.yieldPct.toFixed(1)}%</b>
+    </div>
   </div>`;
 }
 
@@ -667,16 +1219,25 @@ function generateCutting(){
     : '現在の入力内容で木取り表を更新しました。';
   note.classList.add('show');
   applyDrawingColors();
+  saveAppState(false);
   setTimeout(()=>cut.scrollIntoView({behavior:'smooth',block:'start'}),60);
 }
 
 function resetAll(){
-  // 材料・パターンの登録は残し、案件入力だけを完全に空に戻す
   drawingCount=1;
   partCount=1;
+  materialCount=0;
+  patternCount=0;
+  editingMaterial=null;
+  editingPattern=null;
+
+  // 材料・パターンも完全に空にする
+  document.getElementById('materials').innerHTML='';
+  document.getElementById('patterns').innerHTML='';
+
   document.getElementById('drawingHeader').innerHTML=`
     <th class="part-col">部材名</th>
-    <th class="drawing-head" data-drawing-index="0"><input class="drawing-name-input" value="図面 01" aria-label="図面名"></th>`;
+    <th class="drawing-head" data-drawing-index="0"><input class="drawing-name-input" value="" placeholder="図面番号" aria-label="図面名"></th>`;
   document.getElementById('partBody').innerHTML=`
     <tr>
       <td class="part-col"><input class="part-name-input" value="" placeholder="部材名"></td>
@@ -685,91 +1246,215 @@ function resetAll(){
         <button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>
       </td>
     </tr>`;
+
+  document.getElementById('globalKerf').value='3';
+  document.getElementById('globalPasteAllowance').value='10';
+
   document.getElementById('cuttingResults').innerHTML='';
   document.getElementById('cutting').classList.remove('generated');
   const note=document.getElementById('generateNote');
   note.textContent='';
   note.classList.remove('show');
+
   document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show'));
   document.body.style.overflow='';
-  if(typeof bar!=='undefined'&&bar){bar.classList.remove('show');bar.style.top='';bar.style.bottom=''}
+  if(typeof bar!=='undefined'&&bar){
+    bar.classList.remove('show');
+    bar.style.top='';
+    bar.style.bottom='';
+  }
   active=null;
   applyDrawingColors();
+  try{localStorage.removeItem(APP_STORAGE_KEY)}catch{}
+  setTimeout(()=>saveAppState(false),0);
+
   const toast=document.getElementById('resetToast');
   if(toast){
-    toast.textContent='入力をリセットしました';
+    toast.textContent='材料・パターン・入力をすべてリセットしました';
     toast.classList.add('show');
-    setTimeout(()=>toast.classList.remove('show'),1300);
+    setTimeout(()=>toast.classList.remove('show'),1500);
   }
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
+const MATERIAL_STANDARDS={
+  lumber15:{name:'15 ランバー',type:'芯材',thickness:15},
+  lumber18:{name:'18 ランバー',type:'芯材',thickness:18},
+  lumber21:{name:'21 ランバー',type:'芯材',thickness:21},
+  melamine095:{name:'メラミン',type:'仕上材',thickness:0.95},
+  poly25:{name:'ポリ板',type:'仕上材',thickness:2.5}
+};
+
+function findMaterialStandard(data){
+  const name=String(data?.name||'');
+  const thickness=Number(data?.thickness||0);
+  const type=String(data?.type||'');
+  if(type==='芯材'&&thickness===15&&name.includes('ランバー'))return 'lumber15';
+  if(type==='芯材'&&thickness===18&&name.includes('ランバー'))return 'lumber18';
+  if(type==='芯材'&&thickness===21&&name.includes('ランバー'))return 'lumber21';
+  if(type==='仕上材'&&Math.abs(thickness-.95)<.001&&name.includes('メラミン'))return 'melamine095';
+  if(type==='仕上材'&&Math.abs(thickness-2.5)<.001&&(name.includes('ポリ')||name.includes('ポリ板')))return 'poly25';
+  return 'custom';
+}
+
+function applyMaterialStandard(){
+  const key=document.getElementById('matStandard')?.value||'';
+  if(!key)return;
+  if(key==='custom'){
+    document.getElementById('matName').value='';
+    document.getElementById('matType').value='';
+    document.getElementById('matThickness').value='';
+    document.getElementById('matName').focus();
+    return;
+  }
+  const s=MATERIAL_STANDARDS[key];
+  if(!s)return;
+  document.getElementById('matName').value=s.name;
+  document.getElementById('matType').value=s.type;
+  document.getElementById('matThickness').value=String(s.thickness);
+}
+
+function toggleCustomSheetFields(){
+  const preset=document.getElementById('matSheetPreset')?.value||'';
+  document.getElementById('customSheetFields')?.classList.toggle('show',preset==='custom');
+}
+
+function refreshPatternMaterialOptions(selected={}){
+  const core=document.getElementById('patCore');
+  const face=document.getElementById('patFace');
+  const back=document.getElementById('patBack');
+  if(!core||!face||!back) return;
+
+  const mats=[...document.querySelectorAll('.material')].map(m=>({
+    name:m.dataset.name||'',
+    type:m.dataset.type||''
+  }));
+
+  function setOptions(sel,type,value){
+    const filtered=mats.filter(m=>m.type===type);
+    sel.innerHTML='<option value="">選択</option>'+filtered.map(m=>`<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('');
+    sel.value=value||'';
+  }
+
+  setOptions(core,'芯材',selected.core);
+  setOptions(face,'仕上材',selected.face);
+  setOptions(back,'仕上材',selected.back);
+}
+
+function refreshAllPartPatternOptions(){
+  document.querySelectorAll('.psel').forEach(sel=>{
+    const current=sel.value;
+    sel.innerHTML=patternOptionsHtml();
+    if([...sel.options].some(o=>o.value===current)) sel.value=current;
+    sum(sel);
+  });
 }
 
 function openMaterialAdd(){
   editingMaterial=null;
   document.getElementById('matModalTitle').textContent='材料を追加';
   document.getElementById('matSaveBtn').textContent='追加';
-  document.getElementById('matName').value='新規メラミン';
-  document.getElementById('matType').value='仕上材';
-  document.getElementById('matThickness').value='1';
-  document.getElementById('matSheet').value='4×8';
-  document.getElementById('matGrain').value='なし';
-  document.getElementById('matAllowance').value='10';
+  document.getElementById('matStandard').value='';
+  document.getElementById('matName').value='';
+  document.getElementById('matType').value='';
+  document.getElementById('matThickness').value='';
+  document.getElementById('matSheetPreset').value='';
+  document.getElementById('matGrain').value='';
+  document.getElementById('matCustomW').value='';
+  document.getElementById('matCustomH').value='';
+  toggleCustomSheetFields();
   openO('matO');
 }
 
-function editMaterial(btn){
-  editingMaterial=btn.closest('.material');
+function editMaterial(card){
+  editingMaterial=card.closest?.('.material')||card;
   const d=editingMaterial.dataset;
   document.getElementById('matModalTitle').textContent='材料を編集';
   document.getElementById('matSaveBtn').textContent='変更を保存';
+  document.getElementById('matStandard').value=findMaterialStandard(d);
   document.getElementById('matName').value=d.name||'';
-  document.getElementById('matType').value=d.type||'仕上材';
+  document.getElementById('matType').value=d.type||'';
   document.getElementById('matThickness').value=d.thickness||'';
-  document.getElementById('matSheet').value=d.sheet||'4×8';
-  document.getElementById('matGrain').value=d.grain||'なし';
-  document.getElementById('matAllowance').value=d.allowance||'0';
+  document.getElementById('matSheetPreset').value=d.sheetPreset||'custom';
+  document.getElementById('matGrain').value=d.grain||'';
+  document.getElementById('matCustomW').value=d.sheetPreset==='custom'?(d.sheetW||''):'';
+  document.getElementById('matCustomH').value=d.sheetPreset==='custom'?(d.sheetH||''):'';
+  toggleCustomSheetFields();
   openO('matO');
 }
 
-function syncMaterialOptions(oldName,newName){
-  document.querySelectorAll('select.mini.mat').forEach(sel=>{
-    [...sel.options].forEach(o=>{ if(o.textContent===oldName) o.textContent=newName; });
-  });
-}
-
 function saveMaterial(){
-  const name=document.getElementById('matName').value.trim()||'新規材料';
+  const name=document.getElementById('matName').value.trim();
   const type=document.getElementById('matType').value;
-  const thickness=document.getElementById('matThickness').value||'0';
-  const sheet=document.getElementById('matSheet').value;
+  const thicknessRaw=document.getElementById('matThickness').value.trim();
+  const thickness=evalMathExpression(thicknessRaw);
+  const preset=document.getElementById('matSheetPreset').value;
   const grain=document.getElementById('matGrain').value;
-  const allowance=document.getElementById('matAllowance').value||'0';
+
+  if(!name){alert('材料名を入力してください。');return}
+  if(!type){alert('材料の種類を選択してください。');return}
+  if(!(thickness>0)){alert('厚みを入力してください。');return}
+  if(!preset){alert('原板規格を選択してください。');return}
+  if(!grain){alert('木目方向を選択してください。');return}
+
+  let sheetW=0,sheetH=0,sheetLabel='';
+  if(preset==='custom'){
+    sheetW=evalMathExpression(document.getElementById('matCustomW').value);
+    sheetH=evalMathExpression(document.getElementById('matCustomH').value);
+    if(!(sheetW>0&&sheetH>0)){alert('カスタム原板の長さと幅を入力してください。');return}
+    sheetLabel='カスタム';
+  }else{
+    const s=SHEET_SIZES[preset];
+    if(!s){alert('原板規格を確認してください。');return}
+    sheetW=s.w;sheetH=s.h;sheetLabel=preset;
+  }
+
+  const payload={
+    name,type,
+    thickness:String(thickness),
+    sheet:sheetLabel,
+    sheetPreset:preset,
+    sheetW:String(sheetW),
+    sheetH:String(sheetH),
+    grain
+  };
 
   if(editingMaterial){
-    const oldName=editingMaterial.dataset.name;
-    Object.assign(editingMaterial.dataset,{name,type,thickness,sheet,grain,allowance});
-    editingMaterial.querySelector('strong').lastChild.textContent=name;
-    editingMaterial.querySelector('small').innerHTML=`${thickness}mm｜${sheet}<br>${type}｜方向${grain==='なし'?'なし':'：'+grain}`;
-    syncMaterialOptions(oldName,name);
+    const oldName=editingMaterial.dataset.name||'';
+    Object.assign(editingMaterial.dataset,payload);
+    const strong=editingMaterial.querySelector('strong');
+    if(strong){
+      const dot=strong.querySelector('.dot');
+      strong.innerHTML='';
+      if(dot) strong.appendChild(dot);
+      strong.append(document.createTextNode(name));
+    }
+    editingMaterial.querySelector('small').innerHTML=
+      `${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)} ${Math.round(sheetW)}×${Math.round(sheetH)}<br>${escapeHtml(type)}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}`;
+
+    // パターン内の参照名も追従
+    document.querySelectorAll('.pattern').forEach(p=>{
+      if(p.dataset.core===oldName)p.dataset.core=name;
+      if(p.dataset.face===oldName)p.dataset.face=name;
+      if(p.dataset.back===oldName)p.dataset.back=name;
+    });
   }else{
     const idx=materialCount % MATERIAL_COLOR_CLASSES.length;
     const d=document.createElement('div');
-    d.className='material';
+    d.className=`material material-${idx}`;
     d.dataset.materialIndex=idx;
-    Object.assign(d.dataset,{name,type,thickness,sheet,grain,allowance});
+    Object.assign(d.dataset,payload);
     d.setAttribute('onclick','editMaterial(this)');
-    d.innerHTML=`<strong><span class="dot c"></span>${name}</strong><small>${thickness}mm｜${sheet}<br>${type}｜方向${grain==='なし'?'なし':'：'+grain}</small>`;
+    d.innerHTML=`<strong><span class="dot c"></span>${escapeHtml(name)}</strong><small>${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)} ${Math.round(sheetW)}×${Math.round(sheetH)}<br>${escapeHtml(type)}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}</small>`;
     document.getElementById('materials').appendChild(d);
-    document.querySelectorAll('select.mini.mat').forEach(sel=>{
-      if(![...sel.options].some(o=>o.textContent===name)){
-        const o=document.createElement('option'); o.textContent=name; sel.appendChild(o);
-      }
-    });
     materialCount++;
   }
-  closeO('matO');
-}
 
+  updateAllPatternThickness();
+  closeO('matO');
+  saveAppState(false);
+}
 
 function getMaterialThickness(name){
   const mat=[...document.querySelectorAll('.material')].find(m=>m.dataset.name===name);
@@ -778,13 +1463,16 @@ function getMaterialThickness(name){
 }
 
 function calculatePatternThickness(core,layers,face,back){
+  if(!core||!layers||!face||!back) return NaN;
   const layerCount=parseInt(String(layers),10)||0;
   const total=(getMaterialThickness(core)*layerCount)+getMaterialThickness(face)+getMaterialThickness(back);
   return Math.round(total*100)/100;
 }
 
 function formatThickness(n){
-  return Number.isInteger(n)?String(n):String(n.toFixed(2)).replace(/0+$/,'').replace(/\.$/,'');
+  if(!Number.isFinite(Number(n))) return '--';
+  const v=Number(n);
+  return Number.isInteger(v)?String(v):String(v.toFixed(2)).replace(/0+$/,'').replace(/\.$/,'');
 }
 
 function updatePatternCardThickness(card){
@@ -803,7 +1491,7 @@ function updatePatternCardThickness(card){
     label.className='tag final-thickness';
     foot.appendChild(label);
   }
-  label.textContent=`仕上厚 ${formatThickness(total)}mm`;
+  label.textContent=Number.isFinite(total)?`仕上厚 ${formatThickness(total)}mm`:'仕上厚 --mm';
 }
 
 function updateAllPatternThickness(){
@@ -814,60 +1502,57 @@ function updatePatternPreview(){
   const preview=document.getElementById('patThicknessPreview');
   if(!preview)return;
   const core=document.getElementById('patCore')?.value||'';
-  const layers=document.getElementById('patLayers')?.value||'0層';
+  const layers=document.getElementById('patLayers')?.value||'';
   const face=document.getElementById('patFace')?.value||'';
   const back=document.getElementById('patBack')?.value||'';
   const total=calculatePatternThickness(core,layers,face,back);
-  preview.textContent=`仕上厚 ${formatThickness(total)}mm`;
+  preview.textContent=Number.isFinite(total)?`仕上厚 ${formatThickness(total)}mm`:'仕上厚 --mm';
 }
 
 function openPatternAdd(){
   editingPattern=null;
   document.getElementById('patModalTitle').textContent='構成パターンを追加';
   document.getElementById('patSaveBtn').textContent='パターンを追加';
-  document.getElementById('patName').value='厚物・両面メラミン';
-  document.getElementById('patCore').value='18 ランバー';
-  document.getElementById('patLayers').value='2層';
-  document.getElementById('patFace').value='メラミン TJ-4123';
-  document.getElementById('patBack').value='メラミン TJ-4123';
+
+  // 新規追加は完全に空白から
+  document.getElementById('patName').value='';
+  refreshPatternMaterialOptions();
+  document.getElementById('patLayers').value='';
   updatePatternPreview();
   openO('patO');
 }
 
-function editPattern(btn){
-  editingPattern=btn.closest('.pattern');
+function editPattern(card){
+  editingPattern=card.closest?.('.pattern')||card;
   const d=editingPattern.dataset;
   document.getElementById('patModalTitle').textContent='構成パターンを編集';
   document.getElementById('patSaveBtn').textContent='変更を保存';
   document.getElementById('patName').value=d.name||'';
-  document.getElementById('patCore').value=d.core||'18 ランバー';
-  document.getElementById('patLayers').value=d.layers||'1層';
-  document.getElementById('patFace').value=d.face||'メラミン TJ-4123';
-  document.getElementById('patBack').value=d.back||'白ポリ';
+  refreshPatternMaterialOptions({core:d.core,face:d.face,back:d.back});
+  document.getElementById('patLayers').value=d.layers||'';
   updatePatternPreview();
   openO('patO');
 }
 
-function updatePatternSelectLabels(oldLabel,newLabel){
-  document.querySelectorAll('.psel').forEach(sel=>{
-    [...sel.options].forEach(o=>{if(o.textContent===oldLabel)o.textContent=newLabel});
-  });
-}
-
 function savePattern(){
-  const name=document.getElementById('patName').value.trim()||'パターン';
+  const name=document.getElementById('patName').value.trim();
   const core=document.getElementById('patCore').value;
   const layers=document.getElementById('patLayers').value;
   const face=document.getElementById('patFace').value;
   const back=document.getElementById('patBack').value;
 
+  if(!name){alert('パターン名を入力してください。');return}
+  if(!core){alert('芯材を選択してください。');return}
+  if(!layers){alert('芯材の層数を選択してください。');return}
+  if(!face){alert('表面材を選択してください。');return}
+  if(!back){alert('裏面材を選択してください。');return}
+
   if(editingPattern){
     const code=editingPattern.dataset.code;
-    const oldLabel=`${code}｜${editingPattern.dataset.name}`;
     Object.assign(editingPattern.dataset,{name,core,layers,face,back});
     editingPattern.querySelector('h3').textContent=`${code}｜${name}`;
-    editingPattern.querySelector('p').innerHTML=`${core.replace(' ランバー','L')} ×${layers}<br>表：${face.replace(' TJ-4123','')} / 裏：${back.replace(' TJ-4123','')}`;
-    updatePatternSelectLabels(oldLabel,`${code}｜${name}`);
+    editingPattern.querySelector('p').innerHTML=
+      `${escapeHtml(core)} ×${escapeHtml(layers)}<br>表：${escapeHtml(face)} / 裏：${escapeHtml(back)}`;
   }else{
     patternCount++;
     const code='P'+patternCount;
@@ -875,18 +1560,25 @@ function savePattern(){
     d.className='pattern';
     Object.assign(d.dataset,{code,name,core,layers,face,back});
     d.setAttribute('onclick','editPattern(this)');
-    d.innerHTML=`<h3>${code}｜${name}</h3><p>${core.replace(' ランバー','L')} ×${layers}<br>表：${face.replace(' TJ-4123','')} / 裏：${back.replace(' TJ-4123','')}</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div>`;
+    d.innerHTML=`<h3>${escapeHtml(code)}｜${escapeHtml(name)}</h3><p>${escapeHtml(core)} ×${escapeHtml(layers)}<br>表：${escapeHtml(face)} / 裏：${escapeHtml(back)}</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div>`;
     document.getElementById('patterns').appendChild(d);
-    document.querySelectorAll('.psel').forEach(sel=>{
-      const o=document.createElement('option'); o.value=code; o.textContent=`${code}｜${name}`; sel.appendChild(o);
-    });
   }
+
   updateAllPatternThickness();
+  refreshAllPartPatternOptions();
   closeO('patO');
+  saveAppState(false);
 }
 
+const restoredFromStorage=restoreAppState();
 applyDrawingColors();
 updateAllPatternThickness();
+setupEnterAdvanceHints();
+setupAutoSave();
+
+if(restoredFromStorage){
+  requestAnimationFrame(()=>showSaveStatus('前回のデータを復元しました'));
+}
 
 ['patCore','patLayers','patFace','patBack'].forEach(id=>{
   document.getElementById(id)?.addEventListener('change',updatePatternPreview);
@@ -901,7 +1593,58 @@ function sum(s){
   const layers=Math.max(1,parseInt(p.dataset.layers,10)||1);
   box.innerHTML=`<span class="chip core">${escapeHtml((p.dataset.core||'').replace(' ランバー','L'))}×${layers}</span><span class="chip face">${escapeHtml((p.dataset.face||'').replace(' TJ-4123',''))}</span><span class="chip back">${escapeHtml((p.dataset.back||'').replace(' TJ-4123',''))}</span>`;
 }
-let active=null;const bar=document.getElementById('mathbar');function pos(){if(!bar.classList.contains('show'))return;if(window.visualViewport){const v=window.visualViewport,h=bar.offsetHeight||46;bar.style.top=Math.max(6,v.offsetTop+v.height-h-6)+'px';bar.style.bottom='auto'}else{bar.style.top='auto';bar.style.bottom='8px'}}document.addEventListener('focusin',e=>{if(e.target.classList.contains('math')){active=e.target;bar.classList.add('show');requestAnimationFrame(pos);setTimeout(pos,100)}});bar.addEventListener('pointerdown',e=>e.preventDefault());bar.addEventListener('click',e=>{const b=e.target.closest('[data-op]');if(b&&active){const t=b.dataset.op,s=active.selectionStart??active.value.length,en=active.selectionEnd??s;active.value=active.value.slice(0,s)+t+active.value.slice(en);try{active.setSelectionRange(s+t.length,s+t.length)}catch{}active.focus({preventScroll:true});return}if(e.target.classList.contains('done')){bar.classList.remove('show');active?.blur();active=null}});if(window.visualViewport){visualViewport.addEventListener('resize',pos);visualViewport.addEventListener('scroll',pos)}
+
+function visibleFormFields(){
+  return [...document.querySelectorAll(
+    '.app input:not([type="hidden"]), .app select, .overlay.show input:not([type="hidden"]), .overlay.show select'
+  )].filter(el=>{
+    if(el.disabled||el.readOnly)return false;
+    const r=el.getBoundingClientRect();
+    return r.width>0&&r.height>0;
+  });
+}
+
+function moveToNextField(current){
+  if(!current)return false;
+  const fields=visibleFormFields();
+  const i=fields.indexOf(current);
+  if(i<0)return false;
+  const next=fields[i+1];
+  if(!next){
+    current.blur();
+    return false;
+  }
+  next.focus({preventScroll:false});
+  if(next.select && next.tagName==='INPUT'){
+    try{next.select()}catch{}
+  }
+  next.classList.add('input-next-flash');
+  setTimeout(()=>next.classList.remove('input-next-flash'),220);
+  return true;
+}
+
+function setupEnterAdvanceHints(){
+  document.querySelectorAll('input,select').forEach((el,i)=>{
+    if(el.tagName==='INPUT'&&!el.getAttribute('enterkeyhint')){
+      el.setAttribute('enterkeyhint','next');
+    }
+  });
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const target=e.target;
+  if(!(target instanceof HTMLInputElement||target instanceof HTMLSelectElement))return;
+  e.preventDefault();
+  moveToNextField(target);
+});
+
+let active=null;const bar=document.getElementById('mathbar');function pos(){if(!bar.classList.contains('show'))return;if(window.visualViewport){const v=window.visualViewport,h=bar.offsetHeight||46;bar.style.top=Math.max(6,v.offsetTop+v.height-h-6)+'px';bar.style.bottom='auto'}else{bar.style.top='auto';bar.style.bottom='8px'}}document.addEventListener('focusin',e=>{if(e.target.classList.contains('math')){active=e.target;bar.classList.add('show');requestAnimationFrame(pos);setTimeout(pos,100)}});bar.addEventListener('pointerdown',e=>e.preventDefault());bar.addEventListener('click',e=>{const b=e.target.closest('[data-op]');if(b&&active){const t=b.dataset.op,s=active.selectionStart??active.value.length,en=active.selectionEnd??s;active.value=active.value.slice(0,s)+t+active.value.slice(en);try{active.setSelectionRange(s+t.length,s+t.length)}catch{}active.focus({preventScroll:true});return}if(e.target.classList.contains('done')){
+  const current=active;
+  bar.classList.remove('show');
+  active=null;
+  if(!moveToNextField(current))current?.blur();
+}});if(window.visualViewport){visualViewport.addEventListener('resize',pos);visualViewport.addEventListener('scroll',pos)}
 </script>
 
 <script>
