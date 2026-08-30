@@ -171,6 +171,86 @@
   transform:translateX(-50%) translateY(0);
 }
 
+
+.cell-title-input{
+  width:100%;
+  min-width:0;
+  border:0;
+  border-bottom:1px solid rgba(48,51,48,.16);
+  background:transparent;
+  color:var(--ink);
+  font-size:11px;
+  font-weight:800;
+  padding:1px 0 3px;
+  margin-bottom:5px;
+  border-radius:0;
+}
+.cell-title-input:focus,
+.part-name-input:focus{
+  outline:none;
+  border-bottom-color:#6f816d;
+}
+.empty-cell-note{
+  display:block;
+  color:var(--muted);
+  font-size:8px;
+  margin:2px 0 5px;
+}
+.board-list{
+  display:grid;
+  gap:8px;
+}
+.board-item{
+  break-inside:avoid;
+}
+.board-title{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:4px;
+  font-size:8px;
+  color:var(--muted);
+}
+.result .board{
+  position:relative;
+  overflow:hidden;
+}
+.result .piece{
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
+  padding:2px;
+  border:1px solid rgba(48,51,48,.28);
+  font-size:7px;
+  font-weight:800;
+  line-height:1.15;
+}
+.result-empty{
+  padding:16px 10px;
+  border:1px dashed var(--line);
+  border-radius:10px;
+  color:var(--muted);
+  font-size:10px;
+  text-align:center;
+}
+.drawing-name-input{
+  width:100%;
+  min-width:76px;
+  border:0;
+  background:transparent;
+  color:var(--ink);
+  font-weight:800;
+  font-size:10px;
+  padding:0;
+}
+@media(max-width:700px){
+  .cell-title-input{font-size:10px}
+  .drawing-name-input{min-width:68px;font-size:9px}
+}
+
 @media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}body>*{visibility:hidden!important}#cutting,#cutting *{visibility:visible!important}#cutting{display:block!important;position:absolute;left:0;top:0;width:100%;border:0}.actions{display:none!important}.results{grid-template-columns:1fr}.result{page-break-after:always;border:0}.result:last-child{page-break-after:auto}}
 
 body{
@@ -188,7 +268,7 @@ button,input,select{
 </head>
 <body>
 <div class="app">
-<header><button class="reset-btn" onclick="resetAll()">↺ リセット</button><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
+<header><button class="reset-btn" onclick="resetAll()">↺ 入力リセット</button><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
 <section class="card"><div class="section-head"><div class="no">01</div><div><h2>材料</h2><p>材料は追加・編集できる</p></div></div><div class="materials" id="materials">
 <div class="material" data-material-index="0" data-name="18 ランバー" data-type="芯材" data-thickness="18" data-sheet="4×8 / 3×6" data-grain="なし" data-allowance="0" onclick="editMaterial(this)"><strong><span class="dot o"></span>18 ランバー</strong><small>18mm｜4×8 / 3×6<br>芯材｜方向なし</small></div>
 <div class="material" data-material-index="1" data-name="メラミン TJ-4123" data-type="仕上材" data-thickness="0.95" data-sheet="4×8" data-grain="長手" data-allowance="10" onclick="editMaterial(this)"><strong><span class="dot b"></span>メラミン TJ-4123</strong><small>0.95mm｜4×8<br>仕上材｜木目：長手</small></div>
@@ -199,71 +279,37 @@ button,input,select{
 <div class="pattern" data-code="P2" data-name="厚物" data-core="18 ランバー" data-layers="2層" data-face="メラミン TJ-4123" data-back="白ポリ" onclick="editPattern(this)"><h3>P2｜厚物</h3><p>18L ×2層<br>表：メラミン / 裏：白ポリ</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div></div>
 <div class="pattern" data-code="P3" data-name="両面メラミン" data-core="18 ランバー" data-layers="1層" data-face="メラミン TJ-4123" data-back="メラミン TJ-4123" onclick="editPattern(this)"><h3>P3｜両面メラミン</h3><p>18L ×1層<br>表：メラミン / 裏：メラミン</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div></div>
 </div><div class="actions"><button class="soft" onclick="openPatternAdd()">＋ パターンを追加</button></div></section>
-<section class="card">
-<div class="section-head"><div class="no">03</div><div><h2>図面・部材</h2><p>図面色は木取り図の部材色へそのまま連動</p></div></div>
+<section class="card" id="jobSection">
+<div class="section-head"><div class="no">03</div><div><h2>図面・部材</h2><p>部材名・図面内の部材名は自由に変更できます</p></div></div>
 <div class="table-wrap">
 <table class="matrix" id="partMatrix">
-<thead><tr id="drawingHeader">
+<thead>
+<tr id="drawingHeader">
 <th class="part-col">部材名</th>
-<th class="drawing-head" data-drawing-index="0">図面 01</th>
-<th class="drawing-head" data-drawing-index="1">図面 02</th>
-<th class="drawing-head" data-drawing-index="2">図面 03</th>
-</tr></thead>
+<th class="drawing-head" data-drawing-index="0"><input class="drawing-name-input" value="図面 01" aria-label="図面名"></th>
+</tr>
+</thead>
 <tbody id="partBody">
 <tr>
-<td class="part-col"><input class="part-name-input" value="側板"></td>
+<td class="part-col"><input class="part-name-input" value="" placeholder="部材名"></td>
 <td class="drawing-cell" data-drawing-index="0">
-<div class="cell-title">側板 A</div>
-<div class="dims"><input class="dim math" type="tel" inputmode="numeric" value="900"><span class="times">×</span><input class="dim math" type="tel" inputmode="numeric" value="450"><span class="times">×</span><input class="dim qty" type="tel" inputmode="numeric" value="2"></div>
-<select class="pat-select psel" onchange="sum(this)"><option>P1｜標準箱</option><option selected>P2｜厚物</option><option>P3｜両面メラミン</option></select><button class="detail" onclick="openO('detailO')">詳細</button>
-<div class="summary"><span class="chip core">18L×2</span><span class="chip face">メラミン</span><span class="chip back">白ポリ</span></div>
-<button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button></td>
-<td class="drawing-cell" data-drawing-index="1">
-<div class="cell-title">側板 B</div>
-<div class="dims"><input class="dim math" type="tel" inputmode="numeric" value="760"><span class="times">×</span><input class="dim math" type="tel" inputmode="numeric" value="420"><span class="times">×</span><input class="dim qty" type="tel" inputmode="numeric" value="2"></div>
-<select class="pat-select psel" onchange="sum(this)"><option selected>P1｜標準箱</option><option>P2｜厚物</option><option>P3｜両面メラミン</option></select><button class="detail" onclick="openO('detailO')">詳細</button>
-<div class="summary"><span class="chip core">18L×1</span><span class="chip face">メラミン</span><span class="chip back">白ポリ</span></div>
-<button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button></td>
-<td class="drawing-cell" data-drawing-index="2"><button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button></td>
-</tr>
-<tr>
-<td class="part-col"><input class="part-name-input" value="天板"></td>
-<td class="drawing-cell" data-drawing-index="0">
-<div class="cell-title">天板</div>
-<div class="dims"><input class="dim math" type="tel" inputmode="numeric" value="1200"><span class="times">×</span><input class="dim math" type="tel" inputmode="numeric" value="500"><span class="times">×</span><input class="dim qty" type="tel" inputmode="numeric" value="1"></div>
-<select class="pat-select psel" onchange="sum(this)"><option selected>P1｜標準箱</option><option>P2｜厚物</option><option>P3｜両面メラミン</option></select><button class="detail" onclick="openO('detailO')">詳細</button>
-<div class="summary"><span class="chip core">18L×1</span><span class="chip face">メラミン</span><span class="chip back">白ポリ</span></div>
-<button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button></td>
-<td class="drawing-cell" data-drawing-index="1"><button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button></td>
-<td class="drawing-cell" data-drawing-index="2"><button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button></td>
+<span class="empty-cell-note">この図面に追加</span>
+<button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>
+</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="generate-row"><button class="soft" onclick="addDrawing()">＋ 図面追加</button><button class="soft" onclick="addPart()">＋ 部材追加</button><button class="generate-btn" onclick="generateCutting()">木取り表を生成</button></div><div class="generate-note" id="generateNote">材料構成を材料別に展開して木取り表を生成しました。</div>
+<div class="generate-row">
+<button class="soft" onclick="addDrawing()">＋ 図面追加</button>
+<button class="soft" onclick="addPart()">＋ 部材追加</button>
+<button class="generate-btn" onclick="generateCutting()">木取り表を生成</button>
+</div>
+<div class="generate-note" id="generateNote"></div>
 </section>
 <section class="card" id="cutting">
 <div class="section-head"><div class="no">04</div><div><h2>材料別 木取り</h2><p>背景＝材料色 / 部材＝図面番号色</p></div></div>
-<div class="results">
-<div class="result material-0"><h3>18 ランバー 18mm</h3><p>材料色：ランバー / 部材色：図面番号</p><div class="board">
-<div class="piece drawing-piece" data-drawing-index="0" style="left:2%;top:3%;width:37%;height:45%">図面01<br>側板A</div>
-<div class="piece drawing-piece" data-drawing-index="0" style="left:40%;top:3%;width:37%;height:45%">図面01<br>側板A</div>
-<div class="piece drawing-piece" data-drawing-index="1" style="left:2%;top:50%;width:37%;height:45%">図面02<br>側板B</div>
-<div class="piece drawing-piece" data-drawing-index="2" style="left:78%;top:3%;width:20%;height:60%">図面03</div>
-</div><div class="stats"><span>4×8 ×2枚</span><b>82%</b></div></div>
-
-<div class="result material-1"><h3>メラミン TJ-4123</h3><p>材料カードと背景色を連動</p><div class="board">
-<div class="piece drawing-piece" data-drawing-index="0" style="left:2%;top:3%;width:37%;height:45%">図面01<br>側板A</div>
-<div class="piece drawing-piece" data-drawing-index="1" style="left:40%;top:3%;width:37%;height:45%">図面02<br>側板B</div>
-<div class="piece drawing-piece" data-drawing-index="0" style="left:2%;top:50%;width:49%;height:45%">図面01<br>天板</div>
-</div><div class="stats"><span>4×8 ×1枚</span><b>76%</b></div></div>
-
-<div class="result material-2"><h3>白ポリ</h3><p>同じ材料なら同じ背景色</p><div class="board">
-<div class="piece drawing-piece" data-drawing-index="0" style="left:2%;top:3%;width:37%;height:45%">図面01</div>
-<div class="piece drawing-piece" data-drawing-index="1" style="left:40%;top:3%;width:37%;height:45%">図面02</div>
-<div class="piece drawing-piece" data-drawing-index="2" style="left:2%;top:50%;width:25%;height:45%">図面03</div>
-</div><div class="stats"><span>4×8 ×1枚</span><b>69%</b></div></div>
-</div>
+<div class="results" id="cuttingResults"></div>
 <div class="actions"><button class="dark" onclick="window.print()">木取り表を共有 / PDF</button></div>
 </section>
 </div>
@@ -290,13 +336,12 @@ const DRAWING_COLORS = [
   '#f4dfd0','#d8e8e0'
 ];
 const MATERIAL_COLOR_CLASSES = ['0','1','2','3','4','5'];
-let drawingCount = 3;
-let partCount = 2;
+let drawingCount = 1;
+let partCount = 1;
 let materialCount = 3;
 let patternCount = 3;
 let editingMaterial = null;
 let editingPattern = null;
-const INITIAL_APP_HTML = document.querySelector('.app').innerHTML;
 
 function applyDrawingColors(){
   document.querySelectorAll('[data-drawing-index]').forEach(el=>{
@@ -315,42 +360,36 @@ function applyDrawingColors(){
 }
 
 function emptyDrawingCell(index){
-  const td = document.createElement('td');
-  td.className = 'drawing-cell';
-  td.dataset.drawingIndex = index;
-  td.innerHTML = '<button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>';
+  const td=document.createElement('td');
+  td.className='drawing-cell';
+  td.dataset.drawingIndex=index;
+  td.innerHTML='<span class="empty-cell-note">この図面に追加</span><button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>';
   return td;
 }
 
 function addDrawing(){
-  if(drawingCount >= DRAWING_COLORS.length){
-    alert('プレビューでは図面色を12色まで用意しています。');
+  if(drawingCount>=DRAWING_COLORS.length){
+    alert('図面色は12色まで用意しています。');
     return;
   }
-  const index = drawingCount++;
-  const th = document.createElement('th');
-  th.className = 'drawing-head';
-  th.dataset.drawingIndex = index;
-  th.textContent = '図面 ' + String(index + 1).padStart(2,'0');
+  const index=drawingCount++;
+  const th=document.createElement('th');
+  th.className='drawing-head';
+  th.dataset.drawingIndex=index;
+  th.innerHTML=`<input class="drawing-name-input" value="図面 ${String(index+1).padStart(2,'0')}" aria-label="図面名">`;
   document.getElementById('drawingHeader').appendChild(th);
-
-  document.querySelectorAll('#partBody tr').forEach(tr=>{
-    tr.appendChild(emptyDrawingCell(index));
-  });
+  document.querySelectorAll('#partBody tr').forEach(tr=>tr.appendChild(emptyDrawingCell(index)));
   applyDrawingColors();
 }
 
 function addPart(){
   partCount++;
-  const tr = document.createElement('tr');
-  const nameTd = document.createElement('td');
-  nameTd.className = 'part-col';
-  nameTd.innerHTML = '<input class="part-name-input" value="部材'+partCount+'">';
+  const tr=document.createElement('tr');
+  const nameTd=document.createElement('td');
+  nameTd.className='part-col';
+  nameTd.innerHTML='<input class="part-name-input" value="" placeholder="部材名">';
   tr.appendChild(nameTd);
-
-  for(let i=0;i<drawingCount;i++){
-    tr.appendChild(emptyDrawingCell(i));
-  }
+  for(let i=0;i<drawingCount;i++) tr.appendChild(emptyDrawingCell(i));
   document.getElementById('partBody').appendChild(tr);
   applyDrawingColors();
 }
@@ -358,72 +397,311 @@ function addPart(){
 function patternOptionsHtml(){
   return [...document.querySelectorAll('.pattern')].map(p=>{
     const code=p.dataset.code, name=p.dataset.name;
-    return `<option>${code}｜${name}</option>`;
+    return `<option value="${code}">${code}｜${name}</option>`;
   }).join('');
 }
 
 function addCellPart(btn){
   const td=btn.closest('.drawing-cell');
+  td.querySelector('.empty-cell-note')?.remove();
+  const rowName=td.closest('tr')?.querySelector('.part-name-input')?.value?.trim()||'';
   const entry=document.createElement('div');
   entry.className='cell-entry';
   entry.innerHTML=`
-    <div class="cell-title">追加部材</div>
+    <input class="cell-title-input" value="${escapeHtml(rowName)}" placeholder="部材名" aria-label="図面内の部材名">
     <div class="dims">
-      <input class="dim math" type="tel" inputmode="numeric" value="">
+      <input class="dim math" type="tel" inputmode="numeric" value="" placeholder="長さ">
       <span class="times">×</span>
-      <input class="dim math" type="tel" inputmode="numeric" value="">
+      <input class="dim math" type="tel" inputmode="numeric" value="" placeholder="幅">
       <span class="times">×</span>
-      <input class="dim qty" type="tel" inputmode="numeric" value="1">
+      <input class="dim qty" type="tel" inputmode="numeric" value="1" placeholder="枚数">
     </div>
     <select class="pat-select psel" onchange="sum(this)">${patternOptionsHtml()}</select>
     <button class="detail" onclick="openO('detailO')">詳細</button>
-    <div class="summary"><span class="chip core">18L×1</span><span class="chip face">メラミン</span><span class="chip back">白ポリ</span></div>`;
+    <div class="summary"></div>`;
   td.insertBefore(entry,btn);
+  const sel=entry.querySelector('.psel');
+  if(sel) sum(sel);
+}
+
+function escapeHtml(v){
+  return String(v??'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+function normalizeMathExpression(value){
+  const full='０１２３４５６７８９';
+  return String(value??'').trim()
+    .replace(/[０-９]/g,ch=>String(full.indexOf(ch)))
+    .replace(/＋/g,'+').replace(/[－−]/g,'-')
+    .replace(/[×＊xX]/g,'*').replace(/[÷／]/g,'/')
+    .replace(/（/g,'(').replace(/）/g,')')
+    .replace(/．/g,'.').replace(/，/g,'');
+}
+
+function evalMathExpression(value){
+  const s=normalizeMathExpression(value);
+  if(!s)return NaN;
+  let i=0;
+  const skip=()=>{while(i<s.length&&/\s/.test(s[i]))i++};
+  function num(){
+    skip(); const st=i; let dots=0;
+    while(i<s.length&&/[0-9.]/.test(s[i])){if(s[i]==='.')dots++;if(dots>1)throw 0;i++}
+    if(st===i)throw 0;
+    const n=Number(s.slice(st,i)); if(!Number.isFinite(n))throw 0; return n;
+  }
+  function factor(){
+    skip();
+    if(s[i]==='+'){i++;return factor()}
+    if(s[i]==='-'){i++;return-factor()}
+    if(s[i]==='('){i++;const v=expr();skip();if(s[i]!==')')throw 0;i++;return v}
+    return num();
+  }
+  function term(){
+    let v=factor();
+    while(true){skip();const op=s[i];if(op!=='*'&&op!=='/')break;i++;const r=factor();if(op==='*')v*=r;else{if(r===0)throw 0;v/=r}}
+    return v;
+  }
+  function expr(){
+    let v=term();
+    while(true){skip();const op=s[i];if(op!=='+'&&op!=='-')break;i++;const r=term();v=op==='+'?v+r:v-r}
+    return v;
+  }
+  try{
+    const v=expr();skip();
+    if(i!==s.length||!Number.isFinite(v))return NaN;
+    return v;
+  }catch{return NaN}
+}
+
+function getPatternByCode(code){
+  return [...document.querySelectorAll('.pattern')].find(p=>p.dataset.code===code)||null;
+}
+
+function getMaterialByName(name){
+  return [...document.querySelectorAll('.material')].find(m=>m.dataset.name===name)||null;
+}
+
+function materialAllowance(name){
+  const m=getMaterialByName(name);
+  const n=evalMathExpression(m?.dataset.allowance||'0');
+  return Number.isFinite(n)?Math.max(0,n):0;
+}
+
+function pushExpanded(list, materialName, baseW, baseH, qty, drawingIndex, drawingName, partName){
+  const mat=getMaterialByName(materialName);
+  if(!mat)return;
+  const allowance=materialAllowance(materialName);
+  const w=baseW+allowance;
+  const h=baseH+allowance;
+  for(let i=0;i<qty;i++){
+    list.push({
+      materialName,w,h,drawingIndex,drawingName,partName,
+      grain:mat.dataset.grain||'なし',
+      materialIndex:Number(mat.dataset.materialIndex||0)
+    });
+  }
+}
+
+function collectExpandedPieces(){
+  const expanded=[];
+  let invalid=0;
+  document.querySelectorAll('#partBody tr').forEach(tr=>{
+    const rowName=tr.querySelector('.part-name-input')?.value?.trim()||'';
+    tr.querySelectorAll('.drawing-cell').forEach(td=>{
+      const di=Number(td.dataset.drawingIndex||0);
+      const dhead=document.querySelector(`.drawing-head[data-drawing-index="${di}"] .drawing-name-input`);
+      const drawingName=dhead?.value?.trim()||`図面 ${String(di+1).padStart(2,'0')}`;
+      td.querySelectorAll('.cell-entry').forEach(entry=>{
+        const inputs=entry.querySelectorAll('.dims input');
+        const w=evalMathExpression(inputs[0]?.value);
+        const h=evalMathExpression(inputs[1]?.value);
+        const qRaw=evalMathExpression(inputs[2]?.value||'1');
+        const qty=Math.max(0,Math.floor(qRaw||0));
+        if(!(w>0&&h>0&&qty>0)){invalid++;return}
+        const partName=entry.querySelector('.cell-title-input')?.value?.trim()||rowName||'部材';
+        const code=entry.querySelector('.psel')?.value||'P1';
+        const p=getPatternByCode(code);
+        if(!p){invalid++;return}
+        const layers=Math.max(1,parseInt(p.dataset.layers,10)||1);
+        pushExpanded(expanded,p.dataset.core,w,h,qty*layers,di,drawingName,partName);
+        pushExpanded(expanded,p.dataset.face,w,h,qty,di,drawingName,partName);
+        pushExpanded(expanded,p.dataset.back,w,h,qty,di,drawingName,partName);
+      });
+    });
+  });
+  return {expanded,invalid};
+}
+
+const SHEET_SIZES={
+  '4×8':{name:'4×8',w:2430,h:1220},
+  '3×6':{name:'3×6',w:1820,h:910},
+  '3×8':{name:'3×8',w:2430,h:910},
+  '4×6':{name:'4×6',w:1820,h:1220},
+  '4×10':{name:'4×10',w:3050,h:1220}
+};
+
+function candidateSheets(mat){
+  const raw=String(mat?.dataset.sheet||'4×8');
+  const names=raw.split('/').map(s=>s.trim()).filter(Boolean);
+  const arr=names.map(n=>SHEET_SIZES[n]).filter(Boolean);
+  return arr.length?arr:[SHEET_SIZES['4×8']];
+}
+
+function intersects(a,b){
+  return !(b.x>=a.x+a.w||b.x+b.w<=a.x||b.y>=a.y+a.h||b.y+b.h<=a.y);
+}
+function contains(a,b){
+  return b.x>=a.x&&b.y>=a.y&&b.x+b.w<=a.x+a.w&&b.y+b.h<=a.y+a.h;
+}
+function splitFreeRects(freeRects,used){
+  const out=[];
+  for(const r of freeRects){
+    if(!intersects(r,used)){out.push(r);continue}
+    if(used.x>r.x)out.push({x:r.x,y:r.y,w:used.x-r.x,h:r.h});
+    if(used.x+used.w<r.x+r.w)out.push({x:used.x+used.w,y:r.y,w:(r.x+r.w)-(used.x+used.w),h:r.h});
+    if(used.y>r.y)out.push({x:r.x,y:r.y,w:r.w,h:used.y-r.y});
+    if(used.y+used.h<r.y+r.h)out.push({x:r.x,y:used.y+used.h,w:r.w,h:(r.y+r.h)-(used.y+used.h)});
+  }
+  return out.filter(r=>r.w>0&&r.h>0).filter((r,i,a)=>!a.some((o,j)=>j!==i&&contains(o,r)));
+}
+
+function bestPlacement(sheet,piece,allowRotate){
+  let best=null;
+  const variants=[{w:piece.w,h:piece.h,rot:false}];
+  if(allowRotate&&piece.w!==piece.h)variants.push({w:piece.h,h:piece.w,rot:true});
+  sheet.free.forEach((r,ri)=>{
+    variants.forEach(v=>{
+      if(v.w<=r.w&&v.h<=r.h){
+        const waste=r.w*r.h-v.w*v.h;
+        if(!best||waste<best.waste)best={ri,x:r.x,y:r.y,w:v.w,h:v.h,rot:v.rot,waste};
+      }
+    });
+  });
+  return best;
+}
+
+function packOnSheetType(pieces,type,allowRotate){
+  const ordered=[...pieces].sort((a,b)=>(b.w*b.h)-(a.w*a.h));
+  const sheets=[];
+  for(const p of ordered){
+    let chosen=null, chosenSheet=null;
+    for(const s of sheets){
+      const c=bestPlacement(s,p,allowRotate&&p.grain==='なし');
+      if(c&&(!chosen||c.waste<chosen.waste)){chosen=c;chosenSheet=s}
+    }
+    if(!chosen){
+      const s={type,free:[{x:0,y:0,w:type.w,h:type.h}],placements:[]};
+      const c=bestPlacement(s,p,allowRotate&&p.grain==='なし');
+      if(!c)return null;
+      sheets.push(s);chosen=c;chosenSheet=s;
+    }
+    const used={x:chosen.x,y:chosen.y,w:chosen.w,h:chosen.h};
+    chosenSheet.placements.push({...p,...used,rotated:chosen.rot});
+    chosenSheet.free=splitFreeRects(chosenSheet.free,used);
+  }
+  const usedArea=pieces.reduce((sum,p)=>sum+p.w*p.h,0);
+  const sheetArea=sheets.length*type.w*type.h;
+  return {type,sheets,usedArea,sheetArea,yieldPct:sheetArea?usedArea/sheetArea*100:0};
+}
+
+function choosePacking(pieces,mat){
+  let best=null;
+  for(const type of candidateSheets(mat)){
+    const packed=packOnSheetType(pieces,type,true);
+    if(!packed)continue;
+    if(!best||packed.sheetArea<best.sheetArea||(packed.sheetArea===best.sheetArea&&packed.sheets.length<best.sheets.length))best=packed;
+  }
+  return best;
+}
+
+function renderMaterialResult(materialName,pieces){
+  const mat=getMaterialByName(materialName);
+  if(!mat)return '';
+  const pack=choosePacking(pieces,mat);
+  if(!pack)return '';
+  const mi=Number(mat.dataset.materialIndex||0)%MATERIAL_COLOR_CLASSES.length;
+  const boards=pack.sheets.map((sheet,si)=>{
+    const items=sheet.placements.map(p=>{
+      const left=p.x/sheet.type.w*100,top=p.y/sheet.type.h*100,width=p.w/sheet.type.w*100,height=p.h/sheet.type.h*100;
+      const color=DRAWING_COLORS[p.drawingIndex%DRAWING_COLORS.length];
+      const label=`${escapeHtml(p.drawingName)}<br>${escapeHtml(p.partName)}<br>${Math.round(p.w)}×${Math.round(p.h)}`;
+      return `<div class="piece drawing-piece" data-drawing-index="${p.drawingIndex}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;background:${color}">${label}</div>`;
+    }).join('');
+    return `<div class="board-item"><div class="board-title"><span>${sheet.type.name} ${sheet.type.w}×${sheet.type.h}</span><span>${si+1}枚目</span></div><div class="board" style="aspect-ratio:${sheet.type.w}/${sheet.type.h}">${items}</div></div>`;
+  }).join('');
+  const thickness=mat.dataset.thickness||'';
+  return `<div class="result material-${mi}">
+    <h3>${escapeHtml(materialName)}${thickness?` ${escapeHtml(thickness)}mm`:''}</h3>
+    <p>${pieces.length}片を材料別に展開</p>
+    <div class="board-list">${boards}</div>
+    <div class="stats"><span>${pack.type.name} × ${pack.sheets.length}枚</span><b>${pack.yieldPct.toFixed(1)}%</b></div>
+  </div>`;
 }
 
 function generateCutting(){
+  const {expanded,invalid}=collectExpandedPieces();
   const cut=document.getElementById('cutting');
-  cut.classList.add('generated');
+  const results=document.getElementById('cuttingResults');
   const note=document.getElementById('generateNote');
-  note?.classList.add('show');
+
+  results.innerHTML='';
+  if(!expanded.length){
+    cut.classList.remove('generated');
+    note.textContent='木取りできる部材がありません。寸法と枚数を入力してください。';
+    note.classList.add('show');
+    return;
+  }
+
+  const groups=new Map();
+  expanded.forEach(p=>{
+    if(!groups.has(p.materialName))groups.set(p.materialName,[]);
+    groups.get(p.materialName).push(p);
+  });
+
+  results.innerHTML=[...groups.entries()].map(([name,pieces])=>renderMaterialResult(name,pieces)).join('');
+  cut.classList.add('generated');
+  note.textContent=invalid
+    ? `木取り表を更新しました。未入力・不正な寸法 ${invalid}件は除外しました。`
+    : '現在の入力内容で木取り表を更新しました。';
+  note.classList.add('show');
   applyDrawingColors();
-  setTimeout(()=>cut.scrollIntoView({behavior:'smooth',block:'start'}),80);
+  setTimeout(()=>cut.scrollIntoView({behavior:'smooth',block:'start'}),60);
 }
 
 function resetAll(){
-  // 画面内の追加・編集内容を初期HTMLへ完全に戻す
-  const app=document.querySelector('.app');
-  app.innerHTML=INITIAL_APP_HTML;
-
-  drawingCount=3;
-  partCount=2;
-  materialCount=3;
-  patternCount=3;
-  editingMaterial=null;
-  editingPattern=null;
-
-  // 開いている編集画面や入力補助も閉じる
+  // 材料・パターンの登録は残し、案件入力だけを完全に空に戻す
+  drawingCount=1;
+  partCount=1;
+  document.getElementById('drawingHeader').innerHTML=`
+    <th class="part-col">部材名</th>
+    <th class="drawing-head" data-drawing-index="0"><input class="drawing-name-input" value="図面 01" aria-label="図面名"></th>`;
+  document.getElementById('partBody').innerHTML=`
+    <tr>
+      <td class="part-col"><input class="part-name-input" value="" placeholder="部材名"></td>
+      <td class="drawing-cell" data-drawing-index="0">
+        <span class="empty-cell-note">この図面に追加</span>
+        <button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>
+      </td>
+    </tr>`;
+  document.getElementById('cuttingResults').innerHTML='';
+  document.getElementById('cutting').classList.remove('generated');
+  const note=document.getElementById('generateNote');
+  note.textContent='';
+  note.classList.remove('show');
   document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show'));
   document.body.style.overflow='';
-  if(typeof bar!=='undefined' && bar){
-    bar.classList.remove('show');
-    bar.style.top='';
-    bar.style.bottom='';
-  }
+  if(typeof bar!=='undefined'&&bar){bar.classList.remove('show');bar.style.top='';bar.style.bottom=''}
   active=null;
-
-  // 初期状態の色・厚み表示を再計算
-  requestAnimationFrame(()=>{
-    applyDrawingColors();
-    updateAllPatternThickness();
-
-    const toast=document.getElementById('resetToast');
-    if(toast){
-      toast.classList.add('show');
-      setTimeout(()=>toast.classList.remove('show'),1300);
-    }
-    window.scrollTo({top:0,behavior:'smooth'});
-  });
+  applyDrawingColors();
+  const toast=document.getElementById('resetToast');
+  if(toast){
+    toast.textContent='入力をリセットしました';
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'),1300);
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function openMaterialAdd(){
@@ -600,7 +878,7 @@ function savePattern(){
     d.innerHTML=`<h3>${code}｜${name}</h3><p>${core.replace(' ランバー','L')} ×${layers}<br>表：${face.replace(' TJ-4123','')} / 裏：${back.replace(' TJ-4123','')}</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div>`;
     document.getElementById('patterns').appendChild(d);
     document.querySelectorAll('.psel').forEach(sel=>{
-      const o=document.createElement('option'); o.textContent=`${code}｜${name}`; sel.appendChild(o);
+      const o=document.createElement('option'); o.value=code; o.textContent=`${code}｜${name}`; sel.appendChild(o);
     });
   }
   updateAllPatternThickness();
@@ -615,7 +893,14 @@ updateAllPatternThickness();
 });
 
 function openO(id){document.getElementById(id).classList.add('show');document.body.style.overflow='hidden'}function closeO(id){document.getElementById(id).classList.remove('show');document.body.style.overflow=''}
-function sum(s){const box=s.closest('td').querySelector('.summary'),v=s.value;if(v.startsWith('P2'))box.innerHTML='<span class="chip core">18L×2</span><span class="chip face">メラミン</span><span class="chip back">白ポリ</span>';else if(v.startsWith('P3'))box.innerHTML='<span class="chip core">18L×1</span><span class="chip face">メラミン</span><span class="chip back">メラミン</span>';else box.innerHTML='<span class="chip core">18L×1</span><span class="chip face">メラミン</span><span class="chip back">白ポリ</span>'}
+function sum(s){
+  const entry=s.closest('.cell-entry');
+  const box=entry?.querySelector('.summary');
+  const p=getPatternByCode(s.value);
+  if(!box||!p)return;
+  const layers=Math.max(1,parseInt(p.dataset.layers,10)||1);
+  box.innerHTML=`<span class="chip core">${escapeHtml((p.dataset.core||'').replace(' ランバー','L'))}×${layers}</span><span class="chip face">${escapeHtml((p.dataset.face||'').replace(' TJ-4123',''))}</span><span class="chip back">${escapeHtml((p.dataset.back||'').replace(' TJ-4123',''))}</span>`;
+}
 let active=null;const bar=document.getElementById('mathbar');function pos(){if(!bar.classList.contains('show'))return;if(window.visualViewport){const v=window.visualViewport,h=bar.offsetHeight||46;bar.style.top=Math.max(6,v.offsetTop+v.height-h-6)+'px';bar.style.bottom='auto'}else{bar.style.top='auto';bar.style.bottom='8px'}}document.addEventListener('focusin',e=>{if(e.target.classList.contains('math')){active=e.target;bar.classList.add('show');requestAnimationFrame(pos);setTimeout(pos,100)}});bar.addEventListener('pointerdown',e=>e.preventDefault());bar.addEventListener('click',e=>{const b=e.target.closest('[data-op]');if(b&&active){const t=b.dataset.op,s=active.selectionStart??active.value.length,en=active.selectionEnd??s;active.value=active.value.slice(0,s)+t+active.value.slice(en);try{active.setSelectionRange(s+t.length,s+t.length)}catch{}active.focus({preventScroll:true});return}if(e.target.classList.contains('done')){bar.classList.remove('show');active?.blur();active=null}});if(window.visualViewport){visualViewport.addEventListener('resize',pos);visualViewport.addEventListener('scroll',pos)}
 </script>
 
