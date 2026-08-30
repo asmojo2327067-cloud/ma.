@@ -442,6 +442,30 @@
   }
 }
 
+
+/* スマホ：部材名を見切れず自動改行 */
+.part-name-input,
+.cell-title-input{
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  resize:none;
+  overflow:hidden;
+}
+
+@media (max-width:700px){
+  .part-name-input,
+  .cell-title-input{
+    font-size:16px!important;
+    line-height:1.25;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    padding-top:4px!important;
+    padding-bottom:4px!important;
+  }
+}
+
 @media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}body>*{visibility:hidden!important}#cutting,#cutting *{visibility:visible!important}#cutting{display:block!important;position:absolute;left:0;top:0;width:100%;border:0}.actions{display:none!important}.results{grid-template-columns:1fr}.result{page-break-after:always;border:0}.result:last-child{page-break-after:auto}}
 
 body{
@@ -484,7 +508,7 @@ button,input,select{
 </thead>
 <tbody id="partBody">
 <tr>
-<td class="part-col"><input class="part-name-input" value="" placeholder="部材名"></td>
+<td class="part-col"><textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea></td>
 <td class="drawing-cell" data-drawing-index="0">
 <span class="empty-cell-note">この図面に追加</span>
 <button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>
@@ -812,7 +836,7 @@ function addPart(){
   const tr=document.createElement('tr');
   const nameTd=document.createElement('td');
   nameTd.className='part-col';
-  nameTd.innerHTML='<input class="part-name-input" value="" placeholder="部材名">';
+  nameTd.innerHTML='<textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea>';
   tr.appendChild(nameTd);
   for(let i=0;i<drawingCount;i++) tr.appendChild(emptyDrawingCell(i));
   document.getElementById('partBody').appendChild(tr);
@@ -837,7 +861,7 @@ function addCellPart(btn){
   const entry=document.createElement('div');
   entry.className='cell-entry';
   entry.innerHTML=`
-    <input class="cell-title-input" value="" placeholder="部材名を入力" aria-label="図面内の部材名">
+    <textarea class="cell-title-input" rows="2" placeholder="部材名を入力" aria-label="図面内の部材名" enterkeyhint="next"></textarea>
     <div class="dims">
       <input class="dim math" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="長さ">
       <span class="times">×</span>
@@ -1329,7 +1353,7 @@ function resetAll(){
     <th class="drawing-head" data-drawing-index="0"><input class="drawing-name-input" value="" placeholder="図面番号" aria-label="図面名"></th>`;
   document.getElementById('partBody').innerHTML=`
     <tr>
-      <td class="part-col"><input class="part-name-input" value="" placeholder="部材名"></td>
+      <td class="part-col"><textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea></td>
       <td class="drawing-cell" data-drawing-index="0">
         <span class="empty-cell-note">この図面に追加</span>
         <button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>
