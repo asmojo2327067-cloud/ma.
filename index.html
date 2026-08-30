@@ -591,6 +591,62 @@
   font-weight:800;
 }
 
+
+.sheet-candidate-field{
+  width:100%;
+}
+.sheet-candidate-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.sheet-candidate{
+  position:relative;
+}
+.sheet-candidate input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.sheet-candidate span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:30px;
+  padding:5px 8px;
+  border:1px solid #d2d0c8;
+  border-radius:8px;
+  background:#fff;
+  color:#60645e;
+  font-size:9px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.sheet-candidate input:checked + span{
+  background:#303330;
+  border-color:#303330;
+  color:#fff;
+}
+.custom-sheet-candidate-fields{
+  display:none;
+  gap:5px;
+  flex-wrap:wrap;
+  width:100%;
+  margin-top:5px;
+}
+.custom-sheet-candidate-fields.show{
+  display:flex;
+}
+.auto-sheet-note{
+  width:100%;
+  padding:6px 8px;
+  border-radius:8px;
+  background:#f3f2ed;
+  color:#696d66;
+  font-size:8px;
+  line-height:1.45;
+}
+
 @media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}body>*{visibility:hidden!important}#cutting,#cutting *{visibility:visible!important}#cutting{display:block!important;position:absolute;left:0;top:0;width:100%;border:0}.actions{display:none!important}.results{grid-template-columns:1fr}.result{page-break-after:always;border:0}.result:last-child{page-break-after:auto}}
 
 body{
@@ -715,17 +771,23 @@ button,input,select{
     </select>
   </div>
 
-  <div class="field">
-    <label>原板規格</label>
-    <select id="matSheetPreset" class="next-field" onchange="toggleCustomSheetFields()">
-      <option value="">選択</option>
-      <option value="3×6">3×6｜1820×910</option>
-      <option value="4×8">4×8｜2430×1220</option>
-      <option value="3×8">3×8｜2430×910</option>
-      <option value="4×6">4×6｜1820×1220</option>
-      <option value="4×10">4×10｜3050×1220</option>
-      <option value="custom">カスタム</option>
-    </select>
+  <div class="sheet-candidate-field">
+    <label>使用できる原板サイズ</label>
+    <div class="sheet-candidate-list" id="matSheetCandidates">
+      <label class="sheet-candidate"><input type="checkbox" value="3×6" onchange="toggleCustomSheetFields()"><span>3×6<br>1820×910</span></label>
+      <label class="sheet-candidate"><input type="checkbox" value="4×8" onchange="toggleCustomSheetFields()"><span>4×8<br>2430×1220</span></label>
+      <label class="sheet-candidate"><input type="checkbox" value="3×8" onchange="toggleCustomSheetFields()"><span>3×8<br>2430×910</span></label>
+      <label class="sheet-candidate"><input type="checkbox" value="4×6" onchange="toggleCustomSheetFields()"><span>4×6<br>1820×1220</span></label>
+      <label class="sheet-candidate"><input type="checkbox" value="4×10" onchange="toggleCustomSheetFields()"><span>4×10<br>3050×1220</span></label>
+      <label class="sheet-candidate"><input type="checkbox" value="custom" onchange="toggleCustomSheetFields()"><span>カスタム</span></label>
+    </div>
+
+    <div class="custom-sheet-candidate-fields" id="customSheetFields">
+      <div class="field"><label>カスタム長さ mm</label><input id="matCustomW" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="長さ"></div>
+      <div class="field"><label>カスタム幅 mm</label><input id="matCustomH" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="done" value="" placeholder="幅"></div>
+    </div>
+
+    <div class="auto-sheet-note">複数選択できます。木取り時に選択した原板サイズをすべて比較し、必要枚数と歩留まりが最も良い候補を自動で使います。</div>
   </div>
 
 
@@ -760,11 +822,6 @@ button,input,select{
       <option value="長手">長手方向</option>
       <option value="短手">短手方向</option>
     </select>
-  </div>
-
-  <div class="custom-sheet-fields" id="customSheetFields">
-    <div class="field"><label>長さ mm</label><input id="matCustomW" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="長さ"></div>
-    <div class="field"><label>幅 mm</label><input id="matCustomH" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="done" value="" placeholder="幅"></div>
   </div>
 
   <div class="standard-hint">例：ランバーを選ぶと 12 / 15 / 18 / 21 / 24 / 30mm だけ表示。必要なら「カスタム厚み」も選べます。</div>
@@ -1126,14 +1183,35 @@ const SHEET_SIZES={
 };
 
 function candidateSheets(mat){
-  if(!mat) return [];
-  const w=Number(mat.dataset.sheetW||0);
-  const h=Number(mat.dataset.sheetH||0);
-  const name=mat.dataset.sheet||mat.dataset.sheetPreset||'カスタム';
-  if(w>0&&h>0) return [{name,w,h}];
+  if(!mat)return [];
 
-  const preset=mat.dataset.sheetPreset||mat.dataset.sheet||'';
-  return SHEET_SIZES[preset]?[SHEET_SIZES[preset]]:[];
+  let names=[];
+  if(mat.dataset.sheetCandidates){
+    try{
+      const parsed=JSON.parse(mat.dataset.sheetCandidates);
+      if(Array.isArray(parsed))names=parsed;
+    }catch{}
+  }
+
+  // 旧版互換：単一サイズしか保存されていない場合
+  if(!names.length){
+    const preset=mat.dataset.sheetPreset||mat.dataset.sheet||'';
+    if(SHEET_SIZES[preset])names=[preset];
+    else if((mat.dataset.sheetW||0)>0&&(mat.dataset.sheetH||0)>0)names=['custom'];
+  }
+
+  const result=[];
+  names.forEach(name=>{
+    if(name==='custom'){
+      const w=Number(mat.dataset.sheetW||0);
+      const h=Number(mat.dataset.sheetH||0);
+      if(w>0&&h>0)result.push({name:`カスタム`,w,h});
+      return;
+    }
+    if(SHEET_SIZES[name])result.push({...SHEET_SIZES[name]});
+  });
+
+  return result;
 }
 
 function intersects(a,b){
@@ -1432,10 +1510,10 @@ function renderMaterialResult(materialName,pieces){
 
   return `<div class="result material-${mi}">
     <h3>${escapeHtml(materialName)}${thickness?` ${escapeHtml(thickness)}mm`:''}</h3>
-    <p>${pieces.length}片を材料別に展開｜端材を大きく残す配置を優先</p>
+    <p>${pieces.length}片を材料別に展開｜原板候補を比較して歩留まり最優先＋端材を大きく残す配置</p>
     <div class="board-list">${boards}</div>
     <div class="stats">
-      <span>${pack.type.name} × ${pack.sheets.length}枚</span>
+      <span>採用：${pack.type.name} ${pack.type.w}×${pack.type.h} × ${pack.sheets.length}枚</span>
       <b>${pack.yieldPct.toFixed(1)}%</b>
     </div>
   </div>`;
@@ -1657,9 +1735,22 @@ function applyMaterialStandard(){
   }
 }
 
+function selectedSheetCandidateNames(){
+  return [...document.querySelectorAll('#matSheetCandidates input[type="checkbox"]:checked')]
+    .map(i=>i.value);
+}
+
+function setSelectedSheetCandidates(names=[]){
+  const set=new Set(names);
+  document.querySelectorAll('#matSheetCandidates input[type="checkbox"]').forEach(i=>{
+    i.checked=set.has(i.value);
+  });
+  toggleCustomSheetFields();
+}
+
 function toggleCustomSheetFields(){
-  const preset=document.getElementById('matSheetPreset')?.value||'';
-  document.getElementById('customSheetFields')?.classList.toggle('show',preset==='custom');
+  const custom=document.querySelector('#matSheetCandidates input[value="custom"]')?.checked||false;
+  document.getElementById('customSheetFields')?.classList.toggle('show',custom);
 }
 
 function coreMaterialOptionsHtml(selected=''){
@@ -1790,7 +1881,7 @@ function openMaterialAdd(){
   document.getElementById('matStandard').value='';
   document.getElementById('matName').value='';
   document.getElementById('matType').value='';
-  document.getElementById('matSheetPreset').value='';
+  setSelectedSheetCandidates([]);
   document.getElementById('matGrain').value='';
   document.getElementById('matCustomW').value='';
   document.getElementById('matCustomH').value='';
@@ -1835,10 +1926,25 @@ function editMaterial(card){
     document.getElementById('matSpecies').value='';
     document.getElementById('matSpeciesCustom').value='';
   }
-  document.getElementById('matSheetPreset').value=d.sheetPreset||'custom';
+  let sheetCandidates=[];
+  if(d.sheetCandidates){
+    try{
+      const parsed=JSON.parse(d.sheetCandidates);
+      if(Array.isArray(parsed))sheetCandidates=parsed;
+    }catch{}
+  }
+
+  // 旧版の単一原板設定をそのまま候補1件として引き継ぐ
+  if(!sheetCandidates.length){
+    const oldPreset=d.sheetPreset||d.sheet||'';
+    if(oldPreset&&oldPreset!=='カスタム')sheetCandidates=[oldPreset];
+    if(oldPreset==='custom'||String(oldPreset).startsWith('カスタム'))sheetCandidates=['custom'];
+  }
+
+  setSelectedSheetCandidates(sheetCandidates);
   document.getElementById('matGrain').value=d.grain||'';
-  document.getElementById('matCustomW').value=d.sheetPreset==='custom'?(d.sheetW||''):'';
-  document.getElementById('matCustomH').value=d.sheetPreset==='custom'?(d.sheetH||''):'';
+  document.getElementById('matCustomW').value=sheetCandidates.includes('custom')?(d.sheetW||''):'';
+  document.getElementById('matCustomH').value=sheetCandidates.includes('custom')?(d.sheetH||''):'';
 
   toggleCustomThickness();
   toggleVeneerSpecies();
@@ -1855,7 +1961,7 @@ function saveMaterial(){
     ? document.getElementById('matThicknessCustom').value.trim()
     : thicknessChoice;
   const thickness=evalMathExpression(thicknessRaw);
-  const preset=document.getElementById('matSheetPreset').value;
+  const sheetCandidates=selectedSheetCandidateNames();
   const grain=document.getElementById('matGrain').value;
   const materialStandard=document.getElementById('matStandard').value;
   const species=getSelectedSpecies();
@@ -1872,20 +1978,24 @@ function saveMaterial(){
   if(!name){alert('材料名 / 品番を入力してください。');return}
   if(!type){alert('材料の種類を選択してください。');return}
   if(!(thickness>0)){alert('厚みを入力してください。');return}
-  if(!preset){alert('原板規格を選択してください。');return}
+  if(!sheetCandidates.length){alert('使用できる原板サイズを1つ以上選択してください。');return}
   if(!grain){alert('木目方向を選択してください。');return}
 
-  let sheetW=0,sheetH=0,sheetLabel='';
-  if(preset==='custom'){
+  let sheetW=0,sheetH=0;
+  if(sheetCandidates.includes('custom')){
     sheetW=evalMathExpression(document.getElementById('matCustomW').value);
     sheetH=evalMathExpression(document.getElementById('matCustomH').value);
-    if(!(sheetW>0&&sheetH>0)){alert('カスタム原板の長さと幅を入力してください。');return}
-    sheetLabel='カスタム';
-  }else{
-    const s=SHEET_SIZES[preset];
-    if(!s){alert('原板規格を確認してください。');return}
-    sheetW=s.w;sheetH=s.h;sheetLabel=preset;
+    if(!(sheetW>0&&sheetH>0)){
+      alert('カスタム原板の長さと幅を入力してください。');
+      return;
+    }
   }
+
+  const sheetLabels=sheetCandidates.map(name=>{
+    if(name==='custom')return `カスタム ${Math.round(sheetW)}×${Math.round(sheetH)}`;
+    return name;
+  });
+  const sheetLabel=sheetLabels.join(' / ');
 
   const payload={
     name,type,
@@ -1893,7 +2003,8 @@ function saveMaterial(){
     species,
     thickness:String(thickness),
     sheet:sheetLabel,
-    sheetPreset:preset,
+    sheetCandidates:JSON.stringify(sheetCandidates),
+    sheetPreset:sheetCandidates.length===1?sheetCandidates[0]:'multiple',
     sheetW:String(sheetW),
     sheetH:String(sheetH),
     grain
@@ -1911,7 +2022,7 @@ function saveMaterial(){
     }
     const speciesText=species?`｜${escapeHtml(species)}`:'';
     editingMaterial.querySelector('small').innerHTML=
-      `${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)} ${Math.round(sheetW)}×${Math.round(sheetH)}<br>${escapeHtml(type)}${speciesText}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}`;
+      `${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)}<br>${escapeHtml(type)}${speciesText}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}`;
 
     // パターン内の参照名も追従
     document.querySelectorAll('.pattern').forEach(p=>{
@@ -1941,7 +2052,7 @@ function saveMaterial(){
     Object.assign(d.dataset,payload);
     d.setAttribute('onclick','editMaterial(this)');
     const speciesText=species?`｜${escapeHtml(species)}`:'';
-    d.innerHTML=`<strong><span class="dot c"></span>${escapeHtml(name)}</strong><small>${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)} ${Math.round(sheetW)}×${Math.round(sheetH)}<br>${escapeHtml(type)}${speciesText}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}</small>`;
+    d.innerHTML=`<strong><span class="dot c"></span>${escapeHtml(name)}</strong><small>${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)}<br>${escapeHtml(type)}${speciesText}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}</small>`;
     document.getElementById('materials').appendChild(d);
     materialCount++;
   }
