@@ -439,23 +439,10 @@ button,input,select{
 <div class="pattern" data-code="P2" data-name="厚物" data-core="18 ランバー" data-layers="2層" data-face="メラミン TJ-4123" data-back="白ポリ" onclick="editPattern(this)"><h3>P2｜厚物</h3><p>18L ×2層<br>表：メラミン / 裏：白ポリ</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div></div>
 <div class="pattern" data-code="P3" data-name="両面メラミン" data-core="18 ランバー" data-layers="1層" data-face="メラミン TJ-4123" data-back="メラミン TJ-4123" onclick="editPattern(this)"><h3>P3｜両面メラミン</h3><p>18L ×1層<br>表：メラミン / 裏：メラミン</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div></div>
 </div><div class="actions"><button class="soft" onclick="openPatternAdd()">＋ パターンを追加</button></div></section>
-<section class="card" id="cutSettings">
-<div class="section-head"><div class="no">03</div><div><h2>木取り設定</h2><p>切りしろと貼りしろをまとめて設定</p></div></div>
-<div class="cutting-settings">
-  <div class="setting-field">
-    <label>切りしろ mm</label>
-    <input id="globalKerf" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="3">
-  </div>
-  <div class="setting-field">
-    <label>貼りしろ mm</label>
-    <input id="globalPasteAllowance" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="10">
-  </div>
-  <div class="setting-note">貼りしろは仕上材に適用。木目方向は材料ごとの設定を木取りに反映します。</div>
-</div>
-</section>
+
 
 <section class="card" id="jobSection">
-<div class="section-head"><div class="no">04</div><div><h2>図面・部材</h2><p>部材名・図面内の部材名は自由に変更できます</p></div></div>
+<div class="section-head"><div class="no">03</div><div><h2>図面・部材</h2><p>部材名・図面内の部材名は自由に変更できます</p></div></div>
 <div class="table-wrap">
 <table class="matrix" id="partMatrix">
 <thead>
@@ -483,52 +470,98 @@ button,input,select{
 <div class="generate-note" id="generateNote"></div>
 </section>
 <section class="card" id="cutting">
-<div class="section-head"><div class="no">05</div><div><h2>材料別 木取り</h2><p>背景＝材料色 / 部材＝図面番号色</p></div></div>
+<div class="section-head"><div class="no">04</div><div><h2>材料別 木取り</h2><p>背景＝材料色 / 部材＝図面番号色</p></div></div>
 <div class="results" id="cuttingResults"></div>
 <div class="actions"><button class="dark" onclick="window.print()">木取り表を共有 / PDF</button></div>
+</section>
+<section class="card" id="cutSettings">
+<div class="section-head"><div class="no">05</div><div><h2>木取り設定</h2><p>切りしろと貼りしろをまとめて設定</p></div></div>
+<div class="cutting-settings">
+  <div class="setting-field">
+    <label>切りしろ mm</label>
+    <input id="globalKerf" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="3">
+  </div>
+  <div class="setting-field">
+    <label>貼りしろ mm</label>
+    <input id="globalPasteAllowance" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="10">
+  </div>
+  <div class="setting-note">貼りしろは仕上材に適用。変更後は「木取り表を生成」で再計算してください。</div>
+</div>
 </section>
 </div>
 
 <div class="overlay" id="detailO"><div class="sheet"><div class="handle"></div><div class="sheet-head"><div><h3>側板 A｜材料構成</h3><small>パターンとの差分だけ変更</small></div><button class="close" onclick="closeO('detailO')">×</button></div><div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span><span>積層</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>18 ランバー</option></select><span class="lab">×</span><select class="mini layers"><option>2層</option><option>1層</option><option>3層</option></select></div></div></div><div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表面</span><span>追加可</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>全面</option><option>貼り分け</option></select></div><button class="add-line">＋ 表面材を追加</button></div></div><div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏面</span><span>貼り分け対応</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>白ポリ</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="600+10"></div><div class="line" style="margin-top:5px"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="300+10"></div><button class="add-line">＋ 裏面材を追加</button></div></div><button class="save" onclick="closeO('detailO')">この部材だけ変更して保存</button></div></div>
 
 <div class="overlay" id="matO"><div class="sheet"><div class="handle"></div>
-<div class="sheet-head"><div><h3 id="matModalTitle">材料を追加</h3><small>材料規格・原板規格・木目方向を設定</small></div><button class="close" onclick="closeO('matO')">×</button></div>
+<div class="sheet-head"><div><h3 id="matModalTitle">材料を追加</h3><small>材料種類を選ぶと厚み規格を絞り込み</small></div><button class="close" onclick="closeO('matO')">×</button></div>
 <div class="form-grid">
   <div class="field">
-    <label>材料規格</label>
-    <select id="matStandard" class="material-standard" onchange="applyMaterialStandard()">
+    <label>材料種類</label>
+    <select id="matStandard" class="material-standard next-field" onchange="applyMaterialStandard()">
       <option value="">選択</option>
-      <option value="lumber15">15 ランバー｜15mm</option>
-      <option value="lumber18">18 ランバー｜18mm</option>
-      <option value="lumber21">21 ランバー｜21mm</option>
-      <option value="melamine095">メラミン｜0.95mm</option>
-      <option value="poly25">ポリ板｜2.5mm</option>
+      <option value="lumber">ランバー</option>
+      <option value="plywood">積層合板</option>
+      <option value="melamine">メラミン</option>
+      <option value="poly">ポリ板</option>
+      <option value="custom">その他 / カスタム</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>厚み規格 mm</label>
+    <select id="matThicknessPreset" class="next-field" onchange="toggleCustomThickness()">
+      <option value="">材料種類を先に選択</option>
+    </select>
+  </div>
+
+  <div class="field custom-thickness-field" id="customThicknessField" style="display:none">
+    <label>カスタム厚み mm</label>
+    <input id="matThicknessCustom" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="厚み">
+  </div>
+
+  <div class="field">
+    <label>材料名 / 品番</label>
+    <input id="matName" class="next-field" value="" placeholder="例：TJ-4123" enterkeyhint="next">
+  </div>
+
+  <div class="field">
+    <label>種類</label>
+    <select id="matType" class="next-field">
+      <option value="">選択</option>
+      <option>芯材</option>
+      <option>仕上材</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>原板規格</label>
+    <select id="matSheetPreset" class="next-field" onchange="toggleCustomSheetFields()">
+      <option value="">選択</option>
+      <option value="3×6">3×6｜1820×910</option>
+      <option value="4×8">4×8｜2430×1220</option>
+      <option value="3×8">3×8｜2430×910</option>
+      <option value="4×6">4×6｜1820×1220</option>
+      <option value="4×10">4×10｜3050×1220</option>
       <option value="custom">カスタム</option>
     </select>
   </div>
-  <div class="field"><label>材料名</label><input id="matName" class="next-field" value="" placeholder="材料名" enterkeyhint="next"></div>
-  <div class="field"><label>種類</label><select id="matType" class="next-field"><option value="">選択</option><option>芯材</option><option>仕上材</option></select></div>
-  <div class="field"><label>厚み mm</label><input id="matThickness" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="厚み"></div>
-  <div class="field"><label>原板規格</label><select id="matSheetPreset" class="next-field" onchange="toggleCustomSheetFields()">
-    <option value="">選択</option>
-    <option value="3×6">3×6｜1820×910</option>
-    <option value="4×8">4×8｜2430×1220</option>
-    <option value="3×8">3×8｜2430×910</option>
-    <option value="4×6">4×6｜1820×1220</option>
-    <option value="4×10">4×10｜3050×1220</option>
-    <option value="custom">カスタム</option>
-  </select></div>
-  <div class="field"><label>木目方向</label><select id="matGrain" class="next-field">
-    <option value="">選択</option>
-    <option value="なし">方向なし</option>
-    <option value="長手">長手方向</option>
-    <option value="短手">短手方向</option>
-  </select></div>
+
+  <div class="field">
+    <label>木目方向</label>
+    <select id="matGrain" class="next-field">
+      <option value="">選択</option>
+      <option value="なし">方向なし</option>
+      <option value="長手">長手方向</option>
+      <option value="短手">短手方向</option>
+    </select>
+  </div>
+
   <div class="custom-sheet-fields" id="customSheetFields">
     <div class="field"><label>長さ mm</label><input id="matCustomW" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="長さ"></div>
     <div class="field"><label>幅 mm</label><input id="matCustomH" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="done" value="" placeholder="幅"></div>
   </div>
-  <div class="standard-hint">規格を選ぶと材料名・種類・厚みを自動入力。材料名は品番などを追記できます。</div>
+
+  <div class="standard-hint">例：ランバーを選ぶと 15 / 18 / 21 / 24 / 30mm だけ表示。必要なら「カスタム厚み」も選べます。</div>
 </div>
 <button class="save" id="matSaveBtn" style="margin-top:8px" onclick="saveMaterial()">追加</button>
 </div></div>
@@ -565,7 +598,7 @@ let editingMaterial = null;
 let editingPattern = null;
 
 
-const APP_STORAGE_KEY='ma_app_state_v49';
+const APP_STORAGE_KEY='ma_app_state_v50';
 let saveTimer=null;
 let saveStatusTimer=null;
 
@@ -623,7 +656,7 @@ function recountStateFromDom(){
 function saveAppState(showMessage=false){
   try{
     const state={
-      version:49,
+      version:50,
       html:serializeAppHtml(),
       savedAt:Date.now()
     };
@@ -1278,41 +1311,93 @@ function resetAll(){
 }
 
 
-const MATERIAL_STANDARDS={
-  lumber15:{name:'15 ランバー',type:'芯材',thickness:15},
-  lumber18:{name:'18 ランバー',type:'芯材',thickness:18},
-  lumber21:{name:'21 ランバー',type:'芯材',thickness:21},
-  melamine095:{name:'メラミン',type:'仕上材',thickness:0.95},
-  poly25:{name:'ポリ板',type:'仕上材',thickness:2.5}
+const MATERIAL_THICKNESS_STANDARDS={
+  lumber:{
+    label:'ランバー',
+    type:'芯材',
+    thicknesses:[15,18,21,24,30]
+  },
+  plywood:{
+    label:'積層合板',
+    type:'芯材',
+    thicknesses:[9,12,15,18,21,24,30]
+  },
+  melamine:{
+    label:'メラミン',
+    type:'仕上材',
+    thicknesses:[0.95,1.2]
+  },
+  poly:{
+    label:'ポリ板',
+    type:'仕上材',
+    thicknesses:[2.5,3,4]
+  }
 };
 
-function findMaterialStandard(data){
-  const name=String(data?.name||'');
-  const thickness=Number(data?.thickness||0);
-  const type=String(data?.type||'');
-  if(type==='芯材'&&thickness===15&&name.includes('ランバー'))return 'lumber15';
-  if(type==='芯材'&&thickness===18&&name.includes('ランバー'))return 'lumber18';
-  if(type==='芯材'&&thickness===21&&name.includes('ランバー'))return 'lumber21';
-  if(type==='仕上材'&&Math.abs(thickness-.95)<.001&&name.includes('メラミン'))return 'melamine095';
-  if(type==='仕上材'&&Math.abs(thickness-2.5)<.001&&(name.includes('ポリ')||name.includes('ポリ板')))return 'poly25';
+function inferMaterialStandard(data){
+  if(data?.materialStandard)return data.materialStandard;
+  const n=String(data?.name||'');
+  if(n.includes('ランバー')) return 'lumber';
+  if(n.includes('積層')||n.includes('合板')) return 'plywood';
+  if(n.includes('メラミン')) return 'melamine';
+  if(n.includes('ポリ')) return 'poly';
   return 'custom';
+}
+
+function buildThicknessOptions(standard, selected=''){
+  const sel=document.getElementById('matThicknessPreset');
+  if(!sel)return;
+
+  if(!standard){
+    sel.innerHTML='<option value="">材料種類を先に選択</option>';
+    return;
+  }
+
+  if(standard==='custom'){
+    sel.innerHTML='<option value="custom">カスタム厚み</option>';
+    sel.value='custom';
+    toggleCustomThickness();
+    return;
+  }
+
+  const s=MATERIAL_THICKNESS_STANDARDS[standard];
+  const options=['<option value="">選択</option>']
+    .concat(s.thicknesses.map(v=>`<option value="${v}">${v} mm</option>`))
+    .concat('<option value="custom">カスタム厚み</option>');
+
+  sel.innerHTML=options.join('');
+  if(selected!=='' && [...sel.options].some(o=>o.value===String(selected))){
+    sel.value=String(selected);
+  }
+  toggleCustomThickness();
+}
+
+function toggleCustomThickness(){
+  const custom=document.getElementById('matThicknessPreset')?.value==='custom';
+  const field=document.getElementById('customThicknessField');
+  if(field)field.style.display=custom?'block':'none';
 }
 
 function applyMaterialStandard(){
   const key=document.getElementById('matStandard')?.value||'';
+  buildThicknessOptions(key);
+
   if(!key)return;
+
   if(key==='custom'){
     document.getElementById('matName').value='';
     document.getElementById('matType').value='';
-    document.getElementById('matThickness').value='';
-    document.getElementById('matName').focus();
+    document.getElementById('matThicknessCustom').value='';
     return;
   }
-  const s=MATERIAL_STANDARDS[key];
-  if(!s)return;
-  document.getElementById('matName').value=s.name;
+
+  const s=MATERIAL_THICKNESS_STANDARDS[key];
   document.getElementById('matType').value=s.type;
-  document.getElementById('matThickness').value=String(s.thickness);
+
+  // 材料名は規格名を初期値にし、品番追記は自由
+  if(!document.getElementById('matName').value.trim()){
+    document.getElementById('matName').value=s.label;
+  }
 }
 
 function toggleCustomSheetFields(){
@@ -1355,31 +1440,47 @@ function openMaterialAdd(){
   editingMaterial=null;
   document.getElementById('matModalTitle').textContent='材料を追加';
   document.getElementById('matSaveBtn').textContent='追加';
+
   document.getElementById('matStandard').value='';
   document.getElementById('matName').value='';
   document.getElementById('matType').value='';
-  document.getElementById('matThickness').value='';
   document.getElementById('matSheetPreset').value='';
   document.getElementById('matGrain').value='';
   document.getElementById('matCustomW').value='';
   document.getElementById('matCustomH').value='';
+  document.getElementById('matThicknessCustom').value='';
+  buildThicknessOptions('');
   toggleCustomSheetFields();
+  toggleCustomThickness();
   openO('matO');
 }
 
 function editMaterial(card){
   editingMaterial=card.closest?.('.material')||card;
   const d=editingMaterial.dataset;
+
   document.getElementById('matModalTitle').textContent='材料を編集';
   document.getElementById('matSaveBtn').textContent='変更を保存';
-  document.getElementById('matStandard').value=findMaterialStandard(d);
+
+  const standard=inferMaterialStandard(d);
+  document.getElementById('matStandard').value=standard;
+  buildThicknessOptions(standard,d.thickness||'');
+
+  if(document.getElementById('matThicknessPreset').value!==(d.thickness||'')){
+    document.getElementById('matThicknessPreset').value='custom';
+    document.getElementById('matThicknessCustom').value=d.thickness||'';
+  }else{
+    document.getElementById('matThicknessCustom').value='';
+  }
+
   document.getElementById('matName').value=d.name||'';
   document.getElementById('matType').value=d.type||'';
-  document.getElementById('matThickness').value=d.thickness||'';
   document.getElementById('matSheetPreset').value=d.sheetPreset||'custom';
   document.getElementById('matGrain').value=d.grain||'';
   document.getElementById('matCustomW').value=d.sheetPreset==='custom'?(d.sheetW||''):'';
   document.getElementById('matCustomH').value=d.sheetPreset==='custom'?(d.sheetH||''):'';
+
+  toggleCustomThickness();
   toggleCustomSheetFields();
   openO('matO');
 }
@@ -1387,12 +1488,17 @@ function editMaterial(card){
 function saveMaterial(){
   const name=document.getElementById('matName').value.trim();
   const type=document.getElementById('matType').value;
-  const thicknessRaw=document.getElementById('matThickness').value.trim();
+  const thicknessChoice=document.getElementById('matThicknessPreset').value;
+  const thicknessRaw=thicknessChoice==='custom'
+    ? document.getElementById('matThicknessCustom').value.trim()
+    : thicknessChoice;
   const thickness=evalMathExpression(thicknessRaw);
   const preset=document.getElementById('matSheetPreset').value;
   const grain=document.getElementById('matGrain').value;
 
-  if(!name){alert('材料名を入力してください。');return}
+  const materialStandard=document.getElementById('matStandard').value;
+  if(!materialStandard){alert('材料種類を選択してください。');return}
+  if(!name){alert('材料名 / 品番を入力してください。');return}
   if(!type){alert('材料の種類を選択してください。');return}
   if(!(thickness>0)){alert('厚みを入力してください。');return}
   if(!preset){alert('原板規格を選択してください。');return}
@@ -1412,6 +1518,7 @@ function saveMaterial(){
 
   const payload={
     name,type,
+    materialStandard,
     thickness:String(thickness),
     sheet:sheetLabel,
     sheetPreset:preset,
