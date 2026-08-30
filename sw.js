@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ma-pwa-v43';
+const CACHE_NAME = 'ma-pwa-v44';
 const CORE = [
   './',
   './index.html',
@@ -19,7 +19,9 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(keys => Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+      ))
       .then(() => self.clients.claim())
   );
 });
