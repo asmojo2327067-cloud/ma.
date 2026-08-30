@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ma-pwa-v50';
+const CACHE_NAME = 'ma-pwa-v53';
 const CORE = [
   './',
   './index.html',

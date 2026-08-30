@@ -411,6 +411,37 @@
   .save-data-btn{right:2px;top:8px;padding:5px 7px;font-size:7px}
 }
 
+
+.veneer-species-fields{
+  display:none;
+  gap:5px;
+  flex-wrap:wrap;
+  width:100%;
+}
+.veneer-species-fields.show{display:flex}
+.custom-species-field{display:none}
+.custom-species-field.show{display:block}
+
+
+/* iPhone Safari の入力フォーカス時ズーム防止 */
+@media (max-width:700px){
+  .part-name-input,
+  .cell-title-input,
+  .drawing-name-input{
+    font-size:16px!important;
+  }
+
+  .part-name-input{
+    min-height:30px;
+    line-height:1.2;
+  }
+
+  .cell-title-input{
+    min-height:32px;
+    line-height:1.2;
+  }
+}
+
 @media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}body>*{visibility:hidden!important}#cutting,#cutting *{visibility:visible!important}#cutting{display:block!important;position:absolute;left:0;top:0;width:100%;border:0}.actions{display:none!important}.results{grid-template-columns:1fr}.result{page-break-after:always;border:0}.result:last-child{page-break-after:auto}}
 
 body{
@@ -503,6 +534,7 @@ button,input,select{
       <option value="plywood">積層合板</option>
       <option value="melamine">メラミン</option>
       <option value="poly">ポリ板</option>
+      <option value="veneer">突板</option>
       <option value="custom">その他 / カスタム</option>
     </select>
   </div>
@@ -544,6 +576,30 @@ button,input,select{
       <option value="4×10">4×10｜3050×1220</option>
       <option value="custom">カスタム</option>
     </select>
+  </div>
+
+
+  <div class="veneer-species-fields" id="veneerSpeciesFields">
+    <div class="field">
+      <label>材種</label>
+      <select id="matSpecies" class="next-field" onchange="toggleCustomSpecies()">
+        <option value="">選択</option>
+        <option value="ナラ">ナラ</option>
+        <option value="オーク">オーク</option>
+        <option value="タモ">タモ</option>
+        <option value="ウォールナット">ウォールナット</option>
+        <option value="チェリー">チェリー</option>
+        <option value="メープル">メープル</option>
+        <option value="ブナ">ブナ</option>
+        <option value="チーク">チーク</option>
+        <option value="ケヤキ">ケヤキ</option>
+        <option value="custom">その他 / カスタム</option>
+      </select>
+    </div>
+    <div class="field custom-species-field" id="customSpeciesField">
+      <label>材種を入力</label>
+      <input id="matSpeciesCustom" class="next-field" value="" placeholder="材種名" enterkeyhint="next">
+    </div>
   </div>
 
   <div class="field">
@@ -598,7 +654,7 @@ let editingMaterial = null;
 let editingPattern = null;
 
 
-const APP_STORAGE_KEY='ma_app_state_v50';
+const APP_STORAGE_KEY='ma_app_state_v51';
 let saveTimer=null;
 let saveStatusTimer=null;
 
@@ -656,7 +712,7 @@ function recountStateFromDom(){
 function saveAppState(showMessage=false){
   try{
     const state={
-      version:50,
+      version:51,
       html:serializeAppHtml(),
       savedAt:Date.now()
     };
@@ -1331,6 +1387,11 @@ const MATERIAL_THICKNESS_STANDARDS={
     label:'ポリ板',
     type:'仕上材',
     thicknesses:[2.5,3,4]
+  },
+  veneer:{
+    label:'突板',
+    type:'仕上材',
+    thicknesses:[0.2,0.3,0.5,0.6]
   }
 };
 
@@ -1341,6 +1402,7 @@ function inferMaterialStandard(data){
   if(n.includes('積層')||n.includes('合板')) return 'plywood';
   if(n.includes('メラミン')) return 'melamine';
   if(n.includes('ポリ')) return 'poly';
+  if(n.includes('突板')) return 'veneer';
   return 'custom';
 }
 
@@ -1378,9 +1440,38 @@ function toggleCustomThickness(){
   if(field)field.style.display=custom?'block':'none';
 }
 
+
+function toggleVeneerSpecies(){
+  const isVeneer=document.getElementById('matStandard')?.value==='veneer';
+  document.getElementById('veneerSpeciesFields')?.classList.toggle('show',isVeneer);
+  if(!isVeneer){
+    const s=document.getElementById('matSpecies');
+    const c=document.getElementById('matSpeciesCustom');
+    if(s)s.value='';
+    if(c)c.value='';
+    document.getElementById('customSpeciesField')?.classList.remove('show');
+  }
+}
+
+function toggleCustomSpecies(){
+  const custom=document.getElementById('matSpecies')?.value==='custom';
+  document.getElementById('customSpeciesField')?.classList.toggle('show',custom);
+}
+
+function getSelectedSpecies(){
+  const standard=document.getElementById('matStandard')?.value||'';
+  if(standard!=='veneer')return '';
+  const species=document.getElementById('matSpecies')?.value||'';
+  if(species==='custom'){
+    return document.getElementById('matSpeciesCustom')?.value.trim()||'';
+  }
+  return species;
+}
+
 function applyMaterialStandard(){
   const key=document.getElementById('matStandard')?.value||'';
   buildThicknessOptions(key);
+  toggleVeneerSpecies();
 
   if(!key)return;
 
@@ -1449,7 +1540,11 @@ function openMaterialAdd(){
   document.getElementById('matCustomW').value='';
   document.getElementById('matCustomH').value='';
   document.getElementById('matThicknessCustom').value='';
+  document.getElementById('matSpecies').value='';
+  document.getElementById('matSpeciesCustom').value='';
   buildThicknessOptions('');
+  toggleVeneerSpecies();
+  toggleCustomSpecies();
   toggleCustomSheetFields();
   toggleCustomThickness();
   openO('matO');
@@ -1475,18 +1570,30 @@ function editMaterial(card){
 
   document.getElementById('matName').value=d.name||'';
   document.getElementById('matType').value=d.type||'';
+
+  const species=d.species||'';
+  const standardSpecies=['ナラ','オーク','タモ','ウォールナット','チェリー','メープル','ブナ','チーク','ケヤキ'];
+  if(standard==='veneer'){
+    document.getElementById('matSpecies').value=standardSpecies.includes(species)?species:(species?'custom':'');
+    document.getElementById('matSpeciesCustom').value=standardSpecies.includes(species)?'':species;
+  }else{
+    document.getElementById('matSpecies').value='';
+    document.getElementById('matSpeciesCustom').value='';
+  }
   document.getElementById('matSheetPreset').value=d.sheetPreset||'custom';
   document.getElementById('matGrain').value=d.grain||'';
   document.getElementById('matCustomW').value=d.sheetPreset==='custom'?(d.sheetW||''):'';
   document.getElementById('matCustomH').value=d.sheetPreset==='custom'?(d.sheetH||''):'';
 
   toggleCustomThickness();
+  toggleVeneerSpecies();
+  toggleCustomSpecies();
   toggleCustomSheetFields();
   openO('matO');
 }
 
 function saveMaterial(){
-  const name=document.getElementById('matName').value.trim();
+  let name=document.getElementById('matName').value.trim();
   const type=document.getElementById('matType').value;
   const thicknessChoice=document.getElementById('matThicknessPreset').value;
   const thicknessRaw=thicknessChoice==='custom'
@@ -1495,8 +1602,17 @@ function saveMaterial(){
   const thickness=evalMathExpression(thicknessRaw);
   const preset=document.getElementById('matSheetPreset').value;
   const grain=document.getElementById('matGrain').value;
-
   const materialStandard=document.getElementById('matStandard').value;
+  const species=getSelectedSpecies();
+
+  if(materialStandard==='veneer'&&!species){
+    alert('突板の材種を選択してください。');
+    return;
+  }
+
+  if(materialStandard==='veneer'&&(!name||name==='突板')){
+    name=`突板 ${species}`;
+  }
   if(!materialStandard){alert('材料種類を選択してください。');return}
   if(!name){alert('材料名 / 品番を入力してください。');return}
   if(!type){alert('材料の種類を選択してください。');return}
@@ -1519,6 +1635,7 @@ function saveMaterial(){
   const payload={
     name,type,
     materialStandard,
+    species,
     thickness:String(thickness),
     sheet:sheetLabel,
     sheetPreset:preset,
@@ -1537,8 +1654,9 @@ function saveMaterial(){
       if(dot) strong.appendChild(dot);
       strong.append(document.createTextNode(name));
     }
+    const speciesText=species?`｜${escapeHtml(species)}`:'';
     editingMaterial.querySelector('small').innerHTML=
-      `${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)} ${Math.round(sheetW)}×${Math.round(sheetH)}<br>${escapeHtml(type)}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}`;
+      `${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)} ${Math.round(sheetW)}×${Math.round(sheetH)}<br>${escapeHtml(type)}${speciesText}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}`;
 
     // パターン内の参照名も追従
     document.querySelectorAll('.pattern').forEach(p=>{
@@ -1553,7 +1671,8 @@ function saveMaterial(){
     d.dataset.materialIndex=idx;
     Object.assign(d.dataset,payload);
     d.setAttribute('onclick','editMaterial(this)');
-    d.innerHTML=`<strong><span class="dot c"></span>${escapeHtml(name)}</strong><small>${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)} ${Math.round(sheetW)}×${Math.round(sheetH)}<br>${escapeHtml(type)}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}</small>`;
+    const speciesText=species?`｜${escapeHtml(species)}`:'';
+    d.innerHTML=`<strong><span class="dot c"></span>${escapeHtml(name)}</strong><small>${formatThickness(thickness)}mm｜${escapeHtml(sheetLabel)} ${Math.round(sheetW)}×${Math.round(sheetH)}<br>${escapeHtml(type)}${speciesText}｜方向${grain==='なし'?'なし':'：'+escapeHtml(grain)}</small>`;
     document.getElementById('materials').appendChild(d);
     materialCount++;
   }
@@ -1701,50 +1820,127 @@ function sum(s){
   box.innerHTML=`<span class="chip core">${escapeHtml((p.dataset.core||'').replace(' ランバー','L'))}×${layers}</span><span class="chip face">${escapeHtml((p.dataset.face||'').replace(' TJ-4123',''))}</span><span class="chip back">${escapeHtml((p.dataset.back||'').replace(' TJ-4123',''))}</span>`;
 }
 
-function visibleFormFields(){
-  return [...document.querySelectorAll(
-    '.app input:not([type="hidden"]), .app select, .overlay.show input:not([type="hidden"]), .overlay.show select'
-  )].filter(el=>{
+function getAdvanceScope(current){
+  const overlay=current?.closest?.('.overlay.show');
+  if(overlay)return overlay;
+  return document.querySelector('.app');
+}
+
+function editableFieldsInScope(scope){
+  if(!scope)return [];
+  return [...scope.querySelectorAll('input:not([type="hidden"]), select, textarea')].filter(el=>{
     if(el.disabled||el.readOnly)return false;
-    const r=el.getBoundingClientRect();
-    return r.width>0&&r.height>0;
+    if(el.type==='button'||el.type==='submit'||el.type==='reset')return false;
+
+    const style=getComputedStyle(el);
+    if(style.display==='none'||style.visibility==='hidden')return false;
+
+    const rect=el.getBoundingClientRect();
+    return rect.width>0&&rect.height>0;
   });
 }
 
 function moveToNextField(current){
   if(!current)return false;
-  const fields=visibleFormFields();
+
+  const scope=getAdvanceScope(current);
+  const fields=editableFieldsInScope(scope);
   const i=fields.indexOf(current);
   if(i<0)return false;
-  const next=fields[i+1];
+
+  let next=fields[i+1]||null;
+
+  // モーダルの最後なら閉じずにキーボードだけ閉じる。
   if(!next){
     current.blur();
     return false;
   }
+
   next.focus({preventScroll:false});
-  if(next.select && next.tagName==='INPUT'){
-    try{next.select()}catch{}
+
+  if(next instanceof HTMLInputElement){
+    try{
+      const len=next.value.length;
+      next.setSelectionRange(0,len);
+    }catch{}
   }
+
   next.classList.add('input-next-flash');
   setTimeout(()=>next.classList.remove('input-next-flash'),220);
+
+  // 横スクロール表でも、次の欄が見える位置まで寄せる
+  requestAnimationFrame(()=>{
+    try{
+      next.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    }catch{}
+  });
+
   return true;
 }
 
-function setupEnterAdvanceHints(){
-  document.querySelectorAll('input,select').forEach((el,i)=>{
-    if(el.tagName==='INPUT'&&!el.getAttribute('enterkeyhint')){
+function setupEnterAdvanceHints(root=document){
+  root.querySelectorAll?.('input,select,textarea').forEach(el=>{
+    if(el instanceof HTMLInputElement && !el.getAttribute('enterkeyhint')){
       el.setAttribute('enterkeyhint','next');
     }
   });
 }
 
-document.addEventListener('keydown',e=>{
-  if(e.key!=='Enter')return;
-  const target=e.target;
-  if(!(target instanceof HTMLInputElement||target instanceof HTMLSelectElement))return;
-  e.preventDefault();
+let lastEnterAdvanceAt=0;
+let lastEnterTarget=null;
+
+function advanceFromEnter(target){
+  const now=Date.now();
+
+  // keydown + keyup の二重発火を防止
+  if(lastEnterTarget===target && now-lastEnterAdvanceAt<350)return;
+
+  lastEnterTarget=target;
+  lastEnterAdvanceAt=now;
   moveToNextField(target);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.keyCode!==13)return;
+
+  const target=e.target;
+  if(!(target instanceof HTMLInputElement||
+       target instanceof HTMLSelectElement||
+       target instanceof HTMLTextAreaElement))return;
+
+  e.preventDefault();
+  e.stopPropagation();
+  advanceFromEnter(target);
+},true);
+
+// iPhone/Safariでkeydownが拾えないケースの保険
+document.addEventListener('keyup',e=>{
+  if(e.key!=='Enter'&&e.keyCode!==13)return;
+
+  const target=e.target;
+  if(!(target instanceof HTMLInputElement||
+       target instanceof HTMLSelectElement||
+       target instanceof HTMLTextAreaElement))return;
+
+  e.preventDefault();
+  advanceFromEnter(target);
+},true);
+
+// 動的に追加された部材欄にも enterkeyhint を付ける
+const enterHintObserver=new MutationObserver(mutations=>{
+  for(const m of mutations){
+    m.addedNodes.forEach(node=>{
+      if(node.nodeType!==1)return;
+      if(node.matches?.('input,select,textarea')){
+        setupEnterAdvanceHints(node.parentElement||document);
+      }else{
+        setupEnterAdvanceHints(node);
+      }
+    });
+  }
 });
+enterHintObserver.observe(document.body,{childList:true,subtree:true});
+setupEnterAdvanceHints();
 
 let active=null;const bar=document.getElementById('mathbar');function pos(){if(!bar.classList.contains('show'))return;if(window.visualViewport){const v=window.visualViewport,h=bar.offsetHeight||46;bar.style.top=Math.max(6,v.offsetTop+v.height-h-6)+'px';bar.style.bottom='auto'}else{bar.style.top='auto';bar.style.bottom='8px'}}document.addEventListener('focusin',e=>{if(e.target.classList.contains('math')){active=e.target;bar.classList.add('show');requestAnimationFrame(pos);setTimeout(pos,100)}});bar.addEventListener('pointerdown',e=>e.preventDefault());bar.addEventListener('click',e=>{const b=e.target.closest('[data-op]');if(b&&active){const t=b.dataset.op,s=active.selectionStart??active.value.length,en=active.selectionEnd??s;active.value=active.value.slice(0,s)+t+active.value.slice(en);try{active.setSelectionRange(s+t.length,s+t.length)}catch{}active.focus({preventScroll:true});return}if(e.target.classList.contains('done')){
   const current=active;
