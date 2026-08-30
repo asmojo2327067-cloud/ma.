@@ -556,6 +556,41 @@
   height:10px;
 }
 
+
+.core-rows{
+  display:grid;
+  gap:5px;
+}
+.core-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 76px 30px;
+  gap:5px;
+  align-items:center;
+}
+.core-row select{
+  width:100%;
+  min-width:0;
+}
+.core-remove{
+  width:30px;
+  height:30px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:#fff;
+  color:var(--muted);
+  font-weight:800;
+}
+.core-add-btn{
+  margin-top:6px;
+  border:1px dashed #b8b6ae;
+  border-radius:8px;
+  background:#faf9f5;
+  color:#5d625b;
+  padding:6px 9px;
+  font-size:9px;
+  font-weight:800;
+}
+
 @media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}body>*{visibility:hidden!important}#cutting,#cutting *{visibility:visible!important}#cutting{display:block!important;position:absolute;left:0;top:0;width:100%;border:0}.actions{display:none!important}.results{grid-template-columns:1fr}.result{page-break-after:always;border:0}.result:last-child{page-break-after:auto}}
 
 body{
@@ -646,6 +681,7 @@ button,input,select{
       <option value="">選択</option>
       <option value="lumber">ランバー</option>
       <option value="plywood">積層合板</option>
+      <option value="veneerboard">ベニア</option>
       <option value="melamine">メラミン</option>
       <option value="poly">ポリ板</option>
       <option value="veneer">突板</option>
@@ -731,7 +767,7 @@ button,input,select{
     <div class="field"><label>幅 mm</label><input id="matCustomH" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="done" value="" placeholder="幅"></div>
   </div>
 
-  <div class="standard-hint">例：ランバーを選ぶと 15 / 18 / 21 / 24 / 30mm だけ表示。必要なら「カスタム厚み」も選べます。</div>
+  <div class="standard-hint">例：ランバーを選ぶと 12 / 15 / 18 / 21 / 24 / 30mm だけ表示。必要なら「カスタム厚み」も選べます。</div>
 </div>
 <button class="save" id="matSaveBtn" style="margin-top:8px" onclick="saveMaterial()">追加</button>
 </div></div>
@@ -739,11 +775,11 @@ button,input,select{
 <div class="overlay" id="patO"><div class="sheet"><div class="handle"></div>
 <div class="sheet-head"><div><h3 id="patModalTitle">構成パターンを追加</h3><small>材料を選んで構成を登録</small></div><button class="close" onclick="closeO('patO')">×</button></div>
 <div class="field" style="margin-bottom:7px"><label>パターン名</label><input id="patName" value="" placeholder="パターン名"></div>
-<div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span></div>
-<div class="layer-body"><div class="line">
-<select class="mini mat" id="patCore"></select>
-<select class="mini layers" id="patLayers"><option value="">層数</option><option>1層</option><option>2層</option><option>3層</option><option>4層</option></select>
-</div></div></div>
+<div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span><small>異なる厚みを組み合わせ可能</small></div>
+<div class="layer-body">
+  <div id="patCoreRows" class="core-rows"></div>
+  <button type="button" class="core-add-btn" onclick="addPatternCoreRow()">＋ 芯材を追加</button>
+</div></div>
 <div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表仕上げ</span><small>任意</small></div><div class="layer-body"><select class="mini mat" id="patFace"></select></div></div>
 <div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏仕上げ</span><small>任意</small></div><div class="layer-body"><select class="mini mat" id="patBack"></select></div></div>
 <div class="pattern-thickness-preview" id="patThicknessPreview">仕上厚 --mm</div>
@@ -1069,10 +1105,12 @@ function collectExpandedPieces(){
         const code=entry.querySelector('.psel')?.value||'P1';
         const p=getPatternByCode(code);
         if(!p){invalid++;return}
-        const layers=Math.max(1,parseInt(p.dataset.layers,10)||1);
-        pushExpanded(expanded,p.dataset.core,w,h,qty*layers,di,drawingName,partName);
-        pushExpanded(expanded,p.dataset.face,w,h,qty,di,drawingName,partName);
-        pushExpanded(expanded,p.dataset.back,w,h,qty,di,drawingName,partName);
+        const cores=getPatternCores(p);
+        cores.forEach(core=>{
+          pushExpanded(expanded,core.material,w,h,qty*core.count,di,drawingName,partName);
+        });
+        if(p.dataset.face)pushExpanded(expanded,p.dataset.face,w,h,qty,di,drawingName,partName);
+        if(p.dataset.back)pushExpanded(expanded,p.dataset.back,w,h,qty,di,drawingName,partName);
       });
     });
   });
@@ -1493,12 +1531,17 @@ const MATERIAL_THICKNESS_STANDARDS={
   lumber:{
     label:'ランバー',
     type:'芯材',
-    thicknesses:[15,18,21,24,30]
+    thicknesses:[12,15,18,21,24,30]
   },
   plywood:{
     label:'積層合板',
     type:'芯材',
     thicknesses:[9,12,15,18,21,24,30]
+  },
+  veneerboard:{
+    label:'ベニア',
+    type:'芯材',
+    thicknesses:[2.5,3,4,5.5]
   },
   melamine:{
     label:'メラミン',
@@ -1521,6 +1564,7 @@ function inferMaterialStandard(data){
   if(data?.materialStandard)return data.materialStandard;
   const n=String(data?.name||'');
   if(n.includes('ランバー')) return 'lumber';
+  if(n.includes('ベニア')) return 'veneerboard';
   if(n.includes('積層')||n.includes('合板')) return 'plywood';
   if(n.includes('メラミン')) return 'melamine';
   if(n.includes('ポリ')) return 'poly';
@@ -1618,27 +1662,115 @@ function toggleCustomSheetFields(){
   document.getElementById('customSheetFields')?.classList.toggle('show',preset==='custom');
 }
 
+function coreMaterialOptionsHtml(selected=''){
+  const mats=[...document.querySelectorAll('.material')]
+    .filter(m=>m.dataset.type==='芯材')
+    .map(m=>m.dataset.name||'')
+    .filter(Boolean);
+
+  return '<option value="">芯材を選択</option>'+
+    mats.map(name=>`<option value="${escapeHtml(name)}"${name===selected?' selected':''}>${escapeHtml(name)}</option>`).join('');
+}
+
+function addPatternCoreRow(core={material:'',count:1}){
+  const rows=document.getElementById('patCoreRows');
+  if(!rows)return;
+
+  const row=document.createElement('div');
+  row.className='core-row';
+  row.innerHTML=`
+    <select class="mini mat pat-core-material" onchange="updatePatternPreview()">
+      ${coreMaterialOptionsHtml(core.material||'')}
+    </select>
+    <select class="mini pat-core-count" onchange="updatePatternPreview()">
+      ${[1,2,3,4].map(n=>`<option value="${n}"${Number(core.count||1)===n?' selected':''}>${n}枚</option>`).join('')}
+    </select>
+    <button type="button" class="core-remove" onclick="removePatternCoreRow(this)" aria-label="芯材を削除">×</button>`;
+  rows.appendChild(row);
+  updateCoreRemoveButtons();
+  updatePatternPreview();
+}
+
+function removePatternCoreRow(btn){
+  const rows=document.getElementById('patCoreRows');
+  if(!rows)return;
+  const all=rows.querySelectorAll('.core-row');
+  if(all.length<=1){
+    const row=btn.closest('.core-row');
+    row.querySelector('.pat-core-material').value='';
+    row.querySelector('.pat-core-count').value='1';
+  }else{
+    btn.closest('.core-row')?.remove();
+  }
+  updateCoreRemoveButtons();
+  updatePatternPreview();
+}
+
+function updateCoreRemoveButtons(){
+  const rows=document.querySelectorAll('#patCoreRows .core-row');
+  rows.forEach(row=>{
+    const b=row.querySelector('.core-remove');
+    if(b)b.style.opacity=rows.length<=1?'.45':'1';
+  });
+}
+
+function getPatternCoreRowsValues(){
+  return [...document.querySelectorAll('#patCoreRows .core-row')].map(row=>({
+    material:row.querySelector('.pat-core-material')?.value||'',
+    count:Math.max(1,parseInt(row.querySelector('.pat-core-count')?.value||'1',10)||1)
+  })).filter(x=>x.material);
+}
+
+function getPatternCores(pattern){
+  if(!pattern)return [];
+  const raw=pattern.dataset.cores;
+  if(raw){
+    try{
+      const arr=JSON.parse(raw);
+      if(Array.isArray(arr)){
+        return arr
+          .map(x=>({material:String(x.material||''),count:Math.max(1,parseInt(x.count,10)||1)}))
+          .filter(x=>x.material);
+      }
+    }catch{}
+  }
+
+  // 旧版パターン互換
+  const core=pattern.dataset.core||'';
+  const count=Math.max(1,parseInt(pattern.dataset.layers||'1',10)||1);
+  return core?[{material:core,count}]:[];
+}
+
+function formatCoreComposition(cores){
+  if(!cores?.length)return '芯材なし';
+  return cores.map(c=>`${escapeHtml(c.material)} ×${c.count}`).join(' ＋ ');
+}
+
 function refreshPatternMaterialOptions(selected={}){
-  const core=document.getElementById('patCore');
   const face=document.getElementById('patFace');
   const back=document.getElementById('patBack');
-  if(!core||!face||!back) return;
+  if(!face||!back)return;
 
-  const mats=[...document.querySelectorAll('.material')].map(m=>({
-    name:m.dataset.name||'',
-    type:m.dataset.type||''
-  }));
+  const finish=[...document.querySelectorAll('.material')]
+    .filter(m=>m.dataset.type==='仕上材')
+    .map(m=>m.dataset.name||'')
+    .filter(Boolean);
 
-  function setOptions(sel,type,value,optional=false){
-    const filtered=mats.filter(m=>m.type===type);
-    sel.innerHTML=`<option value="">${optional?'なし':'選択'}</option>`+
-      filtered.map(m=>`<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('');
+  function setFinishOptions(sel,value){
+    sel.innerHTML='<option value="">なし</option>'+
+      finish.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
     sel.value=value||'';
   }
 
-  setOptions(core,'芯材',selected.core,false);
-  setOptions(face,'仕上材',selected.face,true);
-  setOptions(back,'仕上材',selected.back,true);
+  setFinishOptions(face,selected.face);
+  setFinishOptions(back,selected.back);
+
+  const rows=document.getElementById('patCoreRows');
+  if(rows){
+    rows.innerHTML='';
+    const cores=selected.cores?.length?selected.cores:[{material:'',count:1}];
+    cores.forEach(c=>addPatternCoreRow(c));
+  }
 }
 
 function refreshAllPartPatternOptions(){
@@ -1783,9 +1915,23 @@ function saveMaterial(){
 
     // パターン内の参照名も追従
     document.querySelectorAll('.pattern').forEach(p=>{
-      if(p.dataset.core===oldName)p.dataset.core=name;
+      const cores=getPatternCores(p).map(c=>({
+        material:c.material===oldName?name:c.material,
+        count:c.count
+      }));
+      if(cores.length){
+        p.dataset.cores=JSON.stringify(cores);
+        p.dataset.core=cores[0].material;
+        p.dataset.layers=String(cores[0].count);
+      }
       if(p.dataset.face===oldName)p.dataset.face=name;
       if(p.dataset.back===oldName)p.dataset.back=name;
+
+      const coreText=formatCoreComposition(cores);
+      const body=p.querySelector('p');
+      if(body){
+        body.innerHTML=`${coreText}<br>表：${p.dataset.face?escapeHtml(p.dataset.face):'なし'} / 裏：${p.dataset.back?escapeHtml(p.dataset.back):'なし'}`;
+      }
     });
   }else{
     const idx=materialCount % MATERIAL_COLOR_CLASSES.length;
@@ -1811,14 +1957,18 @@ function getMaterialThickness(name){
   return Number.isFinite(n)?n:0;
 }
 
-function calculatePatternThickness(core,layers,face,back){
-  if(!core||!layers) return NaN;
-  const layerCount=parseInt(String(layers),10)||0;
-  if(layerCount<1)return NaN;
+function calculatePatternThickness(cores,face,back){
+  if(!cores?.length)return NaN;
+
+  const coreTotal=cores.reduce((sum,c)=>{
+    return sum+(getMaterialThickness(c.material)*Math.max(1,Number(c.count)||1));
+  },0);
+
   const total=
-    (getMaterialThickness(core)*layerCount)+
+    coreTotal+
     (face?getMaterialThickness(face):0)+
     (back?getMaterialThickness(back):0);
+
   return Math.round(total*100)/100;
 }
 
@@ -1831,7 +1981,7 @@ function formatThickness(n){
 function updatePatternCardThickness(card){
   if(!card)return;
   const d=card.dataset;
-  const total=calculatePatternThickness(d.core,d.layers,d.face,d.back);
+  const total=calculatePatternThickness(getPatternCores(card),d.face,d.back);
   let label=card.querySelector('.final-thickness');
   if(!label){
     let foot=card.querySelector('.pattern-foot');
@@ -1854,11 +2004,10 @@ function updateAllPatternThickness(){
 function updatePatternPreview(){
   const preview=document.getElementById('patThicknessPreview');
   if(!preview)return;
-  const core=document.getElementById('patCore')?.value||'';
-  const layers=document.getElementById('patLayers')?.value||'';
+  const cores=getPatternCoreRowsValues();
   const face=document.getElementById('patFace')?.value||'';
   const back=document.getElementById('patBack')?.value||'';
-  const total=calculatePatternThickness(core,layers,face,back);
+  const total=calculatePatternThickness(cores,face,back);
   preview.textContent=Number.isFinite(total)?`仕上厚 ${formatThickness(total)}mm`:'仕上厚 --mm';
 }
 
@@ -1866,11 +2015,8 @@ function openPatternAdd(){
   editingPattern=null;
   document.getElementById('patModalTitle').textContent='構成パターンを追加';
   document.getElementById('patSaveBtn').textContent='パターンを追加';
-
-  // 新規追加は完全に空白から
   document.getElementById('patName').value='';
-  refreshPatternMaterialOptions();
-  document.getElementById('patLayers').value='';
+  refreshPatternMaterialOptions({cores:[{material:'',count:1}],face:'',back:''});
   updatePatternPreview();
   openO('patO');
 }
@@ -1881,37 +2027,61 @@ function editPattern(card){
   document.getElementById('patModalTitle').textContent='構成パターンを編集';
   document.getElementById('patSaveBtn').textContent='変更を保存';
   document.getElementById('patName').value=d.name||'';
-  refreshPatternMaterialOptions({core:d.core,face:d.face,back:d.back});
-  document.getElementById('patLayers').value=d.layers||'';
+
+  refreshPatternMaterialOptions({
+    cores:getPatternCores(editingPattern),
+    face:d.face||'',
+    back:d.back||''
+  });
+
   updatePatternPreview();
   openO('patO');
 }
 
 function savePattern(){
   const name=document.getElementById('patName').value.trim();
-  const core=document.getElementById('patCore').value;
-  const layers=document.getElementById('patLayers').value;
+  const cores=getPatternCoreRowsValues();
   const face=document.getElementById('patFace').value;
   const back=document.getElementById('patBack').value;
 
   if(!name){alert('パターン名を入力してください。');return}
-  if(!core){alert('芯材を選択してください。');return}
-  if(!layers){alert('芯材の層数を選択してください。');return}
+  if(!cores.length){alert('芯材を1つ以上選択してください。');return}
+
+  const coresJson=JSON.stringify(cores);
+  const coreText=formatCoreComposition(cores);
 
   if(editingPattern){
     const code=editingPattern.dataset.code;
-    Object.assign(editingPattern.dataset,{name,core,layers,face,back});
+    Object.assign(editingPattern.dataset,{
+      name,
+      cores:coresJson,
+      core:cores[0].material,
+      layers:String(cores[0].count),
+      face,
+      back
+    });
     editingPattern.querySelector('h3').textContent=`${code}｜${name}`;
     editingPattern.querySelector('p').innerHTML=
-      `${escapeHtml(core)} ×${escapeHtml(layers)}<br>表：${face?escapeHtml(face):'なし'} / 裏：${back?escapeHtml(back):'なし'}`;
+      `${coreText}<br>表：${face?escapeHtml(face):'なし'} / 裏：${back?escapeHtml(back):'なし'}`;
   }else{
     patternCount++;
     const code='P'+patternCount;
     const d=document.createElement('div');
     d.className='pattern';
-    Object.assign(d.dataset,{code,name,core,layers,face,back});
+    Object.assign(d.dataset,{
+      code,
+      name,
+      cores:coresJson,
+      core:cores[0].material,
+      layers:String(cores[0].count),
+      face,
+      back
+    });
     d.setAttribute('onclick','editPattern(this)');
-    d.innerHTML=`<h3>${escapeHtml(code)}｜${escapeHtml(name)}</h3><p>${escapeHtml(core)} ×${escapeHtml(layers)}<br>表：${face?escapeHtml(face):'なし'} / 裏：${back?escapeHtml(back):'なし'}</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div>`;
+    d.innerHTML=
+      `<h3>${escapeHtml(code)}｜${escapeHtml(name)}</h3>`+
+      `<p>${coreText}<br>表：${face?escapeHtml(face):'なし'} / 裏：${back?escapeHtml(back):'なし'}</p>`+
+      `<div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div>`;
     document.getElementById('patterns').appendChild(d);
   }
 
@@ -1931,7 +2101,7 @@ if(restoredFromStorage){
   requestAnimationFrame(()=>showSaveStatus('前回のデータを復元しました'));
 }
 
-['patCore','patLayers','patFace','patBack'].forEach(id=>{
+['patFace','patBack'].forEach(id=>{
   document.getElementById(id)?.addEventListener('change',updatePatternPreview);
 });
 
@@ -1942,15 +2112,16 @@ function sum(s){
   const p=getPatternByCode(s.value);
   if(!box)return;
   if(!p){box.innerHTML='';return}
-  const layers=Math.max(1,parseInt(p.dataset.layers,10)||1);
-  const chips=[
-    `<span class="chip core">${escapeHtml((p.dataset.core||'').replace(' ランバー','L'))}×${layers}</span>`
-  ];
+
+  const chips=getPatternCores(p).map(core=>
+    `<span class="chip core">${escapeHtml(core.material)}×${core.count}</span>`
+  );
+
   if(p.dataset.face){
-    chips.push(`<span class="chip face">${escapeHtml((p.dataset.face||'').replace(' TJ-4123',''))}</span>`);
+    chips.push(`<span class="chip face">${escapeHtml(p.dataset.face)}</span>`);
   }
   if(p.dataset.back){
-    chips.push(`<span class="chip back">${escapeHtml((p.dataset.back||'').replace(' TJ-4123',''))}</span>`);
+    chips.push(`<span class="chip back">${escapeHtml(p.dataset.back)}</span>`);
   }
   box.innerHTML=chips.join('');
 }
