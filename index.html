@@ -747,14 +747,14 @@ button,input,select{
 
   <div class="field">
     <label>厚み規格 mm</label>
-    <select id="matThicknessPreset" class="next-field" onchange="toggleCustomThickness()">
+    <select id="matThicknessPreset" class="next-field" onchange="toggleCustomThickness(); updateAutoMaterialName()">
       <option value="">材料種類を先に選択</option>
     </select>
   </div>
 
   <div class="field custom-thickness-field" id="customThicknessField" style="display:none">
     <label>カスタム厚み mm</label>
-    <input id="matThicknessCustom" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="厚み">
+    <input id="matThicknessCustom" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="厚み" oninput="updateAutoMaterialName()">
   </div>
 
   <div class="field">
@@ -824,7 +824,7 @@ button,input,select{
     </select>
   </div>
 
-  <div class="standard-hint">例：ランバーを選ぶと 12 / 15 / 18 / 21 / 24 / 30mm だけ表示。必要なら「カスタム厚み」も選べます。</div>
+  <div class="standard-hint">ランバー・積層合板・ベニアは「材料種類＋厚み」で材料名を自動作成。その他の材料は品番・材種などを自由入力できます。</div>
 </div>
 <button class="save" id="matSaveBtn" style="margin-top:8px" onclick="saveMaterial()">追加</button>
 </div></div>
@@ -1682,6 +1682,7 @@ function toggleCustomThickness(){
   const custom=document.getElementById('matThicknessPreset')?.value==='custom';
   const field=document.getElementById('customThicknessField');
   if(field)field.style.display=custom?'block':'none';
+  updateAutoMaterialName();
 }
 
 
@@ -1712,6 +1713,36 @@ function getSelectedSpecies(){
   return species;
 }
 
+
+function autoNameMaterialStandards(){
+  return new Set(['lumber','plywood','veneerboard']);
+}
+
+function currentSelectedMaterialThickness(){
+  const choice=document.getElementById('matThicknessPreset')?.value||'';
+  if(!choice)return '';
+  if(choice==='custom'){
+    const raw=document.getElementById('matThicknessCustom')?.value?.trim()||'';
+    const n=evalMathExpression(raw);
+    return Number.isFinite(n)&&n>0 ? formatThickness(n) : '';
+  }
+  const n=Number(choice);
+  return Number.isFinite(n)&&n>0 ? formatThickness(n) : '';
+}
+
+function updateAutoMaterialName(){
+  const standard=document.getElementById('matStandard')?.value||'';
+  if(!autoNameMaterialStandards().has(standard))return;
+
+  const info=MATERIAL_THICKNESS_STANDARDS[standard];
+  const thickness=currentSelectedMaterialThickness();
+  const name=document.getElementById('matName');
+  if(!name||!info)return;
+
+  name.value=thickness ? `${info.label} ${thickness}mm` : info.label;
+  scheduleAutoSave?.();
+}
+
 function applyMaterialStandard(){
   const key=document.getElementById('matStandard')?.value||'';
   buildThicknessOptions(key);
@@ -1729,8 +1760,10 @@ function applyMaterialStandard(){
   const s=MATERIAL_THICKNESS_STANDARDS[key];
   document.getElementById('matType').value=s.type;
 
-  // 材料名は規格名を初期値にし、品番追記は自由
-  if(!document.getElementById('matName').value.trim()){
+  if(autoNameMaterialStandards().has(key)){
+    updateAutoMaterialName();
+  }else if(!document.getElementById('matName').value.trim()){
+    // メラミン・ポリ板・突板などは品番や材種を追記できる
     document.getElementById('matName').value=s.label;
   }
 }
@@ -1950,10 +1983,14 @@ function editMaterial(card){
   toggleVeneerSpecies();
   toggleCustomSpecies();
   toggleCustomSheetFields();
+  if(autoNameMaterialStandards().has(standard)){
+    updateAutoMaterialName();
+  }
   openO('matO');
 }
 
 function saveMaterial(){
+  updateAutoMaterialName();
   let name=document.getElementById('matName').value.trim();
   const type=document.getElementById('matType').value;
   const thicknessChoice=document.getElementById('matThicknessPreset').value;
