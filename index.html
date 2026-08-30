@@ -466,6 +466,96 @@
   }
 }
 
+
+/* 木取り表：材料の木目方向を薄く表示 */
+.result .board{
+  isolation:isolate;
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
+
+.result .board::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:0;
+}
+
+.result .board.grain-long::before{
+  opacity:.24;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 14px,
+      rgba(70,62,50,.16) 14.8px,
+      transparent 15.8px,
+      transparent 27px,
+      rgba(70,62,50,.09) 27.8px,
+      transparent 29px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 37px,
+      rgba(70,62,50,.07) 38px,
+      transparent 40px
+    );
+}
+
+.result .board.grain-short::before{
+  opacity:.24;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 14px,
+      rgba(70,62,50,.16) 14.8px,
+      transparent 15.8px,
+      transparent 27px,
+      rgba(70,62,50,.09) 27.8px,
+      transparent 29px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 37px,
+      rgba(70,62,50,.07) 38px,
+      transparent 40px
+    );
+}
+
+.result .board > .piece,
+.result .board > .offcut{
+  z-index:2;
+}
+
+.grain-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  padding:2px 5px;
+  border-radius:999px;
+  background:rgba(255,255,255,.48);
+  color:#62665f;
+  font-size:7px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.grain-badge::before{
+  content:"";
+  width:10px;
+  height:1px;
+  background:currentColor;
+  opacity:.7;
+}
+.grain-badge.short::before{
+  width:1px;
+  height:10px;
+}
+
 @media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}body>*{visibility:hidden!important}#cutting,#cutting *{visibility:visible!important}#cutting{display:block!important;position:absolute;left:0;top:0;width:100%;border:0}.actions{display:none!important}.results{grid-template-columns:1fr}.result{page-break-after:always;border:0}.result:last-child{page-break-after:auto}}
 
 body{
@@ -654,8 +744,8 @@ button,input,select{
 <select class="mini mat" id="patCore"></select>
 <select class="mini layers" id="patLayers"><option value="">層数</option><option>1層</option><option>2層</option><option>3層</option><option>4層</option></select>
 </div></div></div>
-<div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表</span></div><div class="layer-body"><select class="mini mat" id="patFace"></select></div></div>
-<div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏</span></div><div class="layer-body"><select class="mini mat" id="patBack"></select></div></div>
+<div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表仕上げ</span><small>任意</small></div><div class="layer-body"><select class="mini mat" id="patFace"></select></div></div>
+<div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏仕上げ</span><small>任意</small></div><div class="layer-body"><select class="mini mat" id="patBack"></select></div></div>
 <div class="pattern-thickness-preview" id="patThicknessPreview">仕上厚 --mm</div>
 <button class="save" id="patSaveBtn" onclick="savePattern()">パターンを追加</button>
 </div></div>
@@ -1284,9 +1374,17 @@ function renderMaterialResult(materialName,pieces){
       offcutInfo=`<span>最大端材</span><strong>${Math.round(offcut.w)}×${Math.round(offcut.h)} mm</strong>`;
     }
 
+    const grain=mat.dataset.grain||'なし';
+    const grainClass=grain==='長手'?'grain-long':grain==='短手'?'grain-short':'';
+    const grainBadge=grain==='長手'
+      ?'<span class="grain-badge">木目 長手</span>'
+      :grain==='短手'
+        ?'<span class="grain-badge short">木目 短手</span>'
+        :'';
+
     return `<div class="board-item">
-      <div class="board-title"><span>${sheet.type.name} ${sheet.type.w}×${sheet.type.h}</span><span>${si+1}枚目</span></div>
-      <div class="board" style="aspect-ratio:${sheet.type.w}/${sheet.type.h}">${items}${offcutHtml}</div>
+      <div class="board-title"><span>${sheet.type.name} ${sheet.type.w}×${sheet.type.h}</span><span>${grainBadge}${si+1}枚目</span></div>
+      <div class="board ${grainClass}" style="aspect-ratio:${sheet.type.w}/${sheet.type.h}">${items}${offcutHtml}</div>
       <div class="offcut-summary">${offcutInfo}</div>
     </div>`;
   }).join('');
@@ -1415,7 +1513,7 @@ const MATERIAL_THICKNESS_STANDARDS={
   veneer:{
     label:'突板',
     type:'仕上材',
-    thicknesses:[0.2,0.3,0.5,0.6]
+    thicknesses:[0.5,2.5,3,4]
   }
 };
 
@@ -1531,15 +1629,16 @@ function refreshPatternMaterialOptions(selected={}){
     type:m.dataset.type||''
   }));
 
-  function setOptions(sel,type,value){
+  function setOptions(sel,type,value,optional=false){
     const filtered=mats.filter(m=>m.type===type);
-    sel.innerHTML='<option value="">選択</option>'+filtered.map(m=>`<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('');
+    sel.innerHTML=`<option value="">${optional?'なし':'選択'}</option>`+
+      filtered.map(m=>`<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('');
     sel.value=value||'';
   }
 
-  setOptions(core,'芯材',selected.core);
-  setOptions(face,'仕上材',selected.face);
-  setOptions(back,'仕上材',selected.back);
+  setOptions(core,'芯材',selected.core,false);
+  setOptions(face,'仕上材',selected.face,true);
+  setOptions(back,'仕上材',selected.back,true);
 }
 
 function refreshAllPartPatternOptions(){
@@ -1713,9 +1812,13 @@ function getMaterialThickness(name){
 }
 
 function calculatePatternThickness(core,layers,face,back){
-  if(!core||!layers||!face||!back) return NaN;
+  if(!core||!layers) return NaN;
   const layerCount=parseInt(String(layers),10)||0;
-  const total=(getMaterialThickness(core)*layerCount)+getMaterialThickness(face)+getMaterialThickness(back);
+  if(layerCount<1)return NaN;
+  const total=
+    (getMaterialThickness(core)*layerCount)+
+    (face?getMaterialThickness(face):0)+
+    (back?getMaterialThickness(back):0);
   return Math.round(total*100)/100;
 }
 
@@ -1794,15 +1897,13 @@ function savePattern(){
   if(!name){alert('パターン名を入力してください。');return}
   if(!core){alert('芯材を選択してください。');return}
   if(!layers){alert('芯材の層数を選択してください。');return}
-  if(!face){alert('表面材を選択してください。');return}
-  if(!back){alert('裏面材を選択してください。');return}
 
   if(editingPattern){
     const code=editingPattern.dataset.code;
     Object.assign(editingPattern.dataset,{name,core,layers,face,back});
     editingPattern.querySelector('h3').textContent=`${code}｜${name}`;
     editingPattern.querySelector('p').innerHTML=
-      `${escapeHtml(core)} ×${escapeHtml(layers)}<br>表：${escapeHtml(face)} / 裏：${escapeHtml(back)}`;
+      `${escapeHtml(core)} ×${escapeHtml(layers)}<br>表：${face?escapeHtml(face):'なし'} / 裏：${back?escapeHtml(back):'なし'}`;
   }else{
     patternCount++;
     const code='P'+patternCount;
@@ -1810,7 +1911,7 @@ function savePattern(){
     d.className='pattern';
     Object.assign(d.dataset,{code,name,core,layers,face,back});
     d.setAttribute('onclick','editPattern(this)');
-    d.innerHTML=`<h3>${escapeHtml(code)}｜${escapeHtml(name)}</h3><p>${escapeHtml(core)} ×${escapeHtml(layers)}<br>表：${escapeHtml(face)} / 裏：${escapeHtml(back)}</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div>`;
+    d.innerHTML=`<h3>${escapeHtml(code)}｜${escapeHtml(name)}</h3><p>${escapeHtml(core)} ×${escapeHtml(layers)}<br>表：${face?escapeHtml(face):'なし'} / 裏：${back?escapeHtml(back):'なし'}</p><div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div>`;
     document.getElementById('patterns').appendChild(d);
   }
 
@@ -1839,9 +1940,19 @@ function sum(s){
   const entry=s.closest('.cell-entry');
   const box=entry?.querySelector('.summary');
   const p=getPatternByCode(s.value);
-  if(!box||!p)return;
+  if(!box)return;
+  if(!p){box.innerHTML='';return}
   const layers=Math.max(1,parseInt(p.dataset.layers,10)||1);
-  box.innerHTML=`<span class="chip core">${escapeHtml((p.dataset.core||'').replace(' ランバー','L'))}×${layers}</span><span class="chip face">${escapeHtml((p.dataset.face||'').replace(' TJ-4123',''))}</span><span class="chip back">${escapeHtml((p.dataset.back||'').replace(' TJ-4123',''))}</span>`;
+  const chips=[
+    `<span class="chip core">${escapeHtml((p.dataset.core||'').replace(' ランバー','L'))}×${layers}</span>`
+  ];
+  if(p.dataset.face){
+    chips.push(`<span class="chip face">${escapeHtml((p.dataset.face||'').replace(' TJ-4123',''))}</span>`);
+  }
+  if(p.dataset.back){
+    chips.push(`<span class="chip back">${escapeHtml((p.dataset.back||'').replace(' TJ-4123',''))}</span>`);
+  }
+  box.innerHTML=chips.join('');
 }
 
 function getAdvanceScope(current){
@@ -1911,15 +2022,14 @@ function setupEnterAdvanceHints(root=document){
 }
 
 let lastEnterAdvanceAt=0;
-let lastEnterTarget=null;
 
 function advanceFromEnter(target){
   const now=Date.now();
 
-  // keydown + keyup の二重発火を防止
-  if(lastEnterTarget===target && now-lastEnterAdvanceAt<350)return;
+  // 1回のEnterでkeydownとkeyupが両方発火しても、
+  // 500ms以内は2回目を無視する
+  if(now-lastEnterAdvanceAt<500)return;
 
-  lastEnterTarget=target;
   lastEnterAdvanceAt=now;
   moveToNextField(target);
 }

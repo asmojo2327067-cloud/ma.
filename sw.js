@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ma-pwa-v54';
+const CACHE_NAME = 'ma-pwa-v57';
 const CORE = [
   './',
   './index.html',
@@ -34,7 +34,7 @@ self.addEventListener('fetch', event => {
       fetch(event.request)
         .then(response => {
           const copy=response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html',copy));
+          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
           return response;
         })
         .catch(() => caches.match('./index.html'))
@@ -45,7 +45,7 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy=response.clone();
-      caches.open(CACHE_NAME).then(cache => cache.put(event.request,copy));
+      caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
       return response;
     }))
   );
