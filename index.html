@@ -81,6 +81,10 @@
 }
 
 
+
+.top-sample-btn{position:absolute;right:58px;top:10px;border:1px solid #bfc8bb;background:var(--sageS);color:#4f6251;border-radius:9px;padding:6px 8px;font-size:8px;font-weight:800}
+.version-badge{position:absolute;right:4px;top:43px;font-size:7px;color:var(--muted);font-weight:800}
+
 .reset-btn{
   position:absolute;left:0;top:10px;
   border:1px solid #ccc8bf;background:#faf9f6;color:#666861;
@@ -111,6 +115,8 @@
 .generate-note.show{display:block}
 @media(max-width:700px){
   .reset-btn{left:2px;top:8px;padding:5px 6px;font-size:7px}
+  .top-sample-btn{right:52px;top:8px;padding:5px 7px;font-size:7px}
+  .version-badge{right:4px;top:36px}
     .cell-plus{width:24px;height:24px}
 }
 
@@ -647,7 +653,287 @@
   line-height:1.45;
 }
 
-@media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}body>*{visibility:hidden!important}#cutting,#cutting *{visibility:visible!important}#cutting{display:block!important;position:absolute;left:0;top:0;width:100%;border:0}.actions{display:none!important}.results{grid-template-columns:1fr}.result{page-break-after:always;border:0}.result:last-child{page-break-after:auto}}
+
+/* v61: 購入リスト / データ入出力 / 端落とし */
+.purchase-list{
+  display:grid;
+  gap:6px;
+}
+.purchase-item{
+  display:grid;
+  grid-template-columns:minmax(120px,1fr) minmax(150px,1.5fr);
+  gap:8px;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#faf9f6;
+  padding:7px 8px;
+}
+.purchase-material{
+  font-size:10px;
+  font-weight:800;
+  line-height:1.35;
+}
+.purchase-material small{
+  display:block;
+  color:var(--muted);
+  font-size:8px;
+  font-weight:600;
+  margin-top:2px;
+}
+.purchase-sheets{
+  display:flex;
+  gap:4px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.purchase-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:4px 6px;
+  border-radius:999px;
+  background:#eceae4;
+  color:#50544e;
+  font-size:8px;
+  font-weight:800;
+}
+.data-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.data-note{
+  margin-top:6px;
+  font-size:8px;
+  color:var(--muted);
+  line-height:1.5;
+}
+.trim-boundary{
+  position:absolute;
+  z-index:1;
+  border:1px dashed rgba(72,76,70,.5);
+  pointer-events:none;
+}
+.trim-label{
+  position:absolute;
+  z-index:3;
+  left:4px;
+  bottom:4px;
+  padding:2px 4px;
+  border-radius:5px;
+  background:rgba(255,255,255,.72);
+  color:#646861;
+  font-size:6px;
+  font-weight:800;
+  pointer-events:none;
+}
+@media(max-width:700px){
+  .purchase-item{grid-template-columns:1fr}
+  .purchase-sheets{justify-content:flex-start}
+}
+
+
+.grain-link-btn{
+  margin-left:3px;
+  border:1px solid #c8bea8;
+  background:#f3eee4;
+  color:#665b47;
+  border-radius:8px;
+  padding:7px 6px;
+  font-size:8px;
+  font-weight:800;
+}
+.grain-link-btn.active{
+  background:#e8dfcd;
+  border-color:#ad9b79;
+  color:#54472f;
+}
+.grain-link-status{
+  display:none;
+  margin-top:5px;
+  padding:3px 6px;
+  width:max-content;
+  max-width:100%;
+  border-radius:999px;
+  background:#f0eadf;
+  color:#66583f;
+  font-size:7px;
+  font-weight:800;
+}
+.cell-entry[data-grain-group]:not([data-grain-group=""]) .grain-link-status{
+  display:inline-block;
+}
+.grain-link-note{
+  font-size:9px;
+  color:var(--muted);
+  line-height:1.55;
+  margin:0 0 10px;
+}
+.grain-link-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:10px;
+}
+.grain-link-grid .field select,
+.grain-link-grid .field input{
+  width:100%;
+  max-width:none;
+}
+.grain-link-grid .grain-method-field{
+  grid-column:1 / -1;
+}
+.grain-link-actions{
+  display:flex;
+  gap:6px;
+}
+.grain-link-actions .soft,
+.grain-link-actions .save{
+  flex:1;
+}
+.continuity-piece::after{
+  content:attr(data-continuity);
+  position:absolute;
+  top:2px;
+  right:2px;
+  padding:1px 3px;
+  border-radius:4px;
+  background:rgba(255,255,255,.78);
+  font-size:6px;
+  font-weight:800;
+  color:#5e533f;
+}
+@media(max-width:700px){
+  .grain-link-btn{padding:7px 5px}
+  .grain-link-grid{grid-template-columns:1fr 1fr}
+}
+
+
+.joint-btn{
+  margin-left:3px;
+  border:1px solid #c6b9ad;
+  background:#f4ece6;
+  color:#695849;
+  border-radius:8px;
+  padding:7px 6px;
+  font-size:8px;
+  font-weight:800;
+}
+.joint-btn.active{
+  background:#eaded5;
+  border-color:#b39b89;
+  color:#594536;
+}
+.joint-status{
+  display:none;
+  margin-top:5px;
+  padding:3px 6px;
+  width:max-content;
+  max-width:100%;
+  border-radius:999px;
+  background:#f2e8e1;
+  color:#6c5141;
+  font-size:7px;
+  font-weight:800;
+}
+.cell-entry[data-joint-settings]:not([data-joint-settings=""]):not([data-joint-settings="{}"]) .joint-status{
+  display:inline-block;
+}
+.joint-note{
+  font-size:9px;
+  color:var(--muted);
+  line-height:1.55;
+  margin:0 0 10px;
+}
+.joint-rows{
+  display:grid;
+  gap:7px;
+  margin-bottom:10px;
+}
+.joint-row{
+  border:1px solid var(--line);
+  background:#faf9f6;
+  border-radius:10px;
+  padding:8px;
+}
+.joint-row-head{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:flex-start;
+  margin-bottom:6px;
+}
+.joint-row-head strong{
+  font-size:9px;
+}
+.joint-row-head small{
+  font-size:7px;
+  color:var(--muted);
+  text-align:right;
+}
+.joint-row-controls{
+  display:grid;
+  grid-template-columns:minmax(130px,1fr) minmax(90px,.75fr);
+  gap:6px;
+}
+.joint-row-controls select,
+.joint-row-controls input{
+  width:100%;
+  min-width:0;
+  height:34px;
+  border:1px solid #d4d1c9;
+  border-radius:8px;
+  background:#fff;
+  padding:4px 6px;
+  font-size:10px;
+}
+.joint-preview{
+  margin-top:5px;
+  font-size:8px;
+  color:var(--muted);
+  line-height:1.4;
+}
+.joint-preview.warn{
+  color:#8b5d4c;
+  font-weight:800;
+}
+.joint-piece::after{
+  content:attr(data-joint);
+  position:absolute;
+  left:2px;
+  bottom:2px;
+  padding:1px 3px;
+  border-radius:4px;
+  background:rgba(255,255,255,.82);
+  color:#684f3e;
+  font-size:6px;
+  font-weight:800;
+}
+@media(max-width:700px){
+  .joint-btn{padding:7px 5px}
+  .joint-row-controls{grid-template-columns:1fr 1fr}
+}
+
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  body{background:#fff}
+  body>*{visibility:hidden!important}
+  #cutting,#cutting *,#purchaseListSection,#purchaseListSection *{visibility:visible!important}
+  #cutting,#purchaseListSection{
+    display:block!important;
+    position:relative;
+    left:auto;top:auto;
+    width:100%;
+    border:0;
+    margin:0;
+  }
+  #purchaseListSection{page-break-before:always}
+  .actions,.data-actions{display:none!important}
+  .results{grid-template-columns:1fr}
+  .result{page-break-after:always;border:0}
+  .result:last-child{page-break-after:auto}
+}
 
 body{
   min-height:100svh;
@@ -664,7 +950,7 @@ button,input,select{
 </head>
 <body>
 <div class="app">
-<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
+<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><button class="top-sample-btn" onclick="generateSample()">サンプル</button><div class="version-badge">v72</div><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
 <section class="card"><div class="section-head"><div class="no">01</div><div><h2>材料</h2><p>材料は追加・編集できる</p></div></div><div class="materials" id="materials">
 <div class="material" data-material-index="0" data-name="18 ランバー" data-type="芯材" data-thickness="18" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="なし" onclick="editMaterial(this)"><strong><span class="dot o"></span>18 ランバー</strong><small>18mm｜4×8 2430×1220<br>芯材｜方向なし</small></div>
 <div class="material" data-material-index="1" data-name="メラミン TJ-4123" data-type="仕上材" data-thickness="0.95" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="長手" onclick="editMaterial(this)"><strong><span class="dot b"></span>メラミン TJ-4123</strong><small>0.95mm｜4×8<br>仕上材｜木目：長手</small></div>
@@ -701,17 +987,34 @@ button,input,select{
 <div class="generate-row">
 <button class="soft" onclick="addDrawing()">＋ 図面追加</button>
 <button class="soft" onclick="addPart()">＋ 部材追加</button>
+<button class="soft" onclick="generateSample()">接ぎ・木目サンプル</button>
 <button class="generate-btn" onclick="generateCutting()">木取り表を生成</button>
 </div>
 <div class="generate-note" id="generateNote"></div>
 </section>
 <section class="card" id="cutting">
-<div class="section-head"><div class="no">04</div><div><h2>材料別 木取り</h2><p>背景＝材料色 / 部材＝図面番号色</p></div></div>
+<div class="section-head"><div class="no">04</div><div><h2>材料別 木取り</h2><p>複数原板候補は規格の混在まで比較 / 背景＝材料色 / 部材＝図面番号色</p></div></div>
 <div class="results" id="cuttingResults"></div>
 <div class="actions"><button class="dark" onclick="window.print()">木取り表を共有 / PDF</button></div>
 </section>
+<section class="card" id="purchaseListSection">
+<div class="section-head"><div class="no">05</div><div><h2>購入リスト</h2><p>採用された原板規格と必要枚数を自動集計</p></div></div>
+<div class="purchase-list" id="purchaseList"><div class="result-empty">木取り表を生成すると購入リストを表示します。</div></div>
+<div class="actions">
+  <button class="soft" onclick="sharePurchaseList()">購入リストを共有</button>
+</div>
+</section>
+<section class="card" id="dataSection">
+<div class="section-head"><div class="no">06</div><div><h2>データ</h2><p>ズメーンへの添付・再読込用</p></div></div>
+<div class="data-actions">
+  <button class="soft" onclick="exportMaData()">ma-data.jsonを書き出す</button>
+  <button class="soft" onclick="document.getElementById('maImportFile').click()">ma-data.jsonを読み込む</button>
+  <input id="maImportFile" type="file" accept=".json,application/json" hidden onchange="importMaData(this)">
+</div>
+<div class="data-note">案件名・案件番号はma.では持たず、ズメーン側の案件にこのJSONを添付して紐づける想定。</div>
+</section>
 <section class="card" id="cutSettings">
-<div class="section-head"><div class="no">05</div><div><h2>木取り設定</h2><p>切りしろと貼りしろをまとめて設定</p></div></div>
+<div class="section-head"><div class="no">07</div><div><h2>木取り設定</h2><p>切りしろと貼りしろをまとめて設定</p></div></div>
 <div class="cutting-settings">
   <div class="setting-field">
     <label>切りしろ mm</label>
@@ -721,12 +1024,85 @@ button,input,select{
     <label>貼りしろ mm</label>
     <input id="globalPasteAllowance" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="10">
   </div>
-  <div class="setting-note">貼りしろは仕上材に適用。変更後は「木取り表を生成」で再計算してください。</div>
+  <div class="setting-field">
+    <label>四周端落とし mm</label>
+    <input id="globalEdgeTrim" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="10">
+  </div>
+  <div class="setting-note">貼りしろは仕上材に適用。端落としは原板の四周を使用不可領域として計算します。</div>
 </div>
 </section>
 </div>
 
 <div class="overlay" id="detailO"><div class="sheet"><div class="handle"></div><div class="sheet-head"><div><h3>側板 A｜材料構成</h3><small>パターンとの差分だけ変更</small></div><button class="close" onclick="closeO('detailO')">×</button></div><div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span><span>積層</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>18 ランバー</option></select><span class="lab">×</span><select class="mini layers"><option>2層</option><option>1層</option><option>3層</option></select></div></div></div><div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表面</span><span>追加可</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>全面</option><option>貼り分け</option></select></div><button class="add-line">＋ 表面材を追加</button></div></div><div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏面</span><span>貼り分け対応</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>白ポリ</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="600+10"></div><div class="line" style="margin-top:5px"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="300+10"></div><button class="add-line">＋ 裏面材を追加</button></div></div><button class="save" onclick="closeO('detailO')">この部材だけ変更して保存</button></div></div>
+
+
+
+<div class="overlay" id="jointO">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-head">
+      <div>
+        <h3>接ぎ設定</h3>
+        <small id="jointPartName">部材</small>
+      </div>
+      <button class="close" onclick="closeO('jointO')">×</button>
+    </div>
+    <p class="joint-note">
+      材料・層ごとに接ぎ方を設定します。「1枚目寸法」を空欄にすると均等割り。
+      芯材が複数層ある場合は層ごとに接ぎ位置をずらせます。
+      仕上げ材を接ぐ場合は、仕上寸法で分割したあと各片へ貼りしろを加えて木取りします。
+    </p>
+    <div class="joint-rows" id="jointRows"></div>
+    <button class="save" onclick="saveJointSettings()">接ぎ設定を保存</button>
+  </div>
+</div>
+
+<div class="overlay" id="grainLinkO">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-head">
+      <div>
+        <h3>木目連続</h3>
+        <small id="grainLinkPartName">部材</small>
+      </div>
+      <button class="close" onclick="closeO('grainLinkO')">×</button>
+    </div>
+    <p class="grain-link-note">
+      同じグループの部材を、木目のある材料だけ同じ原板上へ並び順どおりに連続配置します。
+      幅方向は扉を左右に並べる使い方、長さ方向は上下方向へ木目を続ける使い方です。
+      木目「なし」の材料には影響しません。
+    </p>
+    <div class="grain-link-grid">
+      <div class="field">
+        <label>連続グループ</label>
+        <select id="grainLinkGroup">
+          <option value="">なし</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+          <option value="E">E</option>
+          <option value="F">F</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>並び順</label>
+        <input id="grainLinkOrder" type="tel" inputmode="numeric" value="1">
+      </div>
+      <div class="field grain-method-field">
+        <label>連続方法</label>
+        <select id="grainLinkMethod">
+          <option value="across">幅方向（左右に並べる）</option>
+          <option value="along">長さ方向（上下につなぐ）</option>
+        </select>
+      </div>
+    </div>
+    <div class="grain-link-actions">
+      <button class="soft" onclick="clearGrainContinuity()">解除</button>
+      <button class="save" onclick="saveGrainContinuity()">保存</button>
+    </div>
+  </div>
+</div>
 
 <div class="overlay" id="matO"><div class="sheet"><div class="handle"></div>
 <div class="sheet-head"><div><h3 id="matModalTitle">材料を追加</h3><small>材料種類を選ぶと厚み規格を絞り込み</small></div><button class="close" onclick="closeO('matO')">×</button></div>
@@ -861,7 +1237,8 @@ let editingMaterial = null;
 let editingPattern = null;
 
 
-const APP_STORAGE_KEY='ma_app_state_v51';
+const APP_STORAGE_KEY='ma_app_state_v62';
+const LEGACY_STORAGE_KEYS=['ma_app_state_v51'];
 let saveTimer=null;
 let saveStatusTimer=null;
 
@@ -874,56 +1251,50 @@ function showSaveStatus(text='保存しました'){
   saveStatusTimer=setTimeout(()=>el.classList.remove('show'),1100);
 }
 
-function serializeAppHtml(){
-  const app=document.querySelector('.app');
-  if(!app)return '';
-
-  const clone=app.cloneNode(true);
-  const originals=[...app.querySelectorAll('input,select,textarea')];
-  const copies=[...clone.querySelectorAll('input,select,textarea')];
+function serializeRegionHtml(el){
+  if(!el)return '';
+  const clone=el.cloneNode(true);
+  const originals=el.querySelectorAll('input,select,textarea');
+  const copies=clone.querySelectorAll('input,select,textarea');
 
   originals.forEach((src,i)=>{
     const dst=copies[i];
     if(!dst)return;
 
-    if(src instanceof HTMLInputElement){
-      dst.setAttribute('value',src.value);
-      if(src.type==='checkbox'||src.type==='radio'){
-        if(src.checked)dst.setAttribute('checked','');
-        else dst.removeAttribute('checked');
-      }
-    }else if(src instanceof HTMLTextAreaElement){
+    if(src.tagName==='TEXTAREA'){
       dst.textContent=src.value;
-    }else if(src instanceof HTMLSelectElement){
-      [...dst.options].forEach((o,oi)=>{
-        if(oi===src.selectedIndex)o.setAttribute('selected','');
-        else o.removeAttribute('selected');
-      });
+    }else if(src.tagName==='SELECT'){
+      [...dst.options].forEach((o,oi)=>o.selected=src.options[oi]?.selected||false);
+    }else if(src.type==='checkbox'||src.type==='radio'){
+      if(src.checked)dst.setAttribute('checked','');
+      else dst.removeAttribute('checked');
+    }else{
+      dst.setAttribute('value',src.value);
     }
   });
 
   return clone.innerHTML;
 }
 
-function recountStateFromDom(){
-  drawingCount=document.querySelectorAll('#drawingHeader .drawing-head').length||1;
-  partCount=document.querySelectorAll('#partBody tr').length||1;
-  materialCount=document.querySelectorAll('#materials .material').length;
-
-  const nums=[...document.querySelectorAll('#patterns .pattern')]
-    .map(p=>Number(String(p.dataset.code||'').replace(/\D/g,'')))
-    .filter(Number.isFinite);
-  patternCount=nums.length?Math.max(...nums):0;
+function captureInputState(){
+  return {
+    version:72,
+    savedAt:Date.now(),
+    materialsHtml:serializeRegionHtml(document.getElementById('materials')),
+    patternsHtml:serializeRegionHtml(document.getElementById('patterns')),
+    drawingHeaderHtml:serializeRegionHtml(document.getElementById('drawingHeader')),
+    partBodyHtml:serializeRegionHtml(document.getElementById('partBody')),
+    settings:{
+      kerf:document.getElementById('globalKerf')?.value??'3',
+      pasteAllowance:document.getElementById('globalPasteAllowance')?.value??'10',
+      edgeTrim:document.getElementById('globalEdgeTrim')?.value??'10'
+    }
+  };
 }
 
 function saveAppState(showMessage=false){
   try{
-    const state={
-      version:51,
-      html:serializeAppHtml(),
-      savedAt:Date.now()
-    };
-    localStorage.setItem(APP_STORAGE_KEY,JSON.stringify(state));
+    localStorage.setItem(APP_STORAGE_KEY,JSON.stringify(captureInputState()));
     if(showMessage)showSaveStatus('保存しました');
     return true;
   }catch(err){
@@ -938,23 +1309,78 @@ function scheduleAutoSave(){
   saveTimer=setTimeout(()=>saveAppState(false),180);
 }
 
+function extractLegacyState(state){
+  if(!state?.html)return null;
+
+  const tpl=document.createElement('template');
+  tpl.innerHTML=state.html;
+  const root=tpl.content;
+
+  return {
+    version:62,
+    savedAt:Date.now(),
+    materialsHtml:root.querySelector('#materials')?.innerHTML||'',
+    patternsHtml:root.querySelector('#patterns')?.innerHTML||'',
+    drawingHeaderHtml:root.querySelector('#drawingHeader')?.innerHTML||'',
+    partBodyHtml:root.querySelector('#partBody')?.innerHTML||'',
+    settings:{
+      kerf:root.querySelector('#globalKerf')?.value||root.querySelector('#globalKerf')?.getAttribute('value')||'3',
+      pasteAllowance:root.querySelector('#globalPasteAllowance')?.value||root.querySelector('#globalPasteAllowance')?.getAttribute('value')||'10',
+      edgeTrim:root.querySelector('#globalEdgeTrim')?.value||root.querySelector('#globalEdgeTrim')?.getAttribute('value')||'10'
+    }
+  };
+}
+
+function applySavedInputState(state){
+  if(!state)return false;
+
+  const materials=document.getElementById('materials');
+  const patterns=document.getElementById('patterns');
+  const drawingHeader=document.getElementById('drawingHeader');
+  const partBody=document.getElementById('partBody');
+
+  if(materials && typeof state.materialsHtml==='string')materials.innerHTML=state.materialsHtml;
+  if(patterns && typeof state.patternsHtml==='string')patterns.innerHTML=state.patternsHtml;
+  if(drawingHeader && state.drawingHeaderHtml)drawingHeader.innerHTML=state.drawingHeaderHtml;
+  if(partBody && state.partBodyHtml)partBody.innerHTML=state.partBodyHtml;
+
+  if(document.getElementById('globalKerf'))
+    document.getElementById('globalKerf').value=state.settings?.kerf??'3';
+  if(document.getElementById('globalPasteAllowance'))
+    document.getElementById('globalPasteAllowance').value=state.settings?.pasteAllowance??'10';
+  if(document.getElementById('globalEdgeTrim'))
+    document.getElementById('globalEdgeTrim').value=state.settings?.edgeTrim??'10';
+
+  recountStateFromDom();
+  return true;
+}
+
 function restoreAppState(){
   try{
-    const raw=localStorage.getItem(APP_STORAGE_KEY);
-    if(!raw)return false;
-    const state=JSON.parse(raw);
-    if(!state?.html)return false;
+    // 新方式
+    const currentRaw=localStorage.getItem(APP_STORAGE_KEY);
+    if(currentRaw){
+      const state=JSON.parse(currentRaw);
+      if(applySavedInputState(state))return true;
+    }
 
-    const app=document.querySelector('.app');
-    if(!app)return false;
+    // v51〜v61までの「画面全体保存」を入力データだけに変換
+    for(const key of LEGACY_STORAGE_KEYS){
+      const raw=localStorage.getItem(key);
+      if(!raw)continue;
+      const legacy=JSON.parse(raw);
+      const migrated=extractLegacyState(legacy);
+      if(!migrated)continue;
 
-    app.innerHTML=state.html;
-    recountStateFromDom();
-    return true;
+      if(applySavedInputState(migrated)){
+        localStorage.setItem(APP_STORAGE_KEY,JSON.stringify(migrated));
+        return true;
+      }
+    }
   }catch(err){
     console.error('restore failed',err);
-    return false;
   }
+  return false;
 }
 
 function setupAutoSave(){
@@ -973,6 +1399,87 @@ function setupAutoSave(){
   });
   window.addEventListener('pagehide',()=>saveAppState(false));
   window.addEventListener('beforeunload',()=>saveAppState(false));
+}
+
+async function exportMaData(){
+  saveAppState(false);
+
+  const data={
+    format:'ma-data',
+    version:66,
+    exportedAt:new Date().toISOString(),
+    state:captureInputState()
+  };
+
+  const text=JSON.stringify(data,null,2);
+  const blob=new Blob([text],{type:'application/json'});
+  const file=new File([blob],'ma-data.json',{type:'application/json'});
+
+  try{
+    if(navigator.canShare?.({files:[file]})&&navigator.share){
+      await navigator.share({title:'ma. データ',files:[file]});
+      return;
+    }
+  }catch(err){
+    if(err?.name==='AbortError')return;
+  }
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='ma-data.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  showSaveStatus('ma-data.jsonを書き出しました');
+}
+
+async function importMaData(input){
+  const file=input?.files?.[0];
+  if(!file)return;
+
+  try{
+    const text=await file.text();
+    const data=JSON.parse(text);
+
+    if(data?.format!=='ma-data'){
+      alert('ma.のデータファイルではありません。');
+      return;
+    }
+
+    let state=data.state||null;
+
+    // v61の旧JSON形式も読込可能
+    if(!state && data.appHtml){
+      state=extractLegacyState({html:data.appHtml});
+    }
+
+    if(!state || !applySavedInputState(state)){
+      alert('データを読み込めませんでした。');
+      return;
+    }
+
+    ensureJointControls(document);
+    ensureGrainContinuityControls(document);
+    applyDrawingColors();
+    updateAllPatternThickness();
+    setupEnterAdvanceHints(document.querySelector('.app'));
+
+    LAST_PACKS.clear();
+    document.getElementById('cuttingResults').innerHTML='';
+    document.getElementById('cutting').classList.remove('generated');
+    document.getElementById('purchaseList').innerHTML=
+      '<div class="result-empty">木取り表を生成すると購入リストを表示します。</div>';
+
+    saveAppState(false);
+    showSaveStatus('データを読み込みました');
+  }catch(err){
+    console.error(err);
+    alert('データを読み込めませんでした。');
+  }finally{
+    input.value='';
+  }
 }
 
 function applyDrawingColors(){
@@ -1053,9 +1560,456 @@ function addCellPart(btn){
       <input class="dim qty math" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="枚数">
     </div>
     <select class="pat-select psel" onchange="sum(this)">${patternOptionsHtml()}</select>
+    <button class="joint-btn" onclick="openJointSettings(this)">接ぎ</button>
+    <button class="grain-link-btn" onclick="openGrainContinuity(this)">木目連続</button>
     <button class="detail" onclick="openO('detailO')">詳細</button>
+    <div class="joint-status"></div>
+    <div class="grain-link-status"></div>
     <div class="summary"></div>`;
   td.insertBefore(entry,btn);
+  refreshJointEntry(entry);
+  refreshGrainContinuityEntry(entry);
+}
+
+
+
+let editingJointEntry=null;
+
+function getJointSettings(entry){
+  if(!entry)return {};
+  try{
+    const raw=entry.dataset.jointSettings||'{}';
+    const parsed=JSON.parse(raw);
+    return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{};
+  }catch{
+    return {};
+  }
+}
+
+function getEntryDims(entry){
+  const inputs=entry?.querySelectorAll('.dims input')||[];
+  const w=evalMathExpression(inputs[0]?.value||'');
+  const h=evalMathExpression(inputs[1]?.value||'');
+  return {
+    w:Number.isFinite(w)&&w>0?w:0,
+    h:Number.isFinite(h)&&h>0?h:0
+  };
+}
+
+function getJointLayerDescriptors(entry){
+  const code=entry?.querySelector('.psel')?.value||'';
+  const pattern=getPatternByCode(code);
+  if(!pattern)return [];
+
+  const layers=[];
+  const cores=getPatternCores(pattern);
+
+  cores.forEach((core,coreIndex)=>{
+    for(let layerIndex=0;layerIndex<core.count;layerIndex++){
+      const multiCore=cores.length>1;
+      const layerName=core.count>1?`${layerIndex+1}層目`:'';
+      const prefix=multiCore?`芯材${coreIndex+1}`:'芯材';
+      layers.push({
+        key:`core-${coreIndex}-${layerIndex}`,
+        type:'core',
+        label:[prefix,layerName].filter(Boolean).join('｜'),
+        material:core.material
+      });
+    }
+  });
+
+  if(pattern.dataset.face){
+    layers.push({
+      key:'face',
+      type:'face',
+      label:'表面',
+      material:pattern.dataset.face
+    });
+  }
+
+  if(pattern.dataset.back){
+    layers.push({
+      key:'back',
+      type:'back',
+      label:'裏面',
+      material:pattern.dataset.back
+    });
+  }
+
+  return layers;
+}
+
+function ensureJointControls(root=document){
+  root.querySelectorAll?.('.cell-entry').forEach(entry=>{
+    if(!entry.querySelector('.joint-btn')){
+      const grain=entry.querySelector('.grain-link-btn');
+      const detail=entry.querySelector('.detail');
+      const btn=document.createElement('button');
+      btn.className='joint-btn';
+      btn.type='button';
+      btn.textContent='接ぎ';
+      btn.setAttribute('onclick','openJointSettings(this)');
+      if(grain)grain.before(btn);
+      else if(detail)detail.before(btn);
+      else entry.appendChild(btn);
+    }
+
+    if(!entry.querySelector('.joint-status')){
+      const status=document.createElement('div');
+      status.className='joint-status';
+      const grainStatus=entry.querySelector('.grain-link-status');
+      const summary=entry.querySelector('.summary');
+      if(grainStatus)grainStatus.before(status);
+      else if(summary)summary.before(status);
+      else entry.appendChild(status);
+    }
+
+    refreshJointEntry(entry);
+  });
+}
+
+function refreshJointEntry(entry){
+  if(!entry)return;
+  const settings=getJointSettings(entry);
+  const active=Object.values(settings).filter(s=>s?.mode&&s.mode!=='none').length;
+  const btn=entry.querySelector('.joint-btn');
+  const status=entry.querySelector('.joint-status');
+
+  if(btn)btn.classList.toggle('active',active>0);
+  if(status)status.textContent=active?`接ぎ ${active}層`:'';
+}
+
+function jointPasteAllowance(materialName){
+  const mat=getMaterialByName(materialName);
+  return mat?.dataset.type==='仕上材'?getGlobalPasteAllowance():0;
+}
+
+function jointFinishedSplit(baseW,baseH,mode,rawPosition){
+  if(mode==='none'){
+    return {pieces:[{w:baseW,h:baseH}],position:null,error:''};
+  }
+
+  const total=mode==='long'?baseW:baseH;
+  let pos;
+
+  if(String(rawPosition||'').trim()){
+    const n=evalMathExpression(String(rawPosition));
+    if(!Number.isFinite(n)||n<=0||n>=total){
+      return {pieces:[],position:null,error:`1枚目寸法は 0〜${formatThickness(total)}mm の間で指定`};
+    }
+    pos=n;
+  }else{
+    pos=total/2;
+  }
+
+  const rest=total-pos;
+
+  if(mode==='long'){
+    return {
+      pieces:[{w:pos,h:baseH},{w:rest,h:baseH}],
+      position:pos,
+      error:''
+    };
+  }
+
+  return {
+    pieces:[{w:baseW,h:pos},{w:baseW,h:rest}],
+    position:pos,
+    error:''
+  };
+}
+
+function jointCutSplit(materialName,baseW,baseH,mode,rawPosition){
+  const finished=jointFinishedSplit(baseW,baseH,mode,rawPosition);
+  if(finished.error){
+    return {...finished,finishedPieces:[],allowance:0};
+  }
+
+  const allowance=jointPasteAllowance(materialName);
+  const pieces=finished.pieces.map(piece=>({
+    w:piece.w+allowance,
+    h:piece.h+allowance
+  }));
+
+  return {
+    pieces,
+    finishedPieces:finished.pieces,
+    position:finished.position,
+    allowance,
+    error:''
+  };
+}
+
+function pieceFitsMaterialDimensions(materialName,w,h){
+  const mat=getMaterialByName(materialName);
+  if(!mat)return false;
+  const testPiece={w,h,grain:mat.dataset.grain||'なし'};
+  return candidateSheets(mat).some(type=>{
+    const sheet=makePackingSheet(type);
+    return !!(sheet&&bestPlacement(sheet,testPiece,'compact'));
+  });
+}
+
+function updateJointPreview(row){
+  const entry=editingJointEntry;
+  if(!entry||!row)return;
+
+  const material=row.dataset.material||'';
+  const dims=getEntryDims(entry);
+  const mode=row.querySelector('.joint-mode')?.value||'none';
+  const pos=row.querySelector('.joint-position')?.value||'';
+  const preview=row.querySelector('.joint-preview');
+
+  if(!(dims.w>0&&dims.h>0)){
+    preview.textContent='先に部材寸法を入力してください';
+    preview.classList.add('warn');
+    return;
+  }
+
+  const split=jointCutSplit(material,dims.w,dims.h,mode,pos);
+  if(split.error){
+    preview.textContent=split.error;
+    preview.classList.add('warn');
+    return;
+  }
+
+  const cutText=split.pieces
+    .map(p=>`${formatThickness(p.w)}×${formatThickness(p.h)}`)
+    .join(' ＋ ');
+
+  const finishedText=split.finishedPieces
+    .map(p=>`${formatThickness(p.w)}×${formatThickness(p.h)}`)
+    .join(' ＋ ');
+
+  const allFit=split.pieces.every(p=>pieceFitsMaterialDimensions(material,p.w,p.h));
+  const allowanceText=split.allowance>0
+    ?`仕上 ${finishedText} → 木取り ${cutText}（貼りしろ +${formatThickness(split.allowance)}）`
+    :cutText;
+
+  if(mode==='none'){
+    preview.textContent=allFit
+      ?`${allowanceText}｜原板に収まります`
+      :`${allowanceText}｜⚠ 原板に収まりません。接ぎを設定してください`;
+  }else{
+    preview.textContent=allFit
+      ?`${allowanceText}｜接ぎ後は原板に収まります`
+      :`${allowanceText}｜⚠ 接ぎ後も原板に収まりません`;
+  }
+
+  preview.classList.toggle('warn',!allFit);
+}
+
+function renderJointRows(entry){
+  const rows=document.getElementById('jointRows');
+  const layers=getJointLayerDescriptors(entry);
+  const settings=getJointSettings(entry);
+
+  if(!layers.length){
+    rows.innerHTML='<div class="result-empty">先に構成パターンを選択してください。</div>';
+    return;
+  }
+
+  rows.innerHTML=layers.map(layer=>{
+    const setting=settings[layer.key]||{};
+    const mode=setting.mode||'none';
+    const position=setting.position??'';
+
+    return `<div class="joint-row" data-key="${escapeHtml(layer.key)}" data-material="${escapeHtml(layer.material)}">
+      <div class="joint-row-head">
+        <strong>${escapeHtml(layer.label)}</strong>
+        <small>${escapeHtml(layer.material)}</small>
+      </div>
+      <div class="joint-row-controls">
+        <select class="joint-mode" onchange="toggleJointPosition(this);updateJointPreview(this.closest('.joint-row'))">
+          <option value="none"${mode==='none'?' selected':''}>接がない</option>
+          <option value="long"${mode==='long'?' selected':''}>長手方向で接ぐ</option>
+          <option value="short"${mode==='short'?' selected':''}>短手方向で接ぐ</option>
+        </select>
+        <input class="joint-position math" type="tel" inputmode="numeric"
+          value="${escapeHtml(String(position))}"
+          placeholder="1枚目寸法 / 均等"
+          oninput="updateJointPreview(this.closest('.joint-row'))">
+      </div>
+      <div class="joint-preview"></div>
+    </div>`;
+  }).join('');
+
+  rows.querySelectorAll('.joint-row').forEach(row=>{
+    toggleJointPosition(row.querySelector('.joint-mode'));
+    updateJointPreview(row);
+  });
+}
+
+function toggleJointPosition(select){
+  const row=select?.closest('.joint-row');
+  const input=row?.querySelector('.joint-position');
+  if(!input)return;
+  const none=select.value==='none';
+  input.disabled=none;
+  input.style.opacity=none?'.45':'1';
+}
+
+function openJointSettings(btn){
+  const entry=btn.closest('.cell-entry');
+  if(!entry)return;
+
+  editingJointEntry=entry;
+  const partName=entry.querySelector('.cell-title-input')?.value?.trim()||'部材';
+  document.getElementById('jointPartName').textContent=partName;
+  renderJointRows(entry);
+  openO('jointO');
+}
+
+function saveJointSettings(){
+  if(!editingJointEntry)return;
+
+  const next={};
+  let hasError=false;
+
+  document.querySelectorAll('#jointRows .joint-row').forEach(row=>{
+    const key=row.dataset.key;
+    const material=row.dataset.material||'';
+    const mode=row.querySelector('.joint-mode')?.value||'none';
+    const rawPosition=row.querySelector('.joint-position')?.value?.trim()||'';
+
+    if(mode==='none')return;
+
+    const dims=getEntryDims(editingJointEntry);
+    const split=jointCutSplit(material,dims.w,dims.h,mode,rawPosition);
+
+    if(split.error){
+      hasError=true;
+      row.querySelector('.joint-preview')?.classList.add('warn');
+      return;
+    }
+
+    next[key]={
+      mode,
+      position:rawPosition
+    };
+  });
+
+  if(hasError){
+    showSaveStatus('接ぎ位置を確認してください');
+    return;
+  }
+
+  editingJointEntry.dataset.jointSettings=JSON.stringify(next);
+  refreshJointEntry(editingJointEntry);
+  saveAppState(false);
+  closeO('jointO');
+  showSaveStatus(Object.keys(next).length?'接ぎ設定を保存しました':'接ぎ設定を解除しました');
+  editingJointEntry=null;
+}
+
+function getJointSpec(entry,key){
+  const settings=getJointSettings(entry);
+  const spec=settings[key];
+  return spec&&spec.mode&&spec.mode!=='none'?spec:null;
+}
+
+
+let editingGrainEntry=null;
+
+function ensureGrainContinuityControls(root=document){
+  root.querySelectorAll?.('.cell-entry').forEach(entry=>{
+    if(!entry.querySelector('.grain-link-btn')){
+      const detail=entry.querySelector('.detail');
+      const btn=document.createElement('button');
+      btn.className='grain-link-btn';
+      btn.type='button';
+      btn.textContent='木目連続';
+      btn.setAttribute('onclick','openGrainContinuity(this)');
+      if(detail)detail.before(btn);
+      else entry.appendChild(btn);
+    }
+
+    if(!entry.querySelector('.grain-link-status')){
+      const status=document.createElement('div');
+      status.className='grain-link-status';
+      const summary=entry.querySelector('.summary');
+      if(summary)summary.before(status);
+      else entry.appendChild(status);
+    }
+
+    refreshGrainContinuityEntry(entry);
+  });
+}
+
+function refreshGrainContinuityEntry(entry){
+  if(!entry)return;
+  const group=entry.dataset.grainGroup||'';
+  const order=entry.dataset.grainOrder||'';
+  const method=entry.dataset.grainMethod||'across';
+  const methodLabel=method==='along'?'長さ方向':'幅方向';
+  const btn=entry.querySelector('.grain-link-btn');
+  const status=entry.querySelector('.grain-link-status');
+
+  if(btn)btn.classList.toggle('active',!!group);
+  if(status){
+    status.textContent=group ? `木目連続 ${group}｜${order||1}｜${methodLabel}` : '';
+  }
+}
+
+function openGrainContinuity(btn){
+  const entry=btn.closest('.cell-entry');
+  if(!entry)return;
+  editingGrainEntry=entry;
+
+  const partName=entry.querySelector('.cell-title-input')?.value?.trim()||'部材';
+  document.getElementById('grainLinkPartName').textContent=partName;
+  const group=entry.dataset.grainGroup||'';
+  document.getElementById('grainLinkGroup').value=group;
+  document.getElementById('grainLinkOrder').value=entry.dataset.grainOrder||'1';
+
+  // 既に同グループがあれば、そのグループの連続方法を引き継ぐ
+  const groupEntry=group
+    ?[...document.querySelectorAll('#partBody .cell-entry')].find(e=>e!==entry && e.dataset.grainGroup===group)
+    :null;
+  document.getElementById('grainLinkMethod').value=
+    groupEntry?.dataset.grainMethod||entry.dataset.grainMethod||'across';
+
+  openO('grainLinkO');
+}
+
+function saveGrainContinuity(){
+  if(!editingGrainEntry)return;
+  const group=document.getElementById('grainLinkGroup').value||'';
+  const raw=evalMathExpression(document.getElementById('grainLinkOrder').value||'1');
+  const order=Number.isFinite(raw)&&raw>0?Math.floor(raw):1;
+  const method=document.getElementById('grainLinkMethod').value||'across';
+
+  editingGrainEntry.dataset.grainGroup=group;
+  editingGrainEntry.dataset.grainOrder=String(order);
+  editingGrainEntry.dataset.grainMethod=group?method:'';
+
+  // 連続方法はグループ共通。Aの方法を変えたらA全部へ反映。
+  if(group){
+    document.querySelectorAll('#partBody .cell-entry').forEach(entry=>{
+      if(entry.dataset.grainGroup===group){
+        entry.dataset.grainMethod=method;
+        refreshGrainContinuityEntry(entry);
+      }
+    });
+  }else{
+    refreshGrainContinuityEntry(editingGrainEntry);
+  }
+  closeO('grainLinkO');
+  saveAppState(false);
+  showSaveStatus(group?`木目連続 ${group} を設定しました`:'木目連続を解除しました');
+  editingGrainEntry=null;
+}
+
+function clearGrainContinuity(){
+  if(!editingGrainEntry)return;
+  editingGrainEntry.dataset.grainGroup='';
+  editingGrainEntry.dataset.grainOrder='';
+  editingGrainEntry.dataset.grainMethod='';
+  refreshGrainContinuityEntry(editingGrainEntry);
+  closeO('grainLinkO');
+  saveAppState(false);
+  showSaveStatus('木目連続を解除しました');
+  editingGrainEntry=null;
 }
 
 function escapeHtml(v){
@@ -1127,19 +2081,64 @@ function getGlobalPasteAllowance(){
   return Number.isFinite(n)?Math.max(0,n):0;
 }
 
-function pushExpanded(list, materialName, baseW, baseH, qty, drawingIndex, drawingName, partName){
+function getGlobalEdgeTrim(){
+  const n=evalMathExpression(document.getElementById('globalEdgeTrim')?.value||'0');
+  return Number.isFinite(n)?Math.max(0,n):0;
+}
+
+function pushExpanded(list, materialName, baseW, baseH, qty, drawingIndex, drawingName, partName, continuityGroup='', continuityOrder=0, continuityMethod='across', jointSpec=null, jointLayerKey='', jointLayerLabel=''){
   const mat=getMaterialByName(materialName);
-  if(!mat)return;
-  const allowance=mat.dataset.type==='仕上材'?getGlobalPasteAllowance():0;
-  const w=baseW+allowance;
-  const h=baseH+allowance;
+  if(!mat)return 0;
+
+  const split=jointCutSplit(
+    materialName,
+    baseW,
+    baseH,
+    jointSpec?.mode||'none',
+    jointSpec?.position||''
+  );
+
+  if(split.error)return 1;
+
   for(let i=0;i<qty;i++){
-    list.push({
-      materialName,w,h,drawingIndex,drawingName,partName,
-      grain:mat.dataset.grain||'なし',
-      materialIndex:Number(mat.dataset.materialIndex||0)
+    split.pieces.forEach((piece,pieceIndex)=>{
+      const jointApplied=split.pieces.length>1;
+      const suffix=jointApplied
+        ?`｜${jointLayerLabel||'接ぎ'}｜${pieceIndex+1}`
+        :'';
+
+      list.push({
+        materialName,
+        w:piece.w,
+        h:piece.h,
+        drawingIndex,
+        drawingName,
+        partName:`${partName}${suffix}`,
+        originalPartName:partName,
+        grain:mat.dataset.grain||'なし',
+        materialIndex:Number(mat.dataset.materialIndex||0),
+
+        // 接ぎした材料片は木目連続グループから外す。
+        // 接いでいない表面材などは従来どおり木目連続を維持。
+        continuityGroup:jointApplied?'':(continuityGroup||''),
+        continuityOrder:Number(continuityOrder||0)+(i/1000),
+        continuityDisplayOrder:Number(continuityOrder||0)+(qty>1?i:0),
+        continuityMethod:continuityMethod||'across',
+
+        jointApplied,
+        jointLayerKey,
+        jointLayerLabel,
+        jointPieceIndex:jointApplied?pieceIndex+1:0,
+        jointPieceCount:jointApplied?split.pieces.length:0,
+        jointMode:jointSpec?.mode||'none',
+        jointFinishedW:split.finishedPieces?.[pieceIndex]?.w||baseW,
+        jointFinishedH:split.finishedPieces?.[pieceIndex]?.h||baseH,
+        jointAllowance:split.allowance||0
+      });
     });
   }
+
+  return 0;
 }
 
 function collectExpandedPieces(){
@@ -1159,15 +2158,44 @@ function collectExpandedPieces(){
         const qty=Math.max(0,Math.floor(qRaw||0));
         if(!(w>0&&h>0&&qty>0)){invalid++;return}
         const partName=entry.querySelector('.cell-title-input')?.value?.trim()||rowName||'部材';
+        const continuityGroup=entry.dataset.grainGroup||'';
+        const continuityOrder=Number(entry.dataset.grainOrder||0);
+        const continuityMethod=entry.dataset.grainMethod||'across';
         const code=entry.querySelector('.psel')?.value||'P1';
         const p=getPatternByCode(code);
         if(!p){invalid++;return}
         const cores=getPatternCores(p);
-        cores.forEach(core=>{
-          pushExpanded(expanded,core.material,w,h,qty*core.count,di,drawingName,partName);
+
+        cores.forEach((core,coreIndex)=>{
+          for(let layerIndex=0;layerIndex<core.count;layerIndex++){
+            const key=`core-${coreIndex}-${layerIndex}`;
+            const multiCore=cores.length>1;
+            const layerName=core.count>1?`${layerIndex+1}層目`:'';
+            const prefix=multiCore?`芯材${coreIndex+1}`:'芯材';
+            const label=[prefix,layerName].filter(Boolean).join('｜');
+            invalid+=pushExpanded(
+              expanded,core.material,w,h,qty,di,drawingName,partName,
+              continuityGroup,continuityOrder,continuityMethod,
+              getJointSpec(entry,key),key,label
+            );
+          }
         });
-        if(p.dataset.face)pushExpanded(expanded,p.dataset.face,w,h,qty,di,drawingName,partName);
-        if(p.dataset.back)pushExpanded(expanded,p.dataset.back,w,h,qty,di,drawingName,partName);
+
+        if(p.dataset.face){
+          invalid+=pushExpanded(
+            expanded,p.dataset.face,w,h,qty,di,drawingName,partName,
+            continuityGroup,continuityOrder,continuityMethod,
+            getJointSpec(entry,'face'),'face','表面'
+          );
+        }
+
+        if(p.dataset.back){
+          invalid+=pushExpanded(
+            expanded,p.dataset.back,w,h,qty,di,drawingName,partName,
+            continuityGroup,continuityOrder,continuityMethod,
+            getJointSpec(entry,'back'),'back','裏面'
+          );
+        }
       });
     });
   });
@@ -1305,6 +2333,136 @@ function bestPlacement(sheet,piece,mode='compact'){
   return best;
 }
 
+
+function pieceActualArea(piece){
+  if(Array.isArray(piece.continuityMembers)){
+    return piece.continuityMembers.reduce((sum,m)=>sum+(m.w*m.h),0);
+  }
+  return piece.w*piece.h;
+}
+
+function buildContinuityUnits(pieces){
+  const kerf=getGlobalKerf();
+  const groups=new Map();
+  const singles=[];
+
+  pieces.forEach((p,index)=>{
+    // 木目なし材料は連続設定の対象外
+    if(!p.continuityGroup || p.grain==='なし'){
+      singles.push({...p,_sourceIndex:index});
+      return;
+    }
+
+    const layerKey=p.jointLayerKey||'layer';
+    const key=`${p.continuityGroup}|${layerKey}`;
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push({...p,_sourceIndex:index});
+  });
+
+  const units=[...singles];
+
+  groups.forEach((members,groupKey)=>{
+    const displayGroup=members[0]?.continuityGroup||'';
+    members.sort((a,b)=>
+      (Number(a.continuityOrder||0)-Number(b.continuityOrder||0)) ||
+      (a._sourceIndex-b._sourceIndex)
+    );
+
+    if(members.length<2){
+      units.push(members[0]);
+      return;
+    }
+
+    const method=members[0]?.continuityMethod||'across';
+    let w,h;
+
+    if(method==='along'){
+      // 長さ方向へ連続
+      w=members.reduce((sum,m)=>sum+m.w,0)+kerf*(members.length-1);
+      h=Math.max(...members.map(m=>m.h));
+    }else{
+      // 幅方向へ連続（扉を左右へ並べる一般的な使い方）
+      w=Math.max(...members.map(m=>m.w));
+      h=members.reduce((sum,m)=>sum+m.h,0)+kerf*(members.length-1);
+    }
+
+    units.push({
+      ...members[0],
+      w,h,
+      partName:`木目連続 ${displayGroup}`,
+      continuityGroup:displayGroup,
+      continuityMethod:method,
+      continuityMembers:members,
+      continuityComposite:true
+    });
+  });
+
+  return units;
+}
+
+function appendPlacedPiece(sheet,p,chosen){
+  const kerf=getGlobalKerf();
+
+  if(!Array.isArray(p.continuityMembers)){
+    sheet.placements.push({
+      ...p,
+      x:chosen.x,y:chosen.y,
+      w:chosen.drawW,h:chosen.drawH,
+      packW:chosen.packW,packH:chosen.packH,
+      rotated:chosen.rot
+    });
+    return;
+  }
+
+  let cursor=0;
+  const method=p.continuityMethod||'across';
+
+  p.continuityMembers.forEach((m,index)=>{
+    let x,y,w,h,rotated;
+
+    if(p.grain==='短手'){
+      rotated=true;
+      w=m.h;
+      h=m.w;
+
+      if(method==='along'){
+        x=chosen.x;
+        y=chosen.y+cursor;
+        cursor+=m.w+(index<p.continuityMembers.length-1?kerf:0);
+      }else{
+        x=chosen.x+cursor;
+        y=chosen.y;
+        cursor+=m.h+(index<p.continuityMembers.length-1?kerf:0);
+      }
+    }else{
+      rotated=false;
+      w=m.w;
+      h=m.h;
+
+      if(method==='along'){
+        x=chosen.x+cursor;
+        y=chosen.y;
+        cursor+=m.w+(index<p.continuityMembers.length-1?kerf:0);
+      }else{
+        x=chosen.x;
+        y=chosen.y+cursor;
+        cursor+=m.h+(index<p.continuityMembers.length-1?kerf:0);
+      }
+    }
+
+    sheet.placements.push({
+      ...m,
+      x,y,w,h,
+      packW:w,packH:h,
+      rotated,
+      continuityGroup:p.continuityGroup,
+      continuityMethod:method,
+      continuitySequence:index+1,
+      continuityCount:p.continuityMembers.length
+    });
+  });
+}
+
 function pieceOrders(pieces){
   const orders=[
     [...pieces].sort((a,b)=>(b.w*b.h)-(a.w*a.h)),
@@ -1321,6 +2479,24 @@ function pieceOrders(pieces){
     seen.add(key);
     return true;
   });
+}
+
+
+function makePackingSheet(type){
+  const trim=getGlobalEdgeTrim();
+  const usableW=type.w-(trim*2);
+  const usableH=type.h-(trim*2);
+  if(usableW<=0||usableH<=0)return null;
+  return {
+    type,
+    edgeTrim:trim,
+    free:[{x:trim,y:trim,w:usableW,h:usableH}],
+    placements:[]
+  };
+}
+
+function packingSheetArea(sheets){
+  return sheets.reduce((sum,s)=>sum+(s.type.w*s.type.h),0);
 }
 
 function packOrderedPieces(ordered,type,mode){
@@ -1344,11 +2520,8 @@ function packOrderedPieces(ordered,type,mode){
     }
 
     if(!chosen){
-      const s={
-        type,
-        free:[{x:0,y:0,w:type.w,h:type.h}],
-        placements:[]
-      };
+      const s=makePackingSheet(type);
+      if(!s)return null;
       const c=bestPlacement(s,p,mode);
       if(!c)return null;
       sheets.push(s);
@@ -1358,18 +2531,12 @@ function packOrderedPieces(ordered,type,mode){
     }
 
     const used={x:chosen.x,y:chosen.y,w:chosen.packW,h:chosen.packH};
-    chosenSheet.placements.push({
-      ...p,
-      x:chosen.x,y:chosen.y,
-      w:chosen.drawW,h:chosen.drawH,
-      packW:chosen.packW,packH:chosen.packH,
-      rotated:chosen.rot
-    });
+    appendPlacedPiece(chosenSheet,p,chosen);
     chosenSheet.free=splitFreeRects(chosenSheet.free,used);
   }
 
-  const usedArea=ordered.reduce((sum,p)=>sum+p.w*p.h,0);
-  const sheetArea=sheets.length*type.w*type.h;
+  const usedArea=ordered.reduce((sum,p)=>sum+pieceActualArea(p),0);
+  const sheetArea=packingSheetArea(sheets);
 
   return {
     type,
@@ -1448,21 +2615,245 @@ function packOnSheetType(pieces,type){
   return best;
 }
 
-function choosePacking(pieces,mat){
+
+function fixedSheetPlacementRank(sheet,c,strategy){
+  const empty=sheet.placements.length===0 ? 1 : 0;
+  const area=sheet.type.w*sheet.type.h;
+  const freeRect=sheet.free[c.ri];
+  const fitWaste=freeRect ? (freeRect.w*freeRect.h-c.packW*c.packH) : 0;
+
+  if(strategy==='small'){
+    return [empty,area,fitWaste,...c.score];
+  }
+  if(strategy==='fit'){
+    return [empty,fitWaste,...c.score,area];
+  }
+  if(strategy==='geometry'){
+    return [...c.score,empty,fitWaste,area];
+  }
+  // 既に使っている原板を優先して埋める
+  return [empty,...c.score,fitWaste,area];
+}
+
+function packIntoFixedSheets(ordered,sheetTypes,mode,strategy){
+  const sheets=sheetTypes.map(type=>makePackingSheet(type)).filter(Boolean);
+  if(sheets.length!==sheetTypes.length)return null;
+
+  for(const p of ordered){
+    let chosen=null;
+    let chosenSheet=null;
+    let chosenRank=null;
+
+    for(const sheet of sheets){
+      const c=bestPlacement(sheet,p,mode);
+      if(!c)continue;
+
+      const rank=fixedSheetPlacementRank(sheet,c,strategy);
+      if(!chosen||scoreLess(rank,chosenRank)){
+        chosen=c;
+        chosenSheet=sheet;
+        chosenRank=rank;
+      }
+    }
+
+    if(!chosen)return null;
+
+    const used={x:chosen.x,y:chosen.y,w:chosen.packW,h:chosen.packH};
+    appendPlacedPiece(chosenSheet,p,chosen);
+    chosenSheet.free=splitFreeRects(chosenSheet.free,used);
+  }
+
+  // 実際に使わなかった原板は購入枚数に含めない
+  const usedSheets=sheets.filter(s=>s.placements.length);
+  const usedArea=ordered.reduce((sum,p)=>sum+pieceActualArea(p),0);
+  const sheetArea=packingSheetArea(usedSheets);
+  const usedTypeCount=new Set(
+    usedSheets.map(s=>`${s.type.name}|${s.type.w}|${s.type.h}`)
+  ).size;
+
+  return {
+    type:{name:usedTypeCount>1?'混在':(usedSheets[0]?.type?.name||'')},
+    sheets:usedSheets,
+    usedArea,
+    sheetArea,
+    yieldPct:sheetArea?usedArea/sheetArea*100:0,
+    mode,
+    mixed:usedTypeCount>1
+  };
+}
+
+function packFixedSheetCombination(pieces,sheetTypes){
   let best=null;
-  for(const type of candidateSheets(mat)){
-    const packed=packOnSheetType(pieces,type);
-    if(!packed)continue;
-    if(comparePacked(packed,best))best=packed;
+  const modes=['compact','edge','snug'];
+  const strategies=['fill','small','fit','geometry'];
+
+  for(const order of pieceOrders(pieces)){
+    for(const mode of modes){
+      for(const strategy of strategies){
+        const packed=packIntoFixedSheets(order,sheetTypes,mode,strategy);
+        if(packed&&comparePacked(packed,best))best=packed;
+      }
+    }
   }
   return best;
 }
+
+function generateMixedCountCombos(types,maxArea,maxSheets=14){
+  const combos=[];
+  const areas=types.map(t=>t.w*t.h);
+  const usableAreas=types.map(t=>{
+    const trim=getGlobalEdgeTrim();
+    return Math.max(0,(t.w-trim*2)*(t.h-trim*2));
+  });
+
+  function walk(i,counts,totalArea,totalSheets,totalUsable,usedTypes){
+    if(totalArea>maxArea||totalSheets>maxSheets)return;
+
+    if(i===types.length){
+      if(totalSheets>0&&usedTypes>=2){
+        combos.push({
+          counts:[...counts],
+          area:totalArea,
+          sheets:totalSheets,
+          usableArea:totalUsable
+        });
+      }
+      return;
+    }
+
+    const area=areas[i];
+    const usable=usableAreas[i];
+    const maxCount=Math.min(
+      maxSheets-totalSheets,
+      Math.floor((maxArea-totalArea)/area)
+    );
+
+    for(let c=0;c<=maxCount;c++){
+      counts[i]=c;
+      walk(
+        i+1,
+        counts,
+        totalArea+area*c,
+        totalSheets+c,
+        totalUsable+usable*c,
+        usedTypes+(c>0?1:0)
+      );
+    }
+    counts[i]=0;
+  }
+
+  walk(0,new Array(types.length).fill(0),0,0,0,0);
+
+  // 最小原板面積から試す。面積が同じなら枚数が少ない方を先に。
+  combos.sort((a,b)=>a.area-b.area||a.sheets-b.sheets);
+
+  // iPhoneで組み合わせが爆発しないよう上限を設ける。
+  return combos.slice(0,1200);
+}
+
+function comboToSheetTypes(combo,types){
+  const sheetTypes=[];
+  combo.counts.forEach((count,i)=>{
+    for(let n=0;n<count;n++)sheetTypes.push(types[i]);
+  });
+
+  // 大きい原板から置く場合・小さい原板から置く場合の両方は
+  // packIntoFixedSheets 側で全原板を比較するので、ここでは規格順のみ保持。
+  return sheetTypes;
+}
+
+function packMixedSheetTypes(pieces,types,currentBest=null){
+  if(types.length<2)return null;
+
+  const usedArea=pieces.reduce((sum,p)=>sum+pieceActualArea(p),0);
+  const minSheetArea=Math.min(...types.map(t=>t.w*t.h));
+
+  // 単一規格の最良案より原板総面積が大きい混在案は勝てない。
+  // 単一案が無い場合だけ、部材面積から探索上限を作る。
+  let maxArea=currentBest?.sheetArea;
+  if(!Number.isFinite(maxArea)||maxArea<=0){
+    maxArea=Math.max(usedArea*2.2,minSheetArea*2);
+  }
+
+  const estimatedMaxSheets=Math.max(
+    2,
+    Math.floor(maxArea/minSheetArea)
+  );
+  const maxSheets=Math.min(16,estimatedMaxSheets);
+
+  const combos=generateMixedCountCombos(types,maxArea,maxSheets);
+  let best=null;
+  let bestFeasibleArea=Number.isFinite(currentBest?.sheetArea)
+    ? currentBest.sheetArea
+    : Infinity;
+
+  for(const combo of combos){
+    // 面積の小さい順なので、現在の最良案より大きくなったら終了。
+    if(combo.area>bestFeasibleArea)break;
+
+    // 原板の有効面積の合計すら部材面積より小さければ配置不能。
+    if(combo.usableArea<usedArea)continue;
+
+    const sheetTypes=comboToSheetTypes(combo,types);
+    const packed=packFixedSheetCombination(pieces,sheetTypes);
+    if(!packed||!packed.mixed)continue;
+
+    if(comparePacked(packed,best)){
+      best=packed;
+      bestFeasibleArea=packed.sheetArea;
+    }
+  }
+
+  return best;
+}
+
+function choosePacking(pieces,mat){
+  const types=candidateSheets(mat);
+  const packingPieces=buildContinuityUnits(pieces);
+  let best=null;
+
+  // 単一規格案
+  for(const type of types){
+    const packed=packOnSheetType(packingPieces,type);
+    if(!packed)continue;
+    if(comparePacked(packed,best))best=packed;
+  }
+
+  // 複数規格の枚数組み合わせまで列挙して比較
+  // 例：4×8 ×1枚 + 3×6 ×1枚
+  const mixed=packMixedSheetTypes(packingPieces,types,best);
+  if(mixed&&comparePacked(mixed,best))best=mixed;
+
+  return best;
+}
+
+
+function getPackSheetCounts(pack){
+  const map=new Map();
+  (pack?.sheets||[]).forEach(sheet=>{
+    const key=`${sheet.type.name}|${sheet.type.w}|${sheet.type.h}`;
+    if(!map.has(key)){
+      map.set(key,{name:sheet.type.name,w:sheet.type.w,h:sheet.type.h,count:0});
+    }
+    map.get(key).count++;
+  });
+  return [...map.values()];
+}
+
+function formatPackSheetSummary(pack){
+  return getPackSheetCounts(pack)
+    .map(x=>`${x.name} ${x.w}×${x.h} ×${x.count}`)
+    .join(' ＋ ');
+}
+
+const LAST_PACKS=new Map();
 
 function renderMaterialResult(materialName,pieces){
   const mat=getMaterialByName(materialName);
   if(!mat)return '';
   const pack=choosePacking(pieces,mat);
   if(!pack)return '';
+  LAST_PACKS.set(materialName,pack);
 
   const mi=Number(mat.dataset.materialIndex||0)%MATERIAL_COLOR_CLASSES.length;
 
@@ -1473,8 +2864,17 @@ function renderMaterialResult(materialName,pieces){
       const width=p.w/sheet.type.w*100;
       const height=p.h/sheet.type.h*100;
       const color=DRAWING_COLORS[p.drawingIndex%DRAWING_COLORS.length];
-      const label=`${escapeHtml(p.drawingName)}<br>${escapeHtml(p.partName)}<br>${Math.round(p.w)}×${Math.round(p.h)}`;
-      return `<div class="piece drawing-piece" data-drawing-index="${p.drawingIndex}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;background:${color}">${label}</div>`;
+      const continuity=(p.continuityGroup && p.continuitySequence)
+        ?`${p.continuityGroup}-${p.continuitySequence}`
+        :'';
+      const joint=p.jointApplied
+        ?`${p.jointPieceIndex}/${p.jointPieceCount}`
+        :'';
+      const sizeLine=(p.jointApplied && p.jointAllowance>0)
+        ?`${Math.round(p.jointFinishedW)}×${Math.round(p.jointFinishedH)} → ${Math.round(p.w)}×${Math.round(p.h)}`
+        :`${Math.round(p.w)}×${Math.round(p.h)}`;
+      const label=`${escapeHtml(p.drawingName)}<br>${escapeHtml(p.partName)}<br>${sizeLine}`;
+      return `<div class="piece drawing-piece${continuity?' continuity-piece':''}${joint?' joint-piece':''}" ${continuity?`data-continuity="木目 ${escapeHtml(continuity)}"`:''} ${joint?`data-joint="接ぎ ${escapeHtml(joint)}"`:''} data-drawing-index="${p.drawingIndex}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;background:${color}">${label}</div>`;
     }).join('');
 
     const offcut=largestReusableOffcut(sheet);
@@ -1498,9 +2898,18 @@ function renderMaterialResult(materialName,pieces){
         ?'<span class="grain-badge short">木目 短手</span>'
         :'';
 
+    const trim=Number(sheet.edgeTrim||0);
+    const trimLeft=trim/sheet.type.w*100;
+    const trimTop=trim/sheet.type.h*100;
+    const trimWidth=Math.max(0,(sheet.type.w-trim*2)/sheet.type.w*100);
+    const trimHeight=Math.max(0,(sheet.type.h-trim*2)/sheet.type.h*100);
+    const trimHtml=trim>0
+      ?`<div class="trim-boundary" style="left:${trimLeft}%;top:${trimTop}%;width:${trimWidth}%;height:${trimHeight}%"></div><div class="trim-label">端落とし ${formatThickness(trim)}mm</div>`
+      :'';
+
     return `<div class="board-item">
       <div class="board-title"><span>${sheet.type.name} ${sheet.type.w}×${sheet.type.h}</span><span>${grainBadge}${si+1}枚目</span></div>
-      <div class="board ${grainClass}" style="aspect-ratio:${sheet.type.w}/${sheet.type.h}">${items}${offcutHtml}</div>
+      <div class="board ${grainClass}" style="aspect-ratio:${sheet.type.w}/${sheet.type.h}">${trimHtml}${items}${offcutHtml}</div>
       <div class="offcut-summary">${offcutInfo}</div>
     </div>`;
   }).join('');
@@ -1513,13 +2922,115 @@ function renderMaterialResult(materialName,pieces){
     <p>${pieces.length}片を材料別に展開｜原板候補を比較して歩留まり最優先＋端材を大きく残す配置</p>
     <div class="board-list">${boards}</div>
     <div class="stats">
-      <span>採用：${pack.type.name} ${pack.type.w}×${pack.type.h} × ${pack.sheets.length}枚</span>
+      <span>採用：${formatPackSheetSummary(pack)}</span>
       <b>${pack.yieldPct.toFixed(1)}%</b>
     </div>
   </div>`;
 }
 
+
+
+function purchaseMaterialLabel(materialName,mat){
+  const thickness=mat?.dataset.thickness||'';
+  if(!thickness)return materialName;
+  const suffix=`${thickness}mm`;
+  return materialName.includes(suffix) ? materialName : `${materialName} ${suffix}`;
+}
+
+function renderPurchaseList(){
+  const section=document.getElementById('purchaseListSection');
+  const list=document.getElementById('purchaseList');
+  if(!section||!list)return;
+
+  if(!LAST_PACKS.size){
+    section.style.display='block';
+    list.innerHTML='<div class="result-empty">木取り表を生成すると購入リストを表示します。</div>';
+    return;
+  }
+
+  list.innerHTML=[...LAST_PACKS.entries()].map(([materialName,pack])=>{
+    const mat=getMaterialByName(materialName);
+    const type=mat?.dataset.type||'';
+    const label=purchaseMaterialLabel(materialName,mat);
+    const chips=getPackSheetCounts(pack).map(x=>
+      `<span class="purchase-chip">${escapeHtml(x.name)} ${x.w}×${x.h} × ${x.count}枚</span>`
+    ).join('');
+
+    return `<div class="purchase-item">
+      <div class="purchase-material">${escapeHtml(label)}<small>${escapeHtml(type)}</small></div>
+      <div class="purchase-sheets">${chips}</div>
+    </div>`;
+  }).join('');
+
+  section.style.display='block';
+}
+
+function purchaseListText(){
+  const lines=['ma. 購入リスト'];
+  LAST_PACKS.forEach((pack,materialName)=>{
+    const mat=getMaterialByName(materialName);
+    lines.push('');
+    lines.push(purchaseMaterialLabel(materialName,mat));
+    getPackSheetCounts(pack).forEach(x=>{
+      lines.push(`${x.name} ${x.w}×${x.h} × ${x.count}枚`);
+    });
+  });
+  return lines.join('\n');
+}
+
+async function sharePurchaseList(){
+  const text=purchaseListText();
+  try{
+    if(navigator.share){
+      await navigator.share({title:'ma. 購入リスト',text});
+      return;
+    }
+  }catch(err){
+    if(err?.name==='AbortError')return;
+  }
+
+  try{
+    await navigator.clipboard.writeText(text);
+    showSaveStatus('購入リストをコピーしました');
+  }catch{
+    alert(text);
+  }
+}
+
+
+function pieceFitsAnyCandidate(piece){
+  const mat=getMaterialByName(piece.materialName);
+  if(!mat)return false;
+  return candidateSheets(mat).some(type=>{
+    const sheet=makePackingSheet(type);
+    return !!(sheet&&bestPlacement(sheet,piece,'compact'));
+  });
+}
+
+function oversizedPieceMessage(pieces){
+  const unique=[];
+  const seen=new Set();
+
+  pieces.forEach(p=>{
+    const base=p.originalPartName||p.partName||'部材';
+    const layer=p.jointLayerLabel?` / ${p.jointLayerLabel}`:'';
+    const key=`${base}|${p.materialName}|${layer}`;
+    if(seen.has(key))return;
+    seen.add(key);
+    unique.push(`${base}${layer}（${p.materialName}）`);
+  });
+
+  const first=unique.slice(0,3).join('、');
+  const rest=unique.length>3?` ほか${unique.length-3}件`:'';
+  const hasJoint=pieces.some(p=>p.jointApplied);
+
+  return hasJoint
+    ?`接ぎ後も原板に収まらない材料があります：${first}${rest}。接ぎ位置を見直してください。`
+    :`原板より大きい材料があります：${first}${rest}。「接ぎ」から接ぎ方を設定してください。`;
+}
+
 function generateCutting(){
+  LAST_PACKS.clear();
   const {expanded,invalid}=collectExpandedPieces();
   const cut=document.getElementById('cutting');
   const results=document.getElementById('cuttingResults');
@@ -1528,8 +3039,20 @@ function generateCutting(){
   results.innerHTML='';
   if(!expanded.length){
     cut.classList.remove('generated');
+    renderPurchaseList();
     note.textContent='木取りできる部材がありません。寸法と枚数を入力してください。';
     note.classList.add('show');
+    return;
+  }
+
+  const oversized=expanded.filter(p=>!pieceFitsAnyCandidate(p));
+  if(oversized.length){
+    cut.classList.remove('generated');
+    LAST_PACKS.clear();
+    renderPurchaseList();
+    note.textContent=oversizedPieceMessage(oversized);
+    note.classList.add('show');
+    applyDrawingColors();
     return;
   }
 
@@ -1539,7 +3062,25 @@ function generateCutting(){
     groups.get(p.materialName).push(p);
   });
 
-  results.innerHTML=[...groups.entries()].map(([name,pieces])=>renderMaterialResult(name,pieces)).join('');
+  const rendered=[...groups.entries()].map(([name,pieces])=>({
+    name,
+    html:renderMaterialResult(name,pieces)
+  }));
+  const failed=rendered.filter(x=>!x.html).map(x=>x.name);
+
+  if(failed.length){
+    results.innerHTML='';
+    cut.classList.remove('generated');
+    LAST_PACKS.clear();
+    renderPurchaseList();
+    note.textContent=`木取り計算できない材料があります：${failed.join('、')}。木目連続・接ぎ設定・原板サイズを確認してください。`;
+    note.classList.add('show');
+    applyDrawingColors();
+    return;
+  }
+
+  results.innerHTML=rendered.map(x=>x.html).join('');
+  renderPurchaseList();
   cut.classList.add('generated');
   note.textContent=invalid
     ? `木取り表を更新しました。未入力・不正な寸法 ${invalid}件は除外しました。`
@@ -1550,6 +3091,159 @@ function generateCutting(){
   setTimeout(()=>cut.scrollIntoView({behavior:'smooth',block:'start'}),60);
 }
 
+
+function generateSample(){
+  drawingCount=1;
+  partCount=4;
+  materialCount=2;
+  patternCount=1;
+  editingMaterial=null;
+  editingPattern=null;
+  editingJointEntry=null;
+  editingGrainEntry=null;
+
+  document.getElementById('materials').innerHTML=`
+    <div class="material material-0"
+      data-material-index="0"
+      data-name="ランバー 18mm"
+      data-type="芯材"
+      data-material-standard="lumber"
+      data-species=""
+      data-thickness="18"
+      data-sheet="4×8 / 3×6"
+      data-sheet-candidates='["4×8","3×6"]'
+      data-sheet-preset="multiple"
+      data-sheet-w="0"
+      data-sheet-h="0"
+      data-grain="なし"
+      onclick="editMaterial(this)">
+      <strong><span class="dot c"></span>ランバー 18mm</strong>
+      <small>18mm｜4×8 / 3×6<br>芯材｜方向：なし</small>
+    </div>
+
+    <div class="material material-1"
+      data-material-index="1"
+      data-name="木目メラミン SAMPLE"
+      data-type="仕上材"
+      data-material-standard="melamine"
+      data-species=""
+      data-thickness="0.95"
+      data-sheet="4×10 / 4×8"
+      data-sheet-candidates='["4×10","4×8"]'
+      data-sheet-preset="multiple"
+      data-sheet-w="0"
+      data-sheet-h="0"
+      data-grain="長手"
+      onclick="editMaterial(this)">
+      <strong><span class="dot c"></span>木目メラミン SAMPLE</strong>
+      <small>0.95mm｜4×10 / 4×8<br>仕上材｜方向：長手</small>
+    </div>`;
+
+  document.getElementById('patterns').innerHTML=`
+    <div class="pattern"
+      data-code="P1"
+      data-name="接ぎ・木目サンプル"
+      data-cores='[{"material":"ランバー 18mm","count":2}]'
+      data-core="ランバー 18mm"
+      data-layers="2"
+      data-face="木目メラミン SAMPLE"
+      data-back="木目メラミン SAMPLE"
+      onclick="editPattern(this)">
+      <h3>P1｜接ぎ・木目サンプル</h3>
+      <p>ランバー 18mm ×2<br>表：木目メラミン SAMPLE / 裏：木目メラミン SAMPLE</p>
+      <div class="pattern-foot"><span class="tag final-thickness">仕上厚 --mm</span></div>
+    </div>`;
+
+  document.getElementById('drawingHeader').innerHTML=`
+    <th class="part-col">部材名</th>
+    <th class="drawing-head" data-drawing-index="0">
+      <input class="drawing-name-input" value="SAMPLE" aria-label="図面名">
+    </th>`;
+
+  const longJoint=JSON.stringify({
+    "core-0-0":{"mode":"long","position":"1800"},
+    "core-0-1":{"mode":"long","position":"1000"},
+    "face":{"mode":"long","position":"1500"},
+    "back":{"mode":"long","position":"1400"}
+  }).replace(/"/g,'&quot;');
+
+  const entryHtml=(name,w,h,{grainGroup='',grainOrder='',grainMethod='across',jointSettings=''}={})=>`
+    <div class="cell-entry"
+      data-grain-group="${grainGroup}"
+      data-grain-order="${grainOrder}"
+      data-grain-method="${grainGroup?grainMethod:''}"
+      data-joint-settings="${jointSettings}">
+      <textarea class="cell-title-input" rows="2" placeholder="部材名を入力" aria-label="図面内の部材名" enterkeyhint="next">${name}</textarea>
+      <div class="dims">
+        <input class="dim math" type="tel" inputmode="numeric" enterkeyhint="next" value="${w}" placeholder="長さ">
+        <span class="times">×</span>
+        <input class="dim math" type="tel" inputmode="numeric" enterkeyhint="next" value="${h}" placeholder="幅">
+        <span class="times">×</span>
+        <input class="dim qty math" type="tel" inputmode="numeric" enterkeyhint="next" value="1" placeholder="枚数">
+      </div>
+      <select class="pat-select psel" onchange="sum(this)">
+        <option value="">パターンを選択</option>
+        <option value="P1" selected>P1｜接ぎ・木目サンプル</option>
+      </select>
+      <button class="joint-btn${jointSettings?' active':''}" onclick="openJointSettings(this)">接ぎ</button>
+      <button class="grain-link-btn${grainGroup?' active':''}" onclick="openGrainContinuity(this)">木目連続</button>
+      <button class="detail" onclick="openO('detailO')">詳細</button>
+      <div class="joint-status">${jointSettings?'接ぎ 4層':''}</div>
+      <div class="grain-link-status">${grainGroup?`木目連続 ${grainGroup}｜${grainOrder}｜幅方向`:''}</div>
+      <div class="summary"></div>
+    </div>
+    <button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>`;
+
+  document.getElementById('partBody').innerHTML=`
+    <tr>
+      <td class="part-col"><textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next">長尺天板</textarea></td>
+      <td class="drawing-cell" data-drawing-index="0">
+        ${entryHtml('長尺天板',2800,600,{jointSettings:longJoint})}
+      </td>
+    </tr>
+    <tr>
+      <td class="part-col"><textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next">左扉</textarea></td>
+      <td class="drawing-cell" data-drawing-index="0">
+        ${entryHtml('左扉',700,300,{grainGroup:'A',grainOrder:'1'})}
+      </td>
+    </tr>
+    <tr>
+      <td class="part-col"><textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next">中央扉</textarea></td>
+      <td class="drawing-cell" data-drawing-index="0">
+        ${entryHtml('中央扉',700,320,{grainGroup:'A',grainOrder:'2'})}
+      </td>
+    </tr>
+    <tr>
+      <td class="part-col"><textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next">右扉</textarea></td>
+      <td class="drawing-cell" data-drawing-index="0">
+        ${entryHtml('右扉',700,280,{grainGroup:'A',grainOrder:'3'})}
+      </td>
+    </tr>`;
+
+  document.getElementById('globalKerf').value='3';
+  document.getElementById('globalPasteAllowance').value='10';
+  document.getElementById('globalEdgeTrim').value='10';
+
+  document.getElementById('cuttingResults').innerHTML='';
+  document.getElementById('cutting').classList.remove('generated');
+  LAST_PACKS.clear();
+  document.getElementById('purchaseList').innerHTML=
+    '<div class="result-empty">木取り表を生成すると購入リストを表示します。</div>';
+
+  ensureJointControls(document);
+  ensureGrainContinuityControls(document);
+  updateAllPatternThickness();
+  applyDrawingColors();
+  setupEnterAdvanceHints(document.querySelector('.app'));
+  document.querySelectorAll('#partBody .psel').forEach(sum);
+  document.querySelectorAll('#partBody .cell-entry').forEach(entry=>{
+    refreshJointEntry(entry);
+    refreshGrainContinuityEntry(entry);
+  });
+
+  saveAppState(false);
+  showSaveStatus('接ぎ・木目サンプルを入力しました');
+}
 function resetAll(){
   drawingCount=1;
   partCount=1;
@@ -1576,9 +3270,15 @@ function resetAll(){
 
   document.getElementById('globalKerf').value='3';
   document.getElementById('globalPasteAllowance').value='10';
+  document.getElementById('globalEdgeTrim').value='10';
 
   document.getElementById('cuttingResults').innerHTML='';
   document.getElementById('cutting').classList.remove('generated');
+  LAST_PACKS.clear();
+  const purchase=document.getElementById('purchaseList');
+  if(purchase)purchase.innerHTML='<div class="result-empty">木取り表を生成すると購入リストを表示します。</div>';
+  const purchaseSection=document.getElementById('purchaseListSection');
+  if(purchaseSection)purchaseSection.style.display='block';
   const note=document.getElementById('generateNote');
   note.textContent='';
   note.classList.remove('show');
@@ -1592,7 +3292,10 @@ function resetAll(){
   }
   active=null;
   applyDrawingColors();
-  try{localStorage.removeItem(APP_STORAGE_KEY)}catch{}
+  try{
+    localStorage.removeItem(APP_STORAGE_KEY);
+    LEGACY_STORAGE_KEYS.forEach(k=>localStorage.removeItem(k));
+  }catch{}
   setTimeout(()=>saveAppState(false),0);
 
   const toast=document.getElementById('resetToast');
@@ -2240,13 +3943,15 @@ function savePattern(){
 }
 
 const restoredFromStorage=restoreAppState();
+ensureJointControls(document);
+ensureGrainContinuityControls(document);
 applyDrawingColors();
 updateAllPatternThickness();
 setupEnterAdvanceHints();
 setupAutoSave();
 
 if(restoredFromStorage){
-  requestAnimationFrame(()=>showSaveStatus('前回のデータを復元しました'));
+  requestAnimationFrame(()=>showSaveStatus('前回の入力を最新版へ復元しました'));
 }
 
 ['patFace','patBack'].forEach(id=>{
