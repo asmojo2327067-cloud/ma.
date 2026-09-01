@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ma-pwa-v72';
+const CACHE_NAME = 'ma-pwa-v73';
 const CORE = ['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 
 self.addEventListener('install', event => {

@@ -950,7 +950,7 @@ button,input,select{
 </head>
 <body>
 <div class="app">
-<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><button class="top-sample-btn" onclick="generateSample()">サンプル</button><div class="version-badge">v72</div><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
+<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><button class="top-sample-btn" onclick="generateSample()">サンプル</button><div class="version-badge">v73</div><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
 <section class="card"><div class="section-head"><div class="no">01</div><div><h2>材料</h2><p>材料は追加・編集できる</p></div></div><div class="materials" id="materials">
 <div class="material" data-material-index="0" data-name="18 ランバー" data-type="芯材" data-thickness="18" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="なし" onclick="editMaterial(this)"><strong><span class="dot o"></span>18 ランバー</strong><small>18mm｜4×8 2430×1220<br>芯材｜方向なし</small></div>
 <div class="material" data-material-index="1" data-name="メラミン TJ-4123" data-type="仕上材" data-thickness="0.95" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="長手" onclick="editMaterial(this)"><strong><span class="dot b"></span>メラミン TJ-4123</strong><small>0.95mm｜4×8<br>仕上材｜木目：長手</small></div>
@@ -1028,7 +1028,7 @@ button,input,select{
     <label>四周端落とし mm</label>
     <input id="globalEdgeTrim" class="math next-field" type="tel" inputmode="numeric" enterkeyhint="next" value="10">
   </div>
-  <div class="setting-note">貼りしろは仕上材に適用。端落としは原板の四周を使用不可領域として計算します。</div>
+  <div class="setting-note">貼りしろは芯材・仕上げ材を含むすべての構成材料に適用。端落としは原板の四周を使用不可領域として計算します。</div>
 </div>
 </section>
 </div>
@@ -1050,7 +1050,7 @@ button,input,select{
     <p class="joint-note">
       材料・層ごとに接ぎ方を設定します。「1枚目寸法」を空欄にすると均等割り。
       芯材が複数層ある場合は層ごとに接ぎ位置をずらせます。
-      仕上げ材を接ぐ場合は、仕上寸法で分割したあと各片へ貼りしろを加えて木取りします。
+      接ぐ場合は基準寸法で分割したあと、芯材・仕上げ材とも各片へ貼りしろを加えて木取りします。
     </p>
     <div class="joint-rows" id="jointRows"></div>
     <button class="save" onclick="saveJointSettings()">接ぎ設定を保存</button>
@@ -1278,7 +1278,7 @@ function serializeRegionHtml(el){
 
 function captureInputState(){
   return {
-    version:72,
+    version:73,
     savedAt:Date.now(),
     materialsHtml:serializeRegionHtml(document.getElementById('materials')),
     patternsHtml:serializeRegionHtml(document.getElementById('patterns')),
@@ -1680,8 +1680,8 @@ function refreshJointEntry(entry){
 }
 
 function jointPasteAllowance(materialName){
-  const mat=getMaterialByName(materialName);
-  return mat?.dataset.type==='仕上材'?getGlobalPasteAllowance():0;
+  // 貼りしろは芯材・仕上げ材を問わず、すべての構成材料へ適用する。
+  return getMaterialByName(materialName)?getGlobalPasteAllowance():0;
 }
 
 function jointFinishedSplit(baseW,baseH,mode,rawPosition){
@@ -1783,7 +1783,7 @@ function updateJointPreview(row){
 
   const allFit=split.pieces.every(p=>pieceFitsMaterialDimensions(material,p.w,p.h));
   const allowanceText=split.allowance>0
-    ?`仕上 ${finishedText} → 木取り ${cutText}（貼りしろ +${formatThickness(split.allowance)}）`
+    ?`基準 ${finishedText} → 木取り ${cutText}（貼りしろ +${formatThickness(split.allowance)}）`
     :cutText;
 
   if(mode==='none'){
@@ -2915,10 +2915,13 @@ function renderMaterialResult(materialName,pieces){
   }).join('');
 
   const thickness=mat.dataset.thickness||'';
+  const materialLabel=(thickness && !materialName.includes(`${thickness}mm`))
+    ?`${materialName} ${thickness}mm`
+    :materialName;
   const offcutAnalysis=analyzeOffcuts(pack);
 
   return `<div class="result material-${mi}">
-    <h3>${escapeHtml(materialName)}${thickness?` ${escapeHtml(thickness)}mm`:''}</h3>
+    <h3>${escapeHtml(materialLabel)}</h3>
     <p>${pieces.length}片を材料別に展開｜原板候補を比較して歩留まり最優先＋端材を大きく残す配置</p>
     <div class="board-list">${boards}</div>
     <div class="stats">
