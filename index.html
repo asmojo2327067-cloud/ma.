@@ -1013,11 +1013,16 @@ button,input,select{
   body{overscroll-behavior-y:none}
 }
 
+
+.pick-bridge-banner{margin:0 0 10px;border:1px solid #cfc4b3;border-radius:14px;background:#fffaf1;padding:10px 11px;display:flex;gap:8px;align-items:center;box-shadow:0 4px 16px rgba(50,45,35,.06)}.pick-bridge-banner[hidden]{display:none}.pick-bridge-main{min-width:0;flex:1}.pick-bridge-title{font-size:10px;font-weight:900}.pick-bridge-sub{font-size:8px;color:var(--muted);line-height:1.5;margin-top:2px}.pick-bridge-banner button{border:1px solid var(--line);border-radius:9px;padding:7px 8px;background:#fff;font-size:8px;font-weight:800;white-space:nowrap}.pick-bridge-banner .pick-import{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pick-formula-status{display:none;margin-top:5px;padding:6px 7px;border-radius:8px;background:#f2efe9;font-size:7px;line-height:1.55;color:var(--muted)}.pick-formula-status.show{display:block}.pick-formula-status .ok{color:#496453}.pick-formula-status .warn{color:#9a6a24}.pick-formula-status code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:7px;color:var(--ink)}.pick-calculated{background:#f5f0fb!important;border-color:#d6cbe8!important}.pick-id-chip{display:inline-block;margin-right:4px;padding:2px 5px;border-radius:999px;background:#24231f;color:#fff;font-size:6px;font-weight:900}
+@media(max-width:700px){.pick-bridge-banner{margin-left:2px;margin-right:2px}.pick-bridge-sub{font-size:7px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><button class="top-sample-btn" onclick="generateSample()">サンプル</button><div class="version-badge">v74 UI</div><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
+<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><button class="top-sample-btn" onclick="generateSample()">サンプル</button><div class="version-badge">v75 PICK LINK</div><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
+<div class="pick-bridge-banner" id="pickBridgeBanner" hidden><div class="pick-bridge-main"><div class="pick-bridge-title" id="pickBridgeTitle">PICKから部材が届いています</div><div class="pick-bridge-sub" id="pickBridgeSub">固定寸法と変数式を読み込み、パターン厚で再計算します。</div></div><button type="button" onclick="dismissPickBridge()">あとで</button><button type="button" class="pick-import" onclick="importPickBridge()">読み込む</button></div>
 <section class="card"><div class="section-head"><div class="no">01</div><div><h2>材料</h2><p>材料は追加・編集できる</p></div></div><div class="materials" id="materials">
 <div class="material" data-material-index="0" data-name="18 ランバー" data-type="芯材" data-thickness="18" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="なし" onclick="editMaterial(this)"><strong><span class="dot o"></span>18 ランバー</strong><small>18mm｜4×8 2430×1220<br>芯材｜方向なし</small></div>
 <div class="material" data-material-index="1" data-name="メラミン TJ-4123" data-type="仕上材" data-thickness="0.95" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="長手" onclick="editMaterial(this)"><strong><span class="dot b"></span>メラミン TJ-4123</strong><small>0.95mm｜4×8<br>仕上材｜木目：長手</small></div>
@@ -1372,7 +1377,7 @@ function serializeRegionHtml(el){
 
 function captureInputState(){
   return {
-    version:74,
+    version:75,
     savedAt:Date.now(),
     materialsHtml:serializeRegionHtml(document.getElementById('materials')),
     patternsHtml:serializeRegionHtml(document.getElementById('patterns')),
@@ -1736,6 +1741,8 @@ function ensurePracticalEntryUI(root=document){
 }
 
 function evaluateEntryIssue(entry){
+  const pickIssue=typeof getPickFormulaIssue==='function'?getPickFormulaIssue(entry):null;
+  if(pickIssue)return {kind:'warn',text:`⚠ ${pickIssue}`};
   const dims=getEntryDims(entry);
   const qtyInput=entry?.querySelector('.dims .qty');
   const qty=evalMathExpression(qtyInput?.value||'');
@@ -4158,6 +4165,7 @@ function updatePatternCardThickness(card){
 
 function updateAllPatternThickness(){
   document.querySelectorAll('.pattern').forEach(updatePatternCardThickness);
+  if(typeof queuePickRecalc==='function')queuePickRecalc();
 }
 
 function updatePatternPreview(){
@@ -4250,6 +4258,73 @@ function savePattern(){
   saveAppState(false);
 }
 
+
+const PICK_BRIDGE_KEY='pick_ma_bridge_v1';
+const PICK_IMPORTED_KEY='ma_pick_last_imported_at';
+let pickRecalcTimer=null;
+function parseJsonAttr(raw,fallback={}){try{const v=JSON.parse(raw||'');return v&&typeof v==='object'?v:fallback}catch{return fallback}}
+function getPickEntries(){return [...document.querySelectorAll('.cell-entry[data-pick-part-id]')]}
+function getPickEntryById(id){return getPickEntries().find(e=>e.dataset.pickPartId===id)||null}
+function getPickRule(entry,axis){return parseJsonAttr(entry?.dataset?.[axis==='length'?'pickLengthRule':'pickWidthRule'],{type:'unknown'})}
+function setPickRule(entry,axis,rule){if(!entry)return;entry.dataset[axis==='length'?'pickLengthRule':'pickWidthRule']=JSON.stringify(rule||{type:'unknown'})}
+function getPickPatternThickness(entry){
+ const code=entry?.querySelector('.psel')?.value||'';if(!code)return {ok:false,error:`${entry?.dataset.pickPartId||'部材'}のパターン未選択`};
+ const p=getPatternByCode(code);if(!p)return {ok:false,error:`${entry?.dataset.pickPartId||'部材'}のパターンを確認`};
+ const n=calculatePatternThickness(getPatternCores(p),p.dataset.face||'',p.dataset.back||'');
+ return Number.isFinite(n)&&n>0?{ok:true,value:n}:{ok:false,error:`${entry?.dataset.pickPartId||'部材'}の仕上厚を計算できません`};
+}
+function pickDimInput(entry,axis){const inputs=entry?.querySelectorAll('.dims input')||[];return inputs[axis==='length'?0:1]||null}
+function pickFormat(n){if(!Number.isFinite(n))return'';const r=Math.round(n*1000)/1000;return Number.isInteger(r)?String(r):String(r.toFixed(3)).replace(/0+$/,'').replace(/\.$/,'')}
+function resolvePickDimension(partId,axis,ctx){
+ const key=`${partId}:${axis}`;if(ctx.cache.has(key))return ctx.cache.get(key);if(ctx.visiting.has(key))return {ok:false,error:`循環参照 ${partId}`};ctx.visiting.add(key);
+ const entry=getPickEntryById(partId);if(!entry){ctx.visiting.delete(key);return {ok:false,error:`参照部材 ${partId} がありません`}}
+ const rule=getPickRule(entry,axis);let result;
+ if(rule.type==='fixed'){
+   const input=pickDimInput(entry,axis),n=evalMathExpression(input?.value||String(rule.value??''));result=Number.isFinite(n)&&n>0?{ok:true,value:n}:{ok:false,error:`${partId}の${axis==='length'?'長さ':'幅'}を確認`};
+ }else if(rule.type==='unknown'){
+   const input=pickDimInput(entry,axis),n=evalMathExpression(input?.value||'');result=Number.isFinite(n)&&n>0?{ok:true,value:n,manual:true}:{ok:false,error:`${partId}の${axis==='length'?'長さ':'幅'}が未確定`};
+ }else if(rule.type==='formula'){
+   let expr=String(rule.expression||'').trim();if(!expr){result={ok:false,error:`${partId}の計算式が空です`}}
+   else{
+     let err='';
+     const replaceRefs=(re,kind)=>{expr=expr.replace(re,(all,id)=>{if(err)return'0';let r;if(kind==='thickness')r=getPickPatternThickness(getPickEntryById(id));else r=resolvePickDimension(id,kind,ctx);if(!r?.ok){err=r?.error||`${id}を解決できません`;return'0'}return `(${r.value})`})};
+     replaceRefs(/(?:thickness|T)\(\s*([A-Za-z0-9_-]+)\s*\)/gi,'thickness');
+     replaceRefs(/(?:length|L)\(\s*([A-Za-z0-9_-]+)\s*\)/gi,'length');
+     replaceRefs(/(?:width|W)\(\s*([A-Za-z0-9_-]+)\s*\)/gi,'width');
+     if(err)result={ok:false,error:err};else if(/[A-Za-z_]/.test(expr))result={ok:false,error:`${partId}の式に未対応の変数があります`};else{const n=evalMathExpression(expr);result=Number.isFinite(n)&&n>0?{ok:true,value:n,expression:rule.expression}:{ok:false,error:`${partId}の計算式を確認`}}
+   }
+ }else result={ok:false,error:`${partId}の寸法ルールを確認`};
+ ctx.visiting.delete(key);ctx.cache.set(key,result);return result;
+}
+function ensurePickFormulaStatus(entry){let s=entry.querySelector('.pick-formula-status');if(!s){s=document.createElement('div');s.className='pick-formula-status';const alert=entry.querySelector('.entry-alert');if(alert)alert.before(s);else entry.appendChild(s)}return s}
+function renderPickFormulaStatus(entry,results){const s=ensurePickFormulaStatus(entry),id=entry.dataset.pickPartId||'';const lines=[];for(const [axis,r] of Object.entries(results)){const rule=getPickRule(entry,axis),label=axis==='length'?'長さ':'幅';if(rule.type==='formula'){if(r.ok)lines.push(`<span class="ok">∑ ${label} ${escapeHtml(pickFormat(r.value))}</span> = <code>${escapeHtml(rule.expression||'')}</code>`);else lines.push(`<span class="warn">⚠ ${label} ${escapeHtml(r.error||'未解決')}</span><br><code>${escapeHtml(rule.expression||'')}</code>`)}else if(rule.type==='unknown'&&!r.ok)lines.push(`<span class="warn">⚠ ${label} 未確定</span>`)}s.innerHTML=`<span class="pick-id-chip">${escapeHtml(id)}</span>${lines.join('<br>')}`;s.classList.toggle('show',lines.length>0)}
+function recalculatePickDimensions(){
+ const entries=getPickEntries();if(!entries.length)return;const ctx={cache:new Map(),visiting:new Set()};
+ for(const entry of entries){const id=entry.dataset.pickPartId;const results={};for(const axis of ['length','width']){const rule=getPickRule(entry,axis),input=pickDimInput(entry,axis);const r=resolvePickDimension(id,axis,ctx);results[axis]=r;if(!input)continue;if(rule.type==='formula'){input.readOnly=true;input.classList.add('pick-calculated');input.value=r.ok?pickFormat(r.value):''}else{input.readOnly=false;input.classList.remove('pick-calculated');if(rule.type==='fixed'&&!input.value&&Number.isFinite(Number(rule.value)))input.value=pickFormat(Number(rule.value))}}
+   const errors=Object.entries(results).filter(([axis,r])=>!r.ok&&getPickRule(entry,axis).type==='formula').map(([,r])=>r.error);entry.dataset.pickFormulaIssue=errors[0]||'';renderPickFormulaStatus(entry,results);refreshPracticalEntry(entry)
+ }
+ saveAppState(false);
+}
+function queuePickRecalc(){clearTimeout(pickRecalcTimer);pickRecalcTimer=setTimeout(recalculatePickDimensions,40)}
+function getPickFormulaIssue(entry){return entry?.dataset?.pickFormulaIssue||''}
+function isBlankMaInput(){return !document.querySelector('#partBody .cell-entry')}
+function pickDrawingIndex(){
+ if(drawingCount===1&&isBlankMaInput()){document.getElementById('partBody').innerHTML='';const h=document.querySelector('#drawingHeader .drawing-head[data-drawing-index="0"] .drawing-name-input');if(h)h.value='PICK';return 0}
+ addDrawing();const idx=drawingCount-1;const h=document.querySelector(`#drawingHeader .drawing-head[data-drawing-index="${idx}"] .drawing-name-input`);if(h)h.value='PICK';return idx
+}
+function createPickPartRow(part,drawingIndex){
+ const tr=document.createElement('tr'),nameTd=document.createElement('td');nameTd.className='part-col';nameTd.innerHTML='<textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea>';nameTd.querySelector('textarea').value=part.name||part.id||'部材';tr.appendChild(nameTd);for(let i=0;i<drawingCount;i++)tr.appendChild(emptyDrawingCell(i));document.getElementById('partBody').appendChild(tr);const td=tr.querySelector(`.drawing-cell[data-drawing-index="${drawingIndex}"]`);addCellPart(td.querySelector('.cell-plus'));const entry=td.querySelector('.cell-entry');entry.dataset.pickPartId=part.id||`P${getPickEntries().length+1}`;entry.dataset.pickLengthRule=JSON.stringify(part.dimensions?.length||{type:'unknown'});entry.dataset.pickWidthRule=JSON.stringify(part.dimensions?.width||{type:'unknown'});entry.dataset.pickSourcePage=String(part.sourcePage||'');entry.querySelector('.cell-title-input').value=part.name||part.id||'部材';const inputs=entry.querySelectorAll('.dims input'),lr=part.dimensions?.length||{type:'unknown'},wr=part.dimensions?.width||{type:'unknown'};inputs[0].value=lr.type==='fixed'?pickFormat(Number(lr.value)):'';inputs[1].value=wr.type==='fixed'?pickFormat(Number(wr.value)):'';inputs[2].value=String(Math.max(1,Number(part.qty)||1));ensurePickFormulaStatus(entry);refreshPracticalEntry(entry);return entry
+}
+function getPickBridgePayload(){try{const p=JSON.parse(localStorage.getItem(PICK_BRIDGE_KEY)||'null');return p?.format==='pick-ma-bridge'&&Array.isArray(p.parts)?p:null}catch{return null}}
+function refreshPickBridgeBanner(){const b=document.getElementById('pickBridgeBanner');if(!b)return;const p=getPickBridgePayload(),last=localStorage.getItem(PICK_IMPORTED_KEY)||'';if(!p||!p.parts.length||p.exportedAt===last){b.hidden=true;return}document.getElementById('pickBridgeTitle').textContent=`PICKから${p.parts.length}部材が届いています`;document.getElementById('pickBridgeSub').textContent=`${p.sourcePdf||'図面'}・固定寸法と変数式をMAで再計算`;b.hidden=false}
+function dismissPickBridge(){document.getElementById('pickBridgeBanner').hidden=true}
+function importPickPayload(p){if(!p||p.format!=='pick-ma-bridge'||!Array.isArray(p.parts)){alert('PICKのデータを読み込めません。');return false}const idx=pickDrawingIndex();for(const part of p.parts)createPickPartRow(part,idx);applyDrawingColors();setupEnterAdvanceHints(document.querySelector('.app'));try{localStorage.setItem(PICK_IMPORTED_KEY,p.exportedAt||new Date().toISOString())}catch{}document.getElementById('pickBridgeBanner').hidden=true;recalculatePickDimensions();saveAppState(false);showSaveStatus(`PICKから${p.parts.length}部材を読み込みました`);return true}
+function importPickBridge(){const p=getPickBridgePayload();if(!p){alert('PICKのデータが見つかりません。');return false}return importPickPayload(p)}
+function openPickSource(){const p=getPickBridgePayload();if(p?.sourceUrl)location.href=p.sourceUrl}
+document.addEventListener('input',e=>{const entry=e.target?.closest?.('.cell-entry[data-pick-part-id]');if(!entry)return;const dims=[...entry.querySelectorAll('.dims input')];const i=dims.indexOf(e.target);if(i===0||i===1){const axis=i===0?'length':'width',rule=getPickRule(entry,axis);if(rule.type==='fixed'){rule.value=evalMathExpression(e.target.value);setPickRule(entry,axis,rule)}queuePickRecalc()}});
+document.addEventListener('change',e=>{if(e.target?.closest?.('.cell-entry[data-pick-part-id]')?.querySelector('.psel')===e.target)queuePickRecalc()});
+window.__maPickBridge={getPayload:getPickBridgePayload,importPayload:importPickPayload,importStored:importPickBridge,recalculate:recalculatePickDimensions,getEntries:getPickEntries,resolve:(id,axis)=>resolvePickDimension(id,axis,{cache:new Map(),visiting:new Set()})};
+
 const restoredFromStorage=restoreAppState();
 ensureJointControls(document);
 ensureGrainContinuityControls(document);
@@ -4258,6 +4333,8 @@ applyDrawingColors();
 updateAllPatternThickness();
 setupEnterAdvanceHints();
 setupAutoSave();
+refreshPickBridgeBanner();
+queuePickRecalc();
 
 document.addEventListener('input',e=>{
   const entry=e.target?.closest?.('.cell-entry');
@@ -4318,6 +4395,7 @@ function sum(s){
   }
   box.innerHTML=chips.join('');
   refreshPracticalEntry(entry);
+  if(typeof queuePickRecalc==='function')queuePickRecalc();
 }
 
 function getAdvanceScope(current){
