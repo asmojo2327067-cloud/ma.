@@ -979,7 +979,8 @@
   .drawing-head,.drawing-cell{width:286px;min-width:286px;max-width:286px}
   .drawing-head input{width:100%;min-width:0}
   .save-status{bottom:calc(66px + env(safe-area-inset-bottom))}
-  .generate-row .soft:not(:nth-last-child(-n+2)){display:none}
+  .generate-row .soft:not(.part-add-main){display:none}
+  .generate-row .part-add-main{display:inline-flex!important;align-items:center;justify-content:center;min-height:38px;flex:1}
 }
 
 @media print{
@@ -1015,14 +1016,25 @@ button,input,select{
 
 
 .pick-bridge-banner{margin:0 0 10px;border:1px solid #cfc4b3;border-radius:14px;background:#fffaf1;padding:10px 11px;display:flex;gap:8px;align-items:center;box-shadow:0 4px 16px rgba(50,45,35,.06)}.pick-bridge-banner[hidden]{display:none}.pick-bridge-main{min-width:0;flex:1}.pick-bridge-title{font-size:10px;font-weight:900}.pick-bridge-sub{font-size:8px;color:var(--muted);line-height:1.5;margin-top:2px}.pick-bridge-banner button{border:1px solid var(--line);border-radius:9px;padding:7px 8px;background:#fff;font-size:8px;font-weight:800;white-space:nowrap}.pick-bridge-banner .pick-import{background:var(--ink);color:#fff;border-color:var(--ink)}
-.pick-formula-status{display:none;margin-top:5px;padding:6px 7px;border-radius:8px;background:#f2efe9;font-size:7px;line-height:1.55;color:var(--muted)}.pick-formula-status.show{display:block}.pick-formula-status .ok{color:#496453}.pick-formula-status .warn{color:#9a6a24}.pick-formula-status code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:7px;color:var(--ink)}.pick-calculated{background:#f5f0fb!important;border-color:#d6cbe8!important}.pick-id-chip{display:inline-block;margin-right:4px;padding:2px 5px;border-radius:999px;background:#24231f;color:#fff;font-size:6px;font-weight:900}
+.pick-formula-status{display:none;margin-top:5px;padding:6px 7px;border-radius:8px;background:#f2efe9;font-size:7px;line-height:1.55;color:var(--muted)}.pick-origin{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}.pick-origin span{font-size:6px;border-radius:999px;padding:2px 5px;background:#ece7df;color:var(--muted)}.pick-formula-status.show{display:block}.pick-formula-status .ok{color:#496453}.pick-formula-status .warn{color:#9a6a24}.pick-formula-status code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:7px;color:var(--ink)}.pick-calculated{background:#f5f0fb!important;border-color:#d6cbe8!important}.pick-id-chip{display:inline-block;margin-right:4px;padding:2px 5px;border-radius:999px;background:#24231f;color:#fff;font-size:6px;font-weight:900}
 @media(max-width:700px){.pick-bridge-banner{margin-left:2px;margin-right:2px}.pick-bridge-sub{font-size:7px}}
+
+/* v79: deletion / cleanup controls */
+.danger-btn{border:1px solid #d7b3ad;background:#f7e9e6;color:#8b433d;border-radius:10px;padding:9px 11px;font-size:10px;font-weight:800}
+.modal-actions{display:flex;gap:7px;margin-top:8px}.modal-actions .save{flex:1}.modal-actions .danger-btn{display:none;flex:none}
+.entry-delete-btn{position:absolute;right:5px;top:5px;width:25px;height:25px;border:0;border-radius:8px;background:#f3e4e1;color:#8b433d;font-weight:900;font-size:13px;display:grid;place-items:center;z-index:3}
+.cell-entry{position:relative;padding-top:34px!important}
+.row-delete-btn{margin-top:5px;width:100%;border:0;border-radius:7px;background:#f3e4e1;color:#8b433d;padding:5px 3px;font-size:7px;font-weight:800}
+.drawing-head-inner{display:flex;align-items:center;gap:5px}.drawing-head-inner .drawing-name-input{flex:1;min-width:0}.drawing-delete-btn{width:25px;height:25px;flex:none;border:0;border-radius:7px;background:#f3e4e1;color:#8b433d;font-size:12px;font-weight:900}
+.part-settings-delete{width:100%;margin-top:9px}
+@media(max-width:700px){.entry-delete-btn{width:27px;height:27px}.row-delete-btn{font-size:7px;padding:6px 2px}.drawing-delete-btn{width:27px;height:27px}}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><button class="top-sample-btn" onclick="generateSample()">サンプル</button><div class="version-badge">v76 PICK ALL</div><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
-<div class="pick-bridge-banner" id="pickBridgeBanner" hidden><div class="pick-bridge-main"><div class="pick-bridge-title" id="pickBridgeTitle">PICKから部材が届いています</div><div class="pick-bridge-sub" id="pickBridgeSub">PICKの全板候補を読み込み、未確定は要確認のまま保持します。</div></div><button type="button" onclick="dismissPickBridge()">あとで</button><button type="button" class="pick-import" onclick="importPickBridge()">読み込む</button></div>
+<header><button class="reset-btn" onclick="resetAll()">↺ 全リセット</button><button class="save-data-btn" onclick="saveAppState(true)">保存</button><button class="top-sample-btn" onclick="generateSample()">サンプル</button><div class="version-badge">v79 FIX</div><div class="logo">ma.</div><div class="caption">構成パターン → 材料別に展開 → 木取り</div></header>
+<div class="pick-bridge-banner" id="pickBridgeBanner" hidden><div class="pick-bridge-main"><div class="pick-bridge-title" id="pickBridgeTitle">PICKから部材が届いています</div><div class="pick-bridge-sub" id="pickBridgeSub">PICKの部材を図面番号ごとに分けて読み込み、分類・未確定寸法・計算式を保持します。</div></div><button type="button" onclick="dismissPickBridge()">あとで</button><button type="button" class="pick-import" onclick="importPickBridge()">読み込む</button></div>
 <section class="card"><div class="section-head"><div class="no">01</div><div><h2>材料</h2><p>材料は追加・編集できる</p></div></div><div class="materials" id="materials">
 <div class="material" data-material-index="0" data-name="18 ランバー" data-type="芯材" data-thickness="18" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="なし" onclick="editMaterial(this)"><strong><span class="dot o"></span>18 ランバー</strong><small>18mm｜4×8 2430×1220<br>芯材｜方向なし</small></div>
 <div class="material" data-material-index="1" data-name="メラミン TJ-4123" data-type="仕上材" data-thickness="0.95" data-sheet="4×8" data-sheet-preset="4×8" data-sheet-w="2430" data-sheet-h="1220" data-grain="長手" onclick="editMaterial(this)"><strong><span class="dot b"></span>メラミン TJ-4123</strong><small>0.95mm｜4×8<br>仕上材｜木目：長手</small></div>
@@ -1042,12 +1054,12 @@ button,input,select{
 <thead>
 <tr id="drawingHeader">
 <th class="part-col">部材名</th>
-<th class="drawing-head" data-drawing-index="0"><input class="drawing-name-input" value="図面 01" aria-label="図面名"></th>
+<th class="drawing-head" data-drawing-index="0"><div class="drawing-head-inner"><input class="drawing-name-input" value="図面 01" aria-label="図面名"><button type="button" class="drawing-delete-btn" onclick="deleteDrawing(this)" aria-label="図面を削除">×</button></div></th>
 </tr>
 </thead>
 <tbody id="partBody">
 <tr>
-<td class="part-col"><textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea></td>
+<td class="part-col"><textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea><button type="button" class="row-delete-btn" onclick="deletePartRow(this)">行削除</button></td>
 <td class="drawing-cell" data-drawing-index="0">
 <span class="empty-cell-note">この図面に追加</span>
 <button class="cell-plus" onclick="addCellPart(this)" aria-label="この図面に部材を追加">＋</button>
@@ -1058,7 +1070,7 @@ button,input,select{
 </div>
 <div class="generate-row">
 <button class="soft" onclick="addDrawing()">＋ 図面追加</button>
-<button class="soft" onclick="addPart()">＋ 部材追加</button>
+<button class="soft part-add-main" onclick="addPart();scrollToLatestPart()">＋ 部材追加</button>
 <button class="soft" onclick="generateSample()">接ぎ・木目サンプル</button>
 <button class="generate-btn" onclick="generateCutting()">木取り表を生成</button>
 </div>
@@ -1105,7 +1117,6 @@ button,input,select{
 </section>
 </div>
 
-<div class="overlay" id="detailO"><div class="sheet"><div class="handle"></div><div class="sheet-head"><div><h3>側板 A｜材料構成</h3><small>パターンとの差分だけ変更</small></div><button class="close" onclick="closeO('detailO')">×</button></div><div class="layer"><div class="layer-head" style="background:var(--ochreS)"><span>芯材</span><span>積層</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>18 ランバー</option></select><span class="lab">×</span><select class="mini layers"><option>2層</option><option>1層</option><option>3層</option></select></div></div></div><div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表面</span><span>追加可</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>全面</option><option>貼り分け</option></select></div><button class="add-line">＋ 表面材を追加</button></div></div><div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏面</span><span>貼り分け対応</span></div><div class="layer-body"><div class="line"><select class="mini mat"><option>白ポリ</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="600+10"></div><div class="line" style="margin-top:5px"><select class="mini mat"><option>メラミン TJ-4123</option></select><select class="mini mode"><option>貼り分け</option><option>全面</option></select><input class="mini split math" type="tel" inputmode="numeric" value="300+10"></div><button class="add-line">＋ 裏面材を追加</button></div></div><button class="save" onclick="closeO('detailO')">この部材だけ変更して保存</button></div></div>
 
 
 
@@ -1126,6 +1137,7 @@ button,input,select{
     <button class="setting-tile" id="partGrainTile" onclick="openSelectedGrainSettings()">
       <span><strong>木目連続</strong><small id="partGrainTileText">設定なし</small></span><span class="chev">›</span>
     </button>
+    <button type="button" class="danger-btn part-settings-delete" onclick="deleteSelectedPartEntry()">この部材を削除</button>
   </div>
 </div>
 
@@ -1294,7 +1306,7 @@ button,input,select{
 
   <div class="standard-hint">ランバー・積層合板・ベニアは「材料種類＋厚み」で材料名を自動作成。その他の材料は品番・材種などを自由入力できます。</div>
 </div>
-<button class="save" id="matSaveBtn" style="margin-top:8px" onclick="saveMaterial()">追加</button>
+<div class="modal-actions"><button type="button" class="danger-btn" id="matDeleteBtn" onclick="deleteEditingMaterial()">材料を削除</button><button class="save" id="matSaveBtn" onclick="saveMaterial()">追加</button></div>
 </div></div>
 
 <div class="overlay" id="patO"><div class="sheet"><div class="handle"></div>
@@ -1308,7 +1320,7 @@ button,input,select{
 <div class="layer"><div class="layer-head" style="background:var(--blueS)"><span>表仕上げ</span><small>任意</small></div><div class="layer-body"><select class="mini mat" id="patFace"></select></div></div>
 <div class="layer"><div class="layer-head" style="background:var(--sageS)"><span>裏仕上げ</span><small>任意</small></div><div class="layer-body"><select class="mini mat" id="patBack"></select></div></div>
 <div class="pattern-thickness-preview" id="patThicknessPreview">仕上厚 --mm</div>
-<button class="save" id="patSaveBtn" onclick="savePattern()">パターンを追加</button>
+<div class="modal-actions"><button type="button" class="danger-btn" id="patDeleteBtn" onclick="deleteEditingPattern()">パターンを削除</button><button class="save" id="patSaveBtn" onclick="savePattern()">パターンを追加</button></div>
 </div></div>
 
 <div id="saveStatus" class="save-status">保存しました</div>
@@ -1606,6 +1618,42 @@ function emptyDrawingCell(index){
   return td;
 }
 
+function drawingHeadInnerHtml(index,name){
+  return `<div class="drawing-head-inner"><input class="drawing-name-input" value="${escapeHtml(name||`図面 ${String(index+1).padStart(2,'0')}`)}" aria-label="図面名"><button type="button" class="drawing-delete-btn" onclick="deleteDrawing(this)" aria-label="図面を削除">×</button></div>`
+}
+function ensureCellEmptyNote(td){
+  if(!td)return;const plus=td.querySelector('.cell-plus');
+  if(!td.querySelector('.cell-entry')&&!td.querySelector('.empty-cell-note')){const s=document.createElement('span');s.className='empty-cell-note';s.textContent='この図面に追加';td.insertBefore(s,plus||null)}
+}
+function ensureDeleteControls(root=document){
+  document.querySelectorAll('#drawingHeader .drawing-head').forEach((th,i)=>{th.dataset.drawingIndex=i;let wrap=th.querySelector('.drawing-head-inner');const input=th.querySelector('.drawing-name-input');if(!wrap){wrap=document.createElement('div');wrap.className='drawing-head-inner';if(input){input.before(wrap);wrap.appendChild(input)}else th.appendChild(wrap)}if(!wrap.querySelector('.drawing-delete-btn')){const b=document.createElement('button');b.type='button';b.className='drawing-delete-btn';b.textContent='×';b.setAttribute('aria-label','図面を削除');b.onclick=()=>deleteDrawing(b);wrap.appendChild(b)}});
+  document.querySelectorAll('#partBody tr').forEach(tr=>{const td=tr.querySelector('.part-col');if(td&&!td.querySelector('.row-delete-btn')){const b=document.createElement('button');b.type='button';b.className='row-delete-btn';b.textContent='行削除';b.onclick=()=>deletePartRow(b);td.appendChild(b)}tr.querySelectorAll('.drawing-cell').forEach(ensureCellEmptyNote)});
+  root.querySelectorAll?.('.cell-entry').forEach(entry=>{entry.querySelector('.detail')?.remove();if(!entry.querySelector('.entry-delete-btn')){const b=document.createElement('button');b.type='button';b.className='entry-delete-btn';b.textContent='×';b.setAttribute('aria-label','この部材を削除');b.onclick=()=>deleteCellPart(b);entry.prepend(b)}})
+}
+function reindexDrawingColumns(){
+  const heads=[...document.querySelectorAll('#drawingHeader .drawing-head')];drawingCount=heads.length;
+  heads.forEach((th,i)=>th.dataset.drawingIndex=i);
+  document.querySelectorAll('#partBody tr').forEach(tr=>[...tr.querySelectorAll('.drawing-cell')].forEach((td,i)=>td.dataset.drawingIndex=i));
+  ensureDeleteControls(document);applyDrawingColors();saveAppState(false)
+}
+function deleteDrawing(btn){
+  if(drawingCount<=1){alert('図面は1つ以上必要です。');return}
+  const th=btn.closest('.drawing-head');if(!th)return;const idx=Number(th.dataset.drawingIndex||0);const name=th.querySelector('.drawing-name-input')?.value||`図面 ${idx+1}`;
+  if(!confirm(`${name} を削除しますか？\nこの図面列に入力した部材も削除されます。`))return;
+  th.remove();document.querySelectorAll(`#partBody .drawing-cell[data-drawing-index="${idx}"]`).forEach(td=>td.remove());reindexDrawingColumns();queuePickRecalc?.();showSaveStatus('図面を削除しました')
+}
+function deletePartRow(btn){
+  const tr=btn.closest('tr');if(!tr)return;const name=tr.querySelector('.part-name-input')?.value?.trim()||'この部材行';const hasData=!!tr.querySelector('.cell-entry')||!!tr.querySelector('.part-name-input')?.value?.trim();
+  if(hasData&&!confirm(`${name} を行ごと削除しますか？`))return;
+  if(editingPartSettingsEntry&&tr.contains(editingPartSettingsEntry))closePartSettings();tr.remove();queuePickRecalc?.();saveAppState(false);showSaveStatus('部材行を削除しました')
+}
+function deleteCellPart(btn){
+  const entry=btn.closest('.cell-entry');if(!entry)return;const td=entry.closest('.drawing-cell');const name=entry.querySelector('.cell-title-input')?.value?.trim()||entry.dataset.pickPartType||'この部材';
+  if(!confirm(`${name} をこの図面から削除しますか？`))return;
+  if(editingPartSettingsEntry===entry)closePartSettings();entry.remove();ensureCellEmptyNote(td);queuePickRecalc?.();saveAppState(false);showSaveStatus('部材を削除しました')
+}
+function deleteSelectedPartEntry(){const entry=editingPartSettingsEntry;if(!entry)return;const btn=entry.querySelector('.entry-delete-btn');closePartSettings();if(btn)deleteCellPart(btn)}
+
 function addDrawing(){
   if(drawingCount>=DRAWING_COLORS.length){
     alert('図面色は12色まで用意しています。');
@@ -1615,10 +1663,10 @@ function addDrawing(){
   const th=document.createElement('th');
   th.className='drawing-head';
   th.dataset.drawingIndex=index;
-  th.innerHTML=`<input class="drawing-name-input" value="図面 ${String(index+1).padStart(2,'0')}" aria-label="図面名">`;
+  th.innerHTML=drawingHeadInnerHtml(index,`図面 ${String(index+1).padStart(2,'0')}`);
   document.getElementById('drawingHeader').appendChild(th);
   document.querySelectorAll('#partBody tr').forEach(tr=>tr.appendChild(emptyDrawingCell(index)));
-  applyDrawingColors();
+  ensureDeleteControls(document);applyDrawingColors();saveAppState(false);
 }
 
 function addPart(){
@@ -1626,7 +1674,7 @@ function addPart(){
   const tr=document.createElement('tr');
   const nameTd=document.createElement('td');
   nameTd.className='part-col';
-  nameTd.innerHTML='<textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea>';
+  nameTd.innerHTML='<textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea><button type="button" class="row-delete-btn" onclick="deletePartRow(this)">行削除</button>';
   tr.appendChild(nameTd);
   for(let i=0;i<drawingCount;i++) tr.appendChild(emptyDrawingCell(i));
   document.getElementById('partBody').appendChild(tr);
@@ -1635,6 +1683,7 @@ function addPart(){
   // 部材追加時は最初の図面に入力欄まで自動で作る
   const firstPlus=tr.querySelector('.drawing-cell .cell-plus');
   if(firstPlus) addCellPart(firstPlus);
+  ensureDeleteControls(document);saveAppState(false);
 }
 
 function patternOptionsHtml(){
@@ -1651,6 +1700,7 @@ function addCellPart(btn){
   const entry=document.createElement('div');
   entry.className='cell-entry';
   entry.innerHTML=`
+    <button type="button" class="entry-delete-btn" onclick="deleteCellPart(this)" aria-label="この部材を削除">×</button>
     <textarea class="cell-title-input" rows="2" placeholder="部材名を入力" aria-label="図面内の部材名" enterkeyhint="next"></textarea>
     <div class="dims">
       <input class="dim math" type="tel" inputmode="numeric" enterkeyhint="next" value="" placeholder="長さ">
@@ -1665,7 +1715,6 @@ function addCellPart(btn){
     </div>
     <button class="joint-btn" onclick="openJointSettings(this)">接ぎ</button>
     <button class="grain-link-btn" onclick="openGrainContinuity(this)">木目連続</button>
-    <button class="detail" onclick="openO('detailO')">詳細</button>
     <div class="entry-status-row"><div class="joint-status"></div><div class="grain-link-status"></div></div>
     <div class="entry-alert"></div>
     <div class="summary"></div>`;
@@ -1673,7 +1722,7 @@ function addCellPart(btn){
   ensurePracticalEntryUI(entry.parentElement);
   refreshJointEntry(entry);
   refreshGrainContinuityEntry(entry);
-  refreshPracticalEntry(entry);
+  refreshPracticalEntry(entry);ensureDeleteControls(td);saveAppState(false);
 }
 
 
@@ -1689,6 +1738,8 @@ function scrollToLatestPart(){
 
 function ensurePracticalEntryUI(root=document){
   root.querySelectorAll?.('.cell-entry').forEach(entry=>{
+    entry.querySelector('.detail')?.remove();
+    if(!entry.querySelector('.entry-delete-btn')){const db=document.createElement('button');db.type='button';db.className='entry-delete-btn';db.textContent='×';db.setAttribute('aria-label','この部材を削除');db.onclick=()=>deleteCellPart(db);entry.prepend(db)}
     let control=entry.querySelector('.entry-control-row');
     const select=entry.querySelector('.psel');
     let settings=entry.querySelector('.part-settings-btn');
@@ -3497,7 +3548,6 @@ function generateSample(){
       </div>
       <button class="joint-btn${jointSettings?' active':''}" onclick="openJointSettings(this)">接ぎ</button>
       <button class="grain-link-btn${grainGroup?' active':''}" onclick="openGrainContinuity(this)">木目連続</button>
-      <button class="detail" onclick="openO('detailO')">詳細</button>
       <div class="entry-status-row">
         <div class="joint-status">${jointSettings?'接ぎ 4層':''}</div>
         <div class="grain-link-status">${grainGroup?`木目連続 ${grainGroup}｜${grainOrder}｜幅方向`:''}</div>
@@ -3928,6 +3978,7 @@ function openMaterialAdd(){
   editingMaterial=null;
   document.getElementById('matModalTitle').textContent='材料を追加';
   document.getElementById('matSaveBtn').textContent='追加';
+  document.getElementById('matDeleteBtn').style.display='none';
 
   document.getElementById('matStandard').value='';
   document.getElementById('matName').value='';
@@ -3953,6 +4004,7 @@ function editMaterial(card){
 
   document.getElementById('matModalTitle').textContent='材料を編集';
   document.getElementById('matSaveBtn').textContent='変更を保存';
+  document.getElementById('matDeleteBtn').style.display='inline-flex';
 
   const standard=inferMaterialStandard(d);
   document.getElementById('matStandard').value=standard;
@@ -4117,6 +4169,14 @@ function saveMaterial(){
   saveAppState(false);
 }
 
+
+function deleteEditingMaterial(){
+  if(!editingMaterial)return;const name=editingMaterial.dataset.name||'材料';
+  const refs=[...document.querySelectorAll('.pattern')].filter(p=>getPatternCores(p).some(c=>c.material===name)||p.dataset.face===name||p.dataset.back===name).map(p=>`${p.dataset.code||''}｜${p.dataset.name||''}`);
+  if(refs.length){alert(`この材料はパターンで使用中です。\n先にパターンを変更または削除してください。\n\n${refs.join('\n')}`);return}
+  if(!confirm(`${name} を削除しますか？`))return;editingMaterial.remove();editingMaterial=null;closeO('matO');updateAllPatternThickness();refreshPatternMaterialOptions({cores:[{material:'',count:1}],face:'',back:''});saveAppState(false);showSaveStatus('材料を削除しました')
+}
+
 function getMaterialThickness(name){
   const mat=[...document.querySelectorAll('.material')].find(m=>m.dataset.name===name);
   const n=Number(mat?.dataset.thickness||0);
@@ -4182,6 +4242,7 @@ function openPatternAdd(){
   editingPattern=null;
   document.getElementById('patModalTitle').textContent='構成パターンを追加';
   document.getElementById('patSaveBtn').textContent='パターンを追加';
+  document.getElementById('patDeleteBtn').style.display='none';
   document.getElementById('patName').value='';
   refreshPatternMaterialOptions({cores:[{material:'',count:1}],face:'',back:''});
   updatePatternPreview();
@@ -4193,6 +4254,7 @@ function editPattern(card){
   const d=editingPattern.dataset;
   document.getElementById('patModalTitle').textContent='構成パターンを編集';
   document.getElementById('patSaveBtn').textContent='変更を保存';
+  document.getElementById('patDeleteBtn').style.display='inline-flex';
   document.getElementById('patName').value=d.name||'';
 
   refreshPatternMaterialOptions({
@@ -4258,6 +4320,14 @@ function savePattern(){
   saveAppState(false);
 }
 
+function deleteEditingPattern(){
+  if(!editingPattern)return;const code=editingPattern.dataset.code||'',name=editingPattern.dataset.name||code;
+  const used=[...document.querySelectorAll('.cell-entry .psel')].filter(s=>s.value===code).length;
+  if(used){alert(`このパターンは ${used} 件の部材で使用中です。\n先に別のパターンへ変更してください。`);return}
+  if(!confirm(`${code}｜${name} を削除しますか？`))return;editingPattern.remove();editingPattern=null;closeO('patO');refreshAllPartPatternOptions();updateAllPatternThickness();saveAppState(false);showSaveStatus('パターンを削除しました')
+}
+
+
 
 const PICK_BRIDGE_KEY='pick_ma_bridge_v1';
 const PICK_IMPORTED_KEY='ma_pick_last_imported_at';
@@ -4297,7 +4367,7 @@ function resolvePickDimension(partId,axis,ctx){
  ctx.visiting.delete(key);ctx.cache.set(key,result);return result;
 }
 function ensurePickFormulaStatus(entry){let s=entry.querySelector('.pick-formula-status');if(!s){s=document.createElement('div');s.className='pick-formula-status';const alert=entry.querySelector('.entry-alert');if(alert)alert.before(s);else entry.appendChild(s)}return s}
-function renderPickFormulaStatus(entry,results){const s=ensurePickFormulaStatus(entry),id=entry.dataset.pickPartId||'';const lines=[];for(const [axis,r] of Object.entries(results)){const rule=getPickRule(entry,axis),label=axis==='length'?'長さ':'幅';if(rule.type==='formula'){if(r.ok)lines.push(`<span class="ok">∑ ${label} ${escapeHtml(pickFormat(r.value))}</span> = <code>${escapeHtml(rule.expression||'')}</code>`);else lines.push(`<span class="warn">⚠ ${label} ${escapeHtml(r.error||'未解決')}</span><br><code>${escapeHtml(rule.expression||'')}</code>`)}else if(rule.type==='unknown'&&!r.ok)lines.push(`<span class="warn">⚠ ${label} 未確定</span>`)}if(entry.dataset.pickReviewRequired==='1')lines.unshift('<span class="warn">⚠ PICK要確認</span>');s.innerHTML=`<span class="pick-id-chip">${escapeHtml(id)}</span>${lines.join('<br>')}`;s.classList.toggle('show',lines.length>0)}
+function renderPickFormulaStatus(entry,results){const s=ensurePickFormulaStatus(entry),id=entry.dataset.pickPartId||'';const lines=[];for(const [axis,r] of Object.entries(results)){const rule=getPickRule(entry,axis),label=axis==='length'?'長さ':'幅';if(rule.type==='formula'){if(r.ok)lines.push(`<span class="ok">∑ ${label} ${escapeHtml(pickFormat(r.value))}</span> = <code>${escapeHtml(rule.expression||'')}</code>`);else lines.push(`<span class="warn">⚠ ${label} ${escapeHtml(r.error||'未解決')}</span><br><code>${escapeHtml(rule.expression||'')}</code>`)}else if(rule.type==='unknown'&&!r.ok)lines.push(`<span class="warn">⚠ ${label} 未確定</span>`)}if(entry.dataset.pickReviewRequired==='1')lines.unshift('<span class="warn">⚠ PICK要確認</span>');const origin=`<span class="pick-id-chip">${escapeHtml(id)}</span><span class="pick-origin"><span>${escapeHtml(entry.dataset.pickDrawingId||'PICK')}${entry.dataset.pickRegionLabel?'｜'+escapeHtml(entry.dataset.pickRegionLabel):''}</span><span>${escapeHtml(entry.dataset.pickPartType||'部材')}</span></span>`;s.innerHTML=`${origin}${lines.length?'<br>':''}${lines.join('<br>')}`;s.classList.toggle('show',lines.length>0)}
 function recalculatePickDimensions(){
  const entries=getPickEntries();if(!entries.length)return;const ctx={cache:new Map(),visiting:new Set()};
  for(const entry of entries){const id=entry.dataset.pickPartId;const results={};for(const axis of ['length','width']){const rule=getPickRule(entry,axis),input=pickDimInput(entry,axis);const r=resolvePickDimension(id,axis,ctx);results[axis]=r;if(!input)continue;if(rule.type==='formula'){input.readOnly=true;input.classList.add('pick-calculated');input.value=r.ok?pickFormat(r.value):''}else{input.readOnly=false;input.classList.remove('pick-calculated');if(rule.type==='fixed'&&!input.value&&Number.isFinite(Number(rule.value)))input.value=pickFormat(Number(rule.value))}}
@@ -4313,23 +4383,34 @@ function pickDrawingIndex(){
  addDrawing();const idx=drawingCount-1;const h=document.querySelector(`#drawingHeader .drawing-head[data-drawing-index="${idx}"] .drawing-name-input`);if(h)h.value='PICK';return idx
 }
 function createPickPartRow(part,drawingIndex){
- const tr=document.createElement('tr'),nameTd=document.createElement('td');nameTd.className='part-col';nameTd.innerHTML='<textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea>';nameTd.querySelector('textarea').value=part.name||part.id||'部材';tr.appendChild(nameTd);for(let i=0;i<drawingCount;i++)tr.appendChild(emptyDrawingCell(i));document.getElementById('partBody').appendChild(tr);const td=tr.querySelector(`.drawing-cell[data-drawing-index="${drawingIndex}"]`);addCellPart(td.querySelector('.cell-plus'));const entry=td.querySelector('.cell-entry');entry.dataset.pickPartId=part.id||`P${getPickEntries().length+1}`;entry.dataset.pickLengthRule=JSON.stringify(part.dimensions?.length||{type:'unknown'});entry.dataset.pickWidthRule=JSON.stringify(part.dimensions?.width||{type:'unknown'});entry.dataset.pickSourcePage=String(part.sourcePage||'');entry.dataset.pickReviewRequired=part.reviewRequired?'1':'0';entry.dataset.pickApproved=part.approved?'1':'0';entry.querySelector('.cell-title-input').value=part.name||part.id||'部材';const inputs=entry.querySelectorAll('.dims input'),lr=part.dimensions?.length||{type:'unknown'},wr=part.dimensions?.width||{type:'unknown'};inputs[0].value=lr.type==='fixed'?pickFormat(Number(lr.value)):'';inputs[1].value=wr.type==='fixed'?pickFormat(Number(wr.value)):'';inputs[2].value=String(Math.max(1,Number(part.qty)||1));ensurePickFormulaStatus(entry);refreshPracticalEntry(entry);return entry
+ const tr=document.createElement('tr'),nameTd=document.createElement('td');nameTd.className='part-col';nameTd.innerHTML='<textarea class="part-name-input" rows="2" placeholder="部材名" enterkeyhint="next"></textarea><button type="button" class="row-delete-btn" onclick="deletePartRow(this)">行削除</button>';const partName=part.partType||part.name||part.id||'部材';nameTd.querySelector('textarea').value=partName;tr.appendChild(nameTd);for(let i=0;i<drawingCount;i++)tr.appendChild(emptyDrawingCell(i));document.getElementById('partBody').appendChild(tr);const td=tr.querySelector(`.drawing-cell[data-drawing-index="${drawingIndex}"]`);addCellPart(td.querySelector('.cell-plus'));const entry=td.querySelector('.cell-entry');entry.dataset.pickPartId=part.id||`P${getPickEntries().length+1}`;entry.dataset.pickPartType=part.partType||part.name||'';entry.dataset.pickDrawingId=part.drawingId||'';entry.dataset.pickRegionId=part.regionId||'';entry.dataset.pickRegionLabel=part.regionLabel||'';entry.dataset.pickLengthRule=JSON.stringify(part.dimensions?.length||{type:'unknown'});entry.dataset.pickWidthRule=JSON.stringify(part.dimensions?.width||{type:'unknown'});entry.dataset.pickSourcePage=String(part.sourcePage||'');entry.dataset.pickReviewRequired=part.reviewRequired?'1':'0';entry.dataset.pickApproved=part.approved?'1':'0';entry.querySelector('.cell-title-input').value=partName;const inputs=entry.querySelectorAll('.dims input'),lr=part.dimensions?.length||{type:'unknown'},wr=part.dimensions?.width||{type:'unknown'};inputs[0].value=lr.type==='fixed'?pickFormat(Number(lr.value)):'';inputs[1].value=wr.type==='fixed'?pickFormat(Number(wr.value)):'';inputs[2].value=String(Math.max(1,Number(part.qty)||1));ensurePickFormulaStatus(entry);refreshPracticalEntry(entry);return entry
+}
+function preparePickDrawingMap(parts){
+ const ids=[];for(const p of parts){const id=String(p.drawingId||'PICK').trim()||'PICK';if(!ids.includes(id))ids.push(id)}const map=new Map();if(!ids.length)return map;
+ if(drawingCount===1&&isBlankMaInput()){
+   document.getElementById('partBody').innerHTML='';const h=document.querySelector('#drawingHeader .drawing-head[data-drawing-index="0"] .drawing-name-input');if(h)h.value=ids[0];map.set(ids[0],0);
+   for(let i=1;i<ids.length;i++){addDrawing();const idx=drawingCount-1,hi=document.querySelector(`#drawingHeader .drawing-head[data-drawing-index="${idx}"] .drawing-name-input`);if(hi)hi.value=ids[i];map.set(ids[i],idx)}
+ }else{
+   for(const id of ids){addDrawing();const idx=drawingCount-1,h=document.querySelector(`#drawingHeader .drawing-head[data-drawing-index="${idx}"] .drawing-name-input`);if(h)h.value=id;map.set(id,idx)}
+ }
+ return map
 }
 function getPickBridgePayload(){try{const p=JSON.parse(localStorage.getItem(PICK_BRIDGE_KEY)||'null');return p?.format==='pick-ma-bridge'&&Array.isArray(p.parts)?p:null}catch{return null}}
-function refreshPickBridgeBanner(){const b=document.getElementById('pickBridgeBanner');if(!b)return;const p=getPickBridgePayload(),last=localStorage.getItem(PICK_IMPORTED_KEY)||'';if(!p||!p.parts.length||p.exportedAt===last){b.hidden=true;return}document.getElementById('pickBridgeTitle').textContent=`PICKから${p.parts.length}部材が届いています`;document.getElementById('pickBridgeSub').textContent=`${p.sourcePdf||'図面'}・固定寸法と変数式をMAで再計算`;b.hidden=false}
+function refreshPickBridgeBanner(){const b=document.getElementById('pickBridgeBanner');if(!b)return;const p=getPickBridgePayload(),last=localStorage.getItem(PICK_IMPORTED_KEY)||'';if(!p||!p.parts.length||p.exportedAt===last){b.hidden=true;return}document.getElementById('pickBridgeTitle').textContent=`PICKから${p.parts.length}部材が届いています`;const groups=new Set(p.parts.map(x=>x.drawingId||'PICK')).size;document.getElementById('pickBridgeSub').textContent=`${p.sourcePdf||'図面'}・${groups}図面・分類済み部材・固定寸法と変数式をMAで再計算`;b.hidden=false}
 function dismissPickBridge(){document.getElementById('pickBridgeBanner').hidden=true}
-function importPickPayload(p){if(!p||p.format!=='pick-ma-bridge'||!Array.isArray(p.parts)){alert('PICKのデータを読み込めません。');return false}const parts=p.parts.filter(Boolean);if(!parts.length){alert('PICKに部材がありません。');return false}const idx=pickDrawingIndex(),created=[];for(const part of parts){try{const e=createPickPartRow(part,idx);if(e)created.push(e)}catch(err){console.error('PICK import failed',part,err)}}applyDrawingColors();setupEnterAdvanceHints(document.querySelector('.app'));try{localStorage.setItem(PICK_IMPORTED_KEY,p.exportedAt||new Date().toISOString())}catch{}document.getElementById('pickBridgeBanner').hidden=true;recalculatePickDimensions();saveAppState(false);if(created.length!==parts.length){alert(`PICKから${created.length}/${parts.length}部材を読み込みました。読み込めなかった部材があります。`)}showSaveStatus(`PICKから${created.length}部材を読み込みました`);return created.length===parts.length}
+function importPickPayload(p){if(!p||p.format!=='pick-ma-bridge'||!Array.isArray(p.parts)){alert('PICKのデータを読み込めません。');return false}const parts=p.parts.filter(Boolean);if(!parts.length){alert('PICKに部材がありません。');return false}const drawingMap=preparePickDrawingMap(parts),created=[];for(const part of parts){try{const key=String(part.drawingId||'PICK').trim()||'PICK',idx=drawingMap.get(key);if(idx==null)throw new Error(`図面 ${key} の列を作れません`);const e=createPickPartRow(part,idx);if(e)created.push(e)}catch(err){console.error('PICK import failed',part,err)}}applyDrawingColors();setupEnterAdvanceHints(document.querySelector('.app'));try{localStorage.setItem(PICK_IMPORTED_KEY,p.exportedAt||new Date().toISOString())}catch{}document.getElementById('pickBridgeBanner').hidden=true;recalculatePickDimensions();saveAppState(false);const groups=new Set(parts.map(x=>x.drawingId||'PICK')).size;if(created.length!==parts.length){alert(`PICKから${created.length}/${parts.length}部材を読み込みました。読み込めなかった部材があります。`)}showSaveStatus(`PICKから${groups}図面・${created.length}部材を読み込みました`);return created.length===parts.length}
 function importPickBridge(){const p=getPickBridgePayload();if(!p){alert('PICKのデータが見つかりません。');return false}return importPickPayload(p)}
 function openPickSource(){const p=getPickBridgePayload();if(p?.sourceUrl)location.href=p.sourceUrl}
 document.addEventListener('input',e=>{const entry=e.target?.closest?.('.cell-entry[data-pick-part-id]');if(!entry)return;const dims=[...entry.querySelectorAll('.dims input')];const i=dims.indexOf(e.target);if(i===0||i===1){const axis=i===0?'length':'width',rule=getPickRule(entry,axis);if(rule.type==='fixed'){rule.value=evalMathExpression(e.target.value);setPickRule(entry,axis,rule)}queuePickRecalc()}});
 document.addEventListener('change',e=>{if(e.target?.closest?.('.cell-entry[data-pick-part-id]')?.querySelector('.psel')===e.target)queuePickRecalc()});
-async function runPickBatchSelfTest(){if(!new URLSearchParams(location.search).has('picktest'))return;try{document.getElementById('partBody').innerHTML='';const payload={format:'pick-ma-bridge',version:2,exportedAt:new Date().toISOString(),sourcePdf:'selftest.pdf',parts:[1,2,3,4].map(i=>({id:`P${i}`,name:`板 ${i}`,qty:1,approved:i===1,reviewRequired:i!==1,dimensions:{length:{type:'fixed',value:800+i},width:{type:'unknown'}}}))};const ok=importPickPayload(payload)&&getPickEntries().length===4;document.documentElement.dataset.picktest=ok?'pass':'fail';const meta=document.createElement('meta');meta.name='ma-picktest';meta.content=ok?'pass':'fail';document.head.appendChild(meta)}catch(err){console.error(err);document.documentElement.dataset.picktest='fail'}}
+async function runPickBatchSelfTest(){if(!new URLSearchParams(location.search).has('picktest'))return;try{document.getElementById('partBody').innerHTML='';drawingCount=1;document.getElementById('drawingHeader').innerHTML='<th class="drawing-head" data-drawing-index="0"><input class="drawing-name-input" value="" placeholder="図面番号" aria-label="図面名"></th>';const payload={format:'pick-ma-bridge',version:3,exportedAt:new Date().toISOString(),sourcePdf:'selftest.pdf',parts:[{id:'P1',partType:'天板',drawingId:'J-1'},{id:'P2',partType:'側板',drawingId:'J-1'},{id:'P3',partType:'扉',drawingId:'J-2'},{id:'P4',partType:'前板',drawingId:'J-2'}].map((p,i)=>({...p,name:p.partType,qty:1,approved:i===0,reviewRequired:i!==0,dimensions:{length:{type:'fixed',value:800+i},width:{type:'unknown'}}}))};const okImport=importPickPayload(payload),entries=getPickEntries(),heads=[...document.querySelectorAll('#drawingHeader .drawing-name-input')].map(x=>x.value),types=entries.map(e=>e.dataset.pickPartType),ok=okImport&&entries.length===4&&heads.includes('J-1')&&heads.includes('J-2')&&types.includes('天板')&&types.includes('前板');document.documentElement.dataset.picktest=ok?'pass':'fail';const meta=document.createElement('meta');meta.name='ma-picktest';meta.content=ok?'pass':'fail';document.head.appendChild(meta)}catch(err){console.error(err);document.documentElement.dataset.picktest='fail'}}
 window.__maPickBridge={getPayload:getPickBridgePayload,importPayload:importPickPayload,importStored:importPickBridge,recalculate:recalculatePickDimensions,getEntries:getPickEntries,resolve:(id,axis)=>resolvePickDimension(id,axis,{cache:new Map(),visiting:new Set()})};
 
 const restoredFromStorage=restoreAppState();
 ensureJointControls(document);
 ensureGrainContinuityControls(document);
 ensurePracticalEntryUI(document);
+ensureDeleteControls(document);
 applyDrawingColors();
 updateAllPatternThickness();
 setupEnterAdvanceHints();
