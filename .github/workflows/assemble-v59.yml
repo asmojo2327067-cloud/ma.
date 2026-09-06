@@ -1,0 +1,36 @@
+name: Assemble ma v59
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bundle/v59-*.b64'
+      - '.github/workflows/assemble-v59.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Assemble v59
+        run: |
+          cat bundle/v59-*.b64 | tr -d '[:space:]' | base64 -d | gzip -d > index.html
+          grep -q 'data-build="ma-project-v59"' index.html
+          grep -q 'version:59' index.html
+          echo "d75b682bcb51bb419db9f37c06589af401feffa70f9e530d3e570f7d0e2e0236  index.html" | sha256sum -c -
+      - name: Commit v59
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Update ma. to v59"
+          git push
