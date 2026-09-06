@@ -5,7 +5,6 @@ on:
   push:
     branches: [main]
     paths:
-      - 'bundle/v59-*.b64'
       - '.github/workflows/assemble-v59.yml'
 
 permissions:
@@ -20,7 +19,14 @@ jobs:
           fetch-depth: 0
       - name: Assemble v59
         run: |
-          cat bundle/v59-*.b64 | tr -d '[:space:]' | base64 -d | gzip -d > index.html
+          cat \
+            bundle/v59-01.b64 \
+            bundle/v59-02.b64 \
+            bundle/v59-03.b64 \
+            bundle/v59-04.b64 \
+            bundle/v59-05.b64 \
+            bundle/v59-06.b64 \
+            | tr -d '[:space:]' | base64 -d | gzip -d > index.html
           grep -q 'data-build="ma-project-v59"' index.html
           grep -q 'version:59' index.html
           echo "d75b682bcb51bb419db9f37c06589af401feffa70f9e530d3e570f7d0e2e0236  index.html" | sha256sum -c -
