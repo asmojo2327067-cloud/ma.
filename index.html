@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ma.｜案件 v64</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>ma.｜案件 v65</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3293,9 +3293,31 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   }
 }
 
+
+/* ===== mobile structure illustration zoom / v65 ===== */
+#diagramZoomBadge{display:none}
+@media(max-width:760px){
+  body.mobileStructurePreview{touch-action:pan-y}
+  body.mobileStructurePreview #diagramView .mainDiagramSvg{
+    touch-action:none!important;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-touch-callout:none;
+    cursor:grab;
+  }
+  body.mobileStructurePreview #diagramView .mainDiagramSvg.isDiagramPanning{cursor:grabbing}
+  body.mobileStructurePreview #diagramZoomBadge{
+    display:none;position:absolute;right:7px;bottom:7px;z-index:4;
+    padding:3px 6px;border:1px solid rgba(92,84,73,.18);border-radius:999px;
+    background:rgba(251,250,246,.82);color:#766f65;font-size:8px;font-weight:800;
+    line-height:1;pointer-events:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  }
+  body.mobileStructurePreview #diagramZoomBadge.visible{display:block}
+}
+
 </style>
 </head>
-<body data-build="ma-project-v64" class="page-home">
+<body data-build="ma-project-v65" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3706,6 +3728,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
           <g id="dims"></g>
           <g id="cabinet"></g>
         </svg>
+        <div id="diagramZoomBadge" aria-hidden="true">100%</div>
 
         
 
@@ -6583,7 +6606,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV64"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV65"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6724,7 +6747,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:64,
+    version:65,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -8028,14 +8051,55 @@ document.querySelectorAll(".viewTabs button").forEach(btn=>{
   });
 });
 
-function applyResponsiveDiagramViewport(){
+const diagramZoomState={
+  scale:1,cx:490,cy:352,base:{x:120,y:72,w:740,h:560},
+  pointers:new Map(),pinchStart:null,panStart:null
+};
+function diagramBaseViewport(){
+  return window.innerWidth<=760?{x:120,y:72,w:740,h:560}:{x:0,y:0,w:980,h:680};
+}
+function clampDiagramZoomCenter(){
+  const b=diagramZoomState.base;
+  const w=b.w/diagramZoomState.scale,h=b.h/diagramZoomState.scale;
+  const halfW=w/2,halfH=h/2;
+  diagramZoomState.cx=Math.max(b.x+halfW,Math.min(b.x+b.w-halfW,diagramZoomState.cx));
+  diagramZoomState.cy=Math.max(b.y+halfH,Math.min(b.y+b.h-halfH,diagramZoomState.cy));
+}
+function applyDiagramZoomViewport(){
   const svg=document.querySelector("#diagramView .mainDiagramSvg");
   if(!svg)return;
-  if(window.innerWidth<=760){
-    svg.setAttribute("viewBox","120 72 740 560");
-  }else{
-    svg.setAttribute("viewBox","0 0 980 680");
+  const b=diagramZoomState.base,w=b.w/diagramZoomState.scale,h=b.h/diagramZoomState.scale;
+  clampDiagramZoomCenter();
+  svg.setAttribute("viewBox",`${diagramZoomState.cx-w/2} ${diagramZoomState.cy-h/2} ${w} ${h}`);
+  const badge=document.getElementById("diagramZoomBadge");
+  if(badge){
+    badge.textContent=`${Math.round(diagramZoomState.scale*100)}%`;
+    badge.classList.toggle("visible",diagramZoomState.scale>1.01);
   }
+}
+function resetDiagramZoom(){
+  diagramZoomState.base=diagramBaseViewport();
+  diagramZoomState.scale=1;
+  diagramZoomState.cx=diagramZoomState.base.x+diagramZoomState.base.w/2;
+  diagramZoomState.cy=diagramZoomState.base.y+diagramZoomState.base.h/2;
+  diagramZoomState.pointers.clear();
+  diagramZoomState.pinchStart=null;
+  diagramZoomState.panStart=null;
+  document.querySelector("#diagramView .mainDiagramSvg")?.classList.remove("isDiagramPanning");
+  applyDiagramZoomViewport();
+}
+function applyResponsiveDiagramViewport(){
+  const next=diagramBaseViewport();
+  diagramZoomState.base=next;
+  if(window.innerWidth>760){
+    diagramZoomState.scale=1;
+    diagramZoomState.cx=next.x+next.w/2;
+    diagramZoomState.cy=next.y+next.h/2;
+  }else if(diagramZoomState.scale<=1.01){
+    diagramZoomState.cx=next.x+next.w/2;
+    diagramZoomState.cy=next.y+next.h/2;
+  }
+  applyDiagramZoomViewport();
 }
 window.addEventListener("resize",()=>{
   applyResponsiveDiagramViewport();
@@ -8045,6 +8109,78 @@ window.addEventListener("resize",()=>{
   }
 });
 applyResponsiveDiagramViewport();
+
+(function setupDiagramZoomGestures(){
+  const svg=document.querySelector("#diagramView .mainDiagramSvg");
+  if(!svg)return;
+  const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+  function screenToSvgPoint(clientX,clientY){
+    const rect=svg.getBoundingClientRect(),b=diagramZoomState.base;
+    const w=b.w/diagramZoomState.scale,h=b.h/diagramZoomState.scale;
+    return{x:diagramZoomState.cx-w/2+((clientX-rect.left)/Math.max(1,rect.width))*w,
+           y:diagramZoomState.cy-h/2+((clientY-rect.top)/Math.max(1,rect.height))*h};
+  }
+  svg.addEventListener("pointerdown",e=>{
+    if(window.innerWidth>760||!document.body.classList.contains("mobileStructurePreview"))return;
+    if(e.pointerType==="mouse"&&e.button!==0)return;
+    svg.setPointerCapture?.(e.pointerId);
+    diagramZoomState.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    const pts=[...diagramZoomState.pointers.values()];
+    if(pts.length===2){
+      const m=mid(pts[0],pts[1]);
+      diagramZoomState.pinchStart={distance:Math.max(1,dist(pts[0],pts[1])),scale:diagramZoomState.scale,anchorSvg:screenToSvgPoint(m.x,m.y)};
+      diagramZoomState.panStart=null;
+    }else if(pts.length===1&&diagramZoomState.scale>1.01){
+      diagramZoomState.panStart={x:e.clientX,y:e.clientY,cx:diagramZoomState.cx,cy:diagramZoomState.cy};
+      svg.classList.add("isDiagramPanning");
+    }
+  });
+  svg.addEventListener("pointermove",e=>{
+    if(!diagramZoomState.pointers.has(e.pointerId))return;
+    diagramZoomState.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    const pts=[...diagramZoomState.pointers.values()];
+    if(pts.length>=2&&diagramZoomState.pinchStart){
+      e.preventDefault();
+      const current=Math.max(1,dist(pts[0],pts[1]));
+      const nextScale=Math.max(1,Math.min(3,diagramZoomState.pinchStart.scale*(current/diagramZoomState.pinchStart.distance)));
+      const m=mid(pts[0],pts[1]),rect=svg.getBoundingClientRect(),b=diagramZoomState.base;
+      diagramZoomState.scale=nextScale;
+      const vw=b.w/nextScale,vh=b.h/nextScale;
+      const nx=(m.x-rect.left)/Math.max(1,rect.width),ny=(m.y-rect.top)/Math.max(1,rect.height);
+      diagramZoomState.cx=diagramZoomState.pinchStart.anchorSvg.x-(nx-.5)*vw;
+      diagramZoomState.cy=diagramZoomState.pinchStart.anchorSvg.y-(ny-.5)*vh;
+      applyDiagramZoomViewport();
+    }else if(pts.length===1&&diagramZoomState.panStart&&diagramZoomState.scale>1.01){
+      e.preventDefault();
+      const rect=svg.getBoundingClientRect(),b=diagramZoomState.base;
+      const vw=b.w/diagramZoomState.scale,vh=b.h/diagramZoomState.scale;
+      const dx=(e.clientX-diagramZoomState.panStart.x)/Math.max(1,rect.width)*vw;
+      const dy=(e.clientY-diagramZoomState.panStart.y)/Math.max(1,rect.height)*vh;
+      diagramZoomState.cx=diagramZoomState.panStart.cx-dx;
+      diagramZoomState.cy=diagramZoomState.panStart.cy-dy;
+      applyDiagramZoomViewport();
+    }
+  },{passive:false});
+  function end(e){
+    diagramZoomState.pointers.delete(e.pointerId);
+    if(diagramZoomState.pointers.size<2)diagramZoomState.pinchStart=null;
+    if(diagramZoomState.pointers.size===0){
+      diagramZoomState.panStart=null;svg.classList.remove("isDiagramPanning");
+    }else if(diagramZoomState.pointers.size===1&&diagramZoomState.scale>1.01){
+      const [p]=diagramZoomState.pointers.values();
+      diagramZoomState.panStart={x:p.x,y:p.y,cx:diagramZoomState.cx,cy:diagramZoomState.cy};
+    }
+  }
+  svg.addEventListener("pointerup",end);
+  svg.addEventListener("pointercancel",end);
+  svg.addEventListener("lostpointercapture",end);
+  svg.addEventListener("dblclick",e=>{
+    if(window.innerWidth<=760&&document.body.classList.contains("mobileStructurePreview")){
+      e.preventDefault();resetDiagramZoom();
+    }
+  });
+})();
 
 
 function closeMobileOverflowMenu(){
@@ -8246,8 +8382,10 @@ function syncMobileThreeFullscreen(){
 
 function syncMobileStructurePreview(){
   const isEditor=!document.body.classList.contains("page-home")&&!document.body.classList.contains("page-cut")&&!document.body.classList.contains("page-project");
+  const wasEnabled=document.body.classList.contains("mobileStructurePreview");
   const enabled=window.innerWidth<=760&&isEditor&&state.view==="diagram";
   document.body.classList.toggle("mobileStructurePreview",enabled);
+  if(enabled&&!wasEnabled)resetDiagramZoom();
   if(enabled){
     const header=document.querySelector(".mobileHeader");
     const meta=document.querySelector(".metaRow");
