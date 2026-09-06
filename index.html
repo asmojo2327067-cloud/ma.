@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ma.｜案件 v60</title>
+<title>ma.｜案件 v61</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -2899,9 +2899,136 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   }
 }
 
+
+/* ===== mobile sidebars / v61 ===== */
+:root{--mobile-sidebar-top:376px}
+.mobileSidebar,.mobileSidebarBackdrop,.mobileSidebarHandles{display:none}
+
+@media(max-width:760px){
+  .mobileSidebarHandles{
+    display:flex;
+    position:fixed;
+    top:calc(var(--mobile-sidebar-top) + 7px);
+    left:0;right:0;
+    z-index:48;
+    justify-content:space-between;
+    align-items:flex-start;
+    pointer-events:none;
+  }
+  body.page-home .mobileSidebarHandles,
+  body.page-cut .mobileSidebarHandles,
+  body.page-project .mobileSidebarHandles{display:none!important}
+  .mobileSidebarHandles button{
+    pointer-events:auto;
+    min-width:65px;height:34px;
+    display:flex;align-items:center;justify-content:center;gap:5px;
+    padding:0 9px;
+    border:1px solid #bfb8ad;
+    background:#f7f3ea;
+    color:var(--ink);
+    font-size:10px;font-weight:800;
+    box-shadow:0 4px 14px rgba(45,40,34,.11);
+  }
+  #mobileLeftSidebarHandle{border-left:0;border-radius:0 17px 17px 0}
+  #mobileRightSidebarHandle{border-right:0;border-radius:17px 0 0 17px}
+  .mobileSidebarHandleIcon{font-size:13px;line-height:1}
+  .mobileSidebarHandles button[aria-expanded="true"]{
+    background:var(--accentSoft);color:var(--accent);
+  }
+
+  .mobileSidebarBackdrop{
+    position:fixed;
+    left:0;right:0;
+    top:var(--mobile-sidebar-top);
+    bottom:72px;
+    z-index:50;
+    background:rgba(40,36,31,.22);
+    backdrop-filter:blur(1px);
+    -webkit-backdrop-filter:blur(1px);
+  }
+  .mobileSidebarBackdrop:not([hidden]){display:block}
+
+  .mobileSidebar{
+    display:flex;
+    position:fixed;
+    top:var(--mobile-sidebar-top);
+    bottom:72px;
+    z-index:52;
+    width:min(88vw,360px);
+    min-height:180px;
+    flex-direction:column;
+    background:#f8f5ed;
+    border-color:#bbb4a8;
+    box-shadow:0 14px 34px rgba(43,38,31,.22);
+    transition:transform .22s ease;
+    overflow:hidden;
+  }
+  .mobileSidebarLeft{
+    left:0;
+    border-right:1px solid #bbb4a8;
+    transform:translateX(calc(-100% - 8px));
+  }
+  .mobileSidebarRight{
+    right:0;
+    border-left:1px solid #bbb4a8;
+    transform:translateX(calc(100% + 8px));
+  }
+  body.mobileSidebarLeftOpen .mobileSidebarLeft,
+  body.mobileSidebarRightOpen .mobileSidebarRight{transform:translateX(0)}
+
+  .mobileSidebarHead{
+    flex:0 0 48px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:7px 10px 7px 12px;
+    border-bottom:1px solid var(--line);
+    background:#f4f0e7;
+  }
+  .mobileSidebarHead>div{display:flex;align-items:baseline;gap:7px;min-width:0}
+  .mobileSidebarHead strong{font-size:13px;letter-spacing:.04em}
+  .mobileSidebarHead span{
+    color:var(--muted);font-size:8px;
+    font-family:"Segoe Print","Bradley Hand",cursive;font-style:italic;
+  }
+  .mobileSidebarHead button{
+    width:32px;height:32px;display:grid;place-items:center;padding:0;
+    border:1px solid var(--line);border-radius:50%;
+    background:#fffdf8;color:var(--ink);font-size:20px;line-height:1;
+  }
+  .mobileSidebarBody{
+    flex:1 1 auto;min-height:0;
+    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    padding:10px 10px 18px;
+  }
+
+  .mobileSidebar .sideTabs{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:4px;margin:0 0 10px!important;padding:0!important;
+  }
+  .mobileSidebar .sideTabs .sideTab{
+    min-width:0;padding:8px 3px!important;font-size:10px!important;border-radius:3px!important;
+  }
+  .mobileSidebar .sidePanel{
+    width:100%!important;
+    margin:0!important;padding:12px!important;
+    border:1px solid var(--line)!important;
+    border-radius:5px!important;background:rgba(255,255,255,.28)!important;
+  }
+  .mobileSidebar .sidePanel.tabPanelHidden{display:none!important}
+  .mobileSidebar #rightHistorySection{
+    padding:0!important;border:0!important;background:transparent!important;
+  }
+  .mobileSidebar #rightHistorySection .historyList{max-height:none!important}
+
+  body.mobileSidebarLeftOpen .mobileSidebarHandles,
+  body.mobileSidebarRightOpen .mobileSidebarHandles{
+    opacity:0;pointer-events:none;
+  }
+}
+
 </style>
 </head>
-<body data-build="ma-project-v60" class="page-home">
+<body data-build="ma-project-v61" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3543,6 +3670,33 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 </div>
 
 <div id="mobileFlow" class="mobileFlow" aria-label="スマホ専用編集UI"></div>
+
+<div id="mobileSidebarBackdrop" class="mobileSidebarBackdrop" hidden></div>
+
+<div id="mobileSidebarHandles" class="mobileSidebarHandles" aria-label="スマホサイドバー">
+  <button id="mobileLeftSidebarHandle" type="button" data-mobile-sidebar-open="left" aria-controls="mobileLeftSidebar" aria-expanded="false">
+    <span class="mobileSidebarHandleIcon">☰</span><span>設定</span>
+  </button>
+  <button id="mobileRightSidebarHandle" type="button" data-mobile-sidebar-open="right" aria-controls="mobileRightSidebar" aria-expanded="false">
+    <span>部材</span><span class="mobileSidebarHandleIcon">☷</span>
+  </button>
+</div>
+
+<aside id="mobileLeftSidebar" class="mobileSidebar mobileSidebarLeft" aria-hidden="true" aria-label="設定サイドバー">
+  <div class="mobileSidebarHead">
+    <div><strong>設定</strong><span>structure</span></div>
+    <button type="button" data-mobile-sidebar-close aria-label="設定サイドバーを閉じる">×</button>
+  </div>
+  <div id="mobileLeftSidebarBody" class="mobileSidebarBody"></div>
+</aside>
+
+<aside id="mobileRightSidebar" class="mobileSidebar mobileSidebarRight" aria-hidden="true" aria-label="部材サイドバー">
+  <div class="mobileSidebarHead">
+    <div><strong>部材</strong><span>all parts</span></div>
+    <button type="button" data-mobile-sidebar-close aria-label="部材サイドバーを閉じる">×</button>
+  </div>
+  <div id="mobileRightSidebarBody" class="mobileSidebarBody"></div>
+</aside>
 
 <script>
 const state={
@@ -6143,7 +6297,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV60";
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV61";
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6238,6 +6392,7 @@ function initWorkspaceDock(){
 initWorkspaceDock();
 
 document.querySelectorAll(".viewTabs button").forEach(btn=>btn.addEventListener("click",()=>{
+  closeMobileSidebars();
   state.view=btn.dataset.view;
   document.querySelectorAll(".viewTabs button").forEach(b=>b.classList.toggle("active",b===btn));
   $("diagramView").classList.toggle("hidden",state.view!=="diagram");
@@ -6282,7 +6437,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:60,
+    version:61,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -7174,7 +7329,7 @@ function runCutting(){
 }
 function renderCutResults(){const rec=document.getElementById("cutRecommendation"),res=document.getElementById("cuttingResults"),pur=document.getElementById("purchaseList");if(!lastCutResult||!lastCutResult.results?.length){if(res)res.innerHTML=`<div class="cutResultEmpty">${lastCutResult?.errors?.length?escapeAttr(lastCutResult.errors.join(" / ")):"木取りできる部材がありません。"}</div>`;if(rec)rec.innerHTML="";return}const stale=lastCutResult.sourceSignature!==cuttingSourceSignature(),totalSheets=lastCutResult.results.reduce((s,r)=>s+r.pack.sheetCount,0),pieceArea=lastCutResult.results.reduce((s,r)=>s+r.pack.pieceArea,0),sheetArea=lastCutResult.results.reduce((s,r)=>s+r.pack.totalSheetArea,0),yieldAll=sheetArea?pieceArea/sheetArea*100:0;rec.innerHTML=`<div class="cutRecommendCard">採用原板 合計 <b>${totalSheets}枚</b> ／ 全体歩留まり <b>${yieldAll.toFixed(1)}%</b>${stale?'<br><b class="cutDimError">構造または材料設定が変わっています。再生成してください。</b>':""}</div>`;res.innerHTML=lastCutResult.results.map(r=>{const counts={};r.pack.sheets.forEach(s=>counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]=(counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]||0)+1);const mix=Object.entries(counts).map(([k,v])=>`${k} × ${v}枚`).join(" ＋ "),rm=r.pack.maxRemnant;return `<article class="cutMaterialResult"><div class="cutMaterialResultHead"><div><strong><i class="cutMaterialColor" style="background:${r.mat.color}"></i>${escapeAttr(r.mat.name)}</strong><small>${mix}<br><b>最大端材 ${Math.round(rm.w)} × ${Math.round(rm.h)}</b>｜${r.mat.grain==="none"?"木目なし":r.mat.grain==="long"?"木目 長手":"木目 短手"}</small></div><div class="cutYieldBadge">歩留まり ${r.pack.yieldRate.toFixed(1)}%</div></div><div class="cutSheets">${r.pack.sheets.map((s,i)=>renderSheetVisual(s,i,r.mat)).join("")}</div></article>`}).join("");pur.innerHTML=lastCutResult.results.map(r=>{const counts={};r.pack.sheets.forEach(s=>counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]=(counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]||0)+1);return `<div class="purchaseItem"><div class="purchaseMaterial">${escapeAttr(r.mat.name)}<small>${r.mat.thickness}mm｜${r.mat.grain==="none"?"方向なし":r.mat.grain==="long"?"木目：長手":"木目：短手"}</small></div><div class="purchaseSheets">${Object.entries(counts).map(([k,v])=>`<span class="purchaseSheetTag">${escapeAttr(k)} × ${v}枚</span>`).join("")}</div></div>`}).join("")}
 document.getElementById("runCutting")?.addEventListener("click",runCutting);document.getElementById("cutPrintButton")?.addEventListener("click",()=>window.print());
-function showCutPage(){closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-project");document.body.classList.add("page-cut");const title=document.querySelector(".mobilePageTitle");if(title)title.textContent="木取り";setShellActive("cut");refreshProjectContext();syncCutSettingInputs();renderCutUnitSources();renderCutList();if(lastCutResult)renderCutResults();else resetCutResults();window.scrollTo({top:0,behavior:"auto"})}
+function showCutPage(){closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-project");document.body.classList.add("page-cut");const title=document.querySelector(".mobilePageTitle");if(title)title.textContent="木取り";setShellActive("cut");refreshProjectContext();syncCutSettingInputs();renderCutUnitSources();renderCutList();if(lastCutResult)renderCutResults();else resetCutResults();window.scrollTo({top:0,behavior:"auto"})}
 document.getElementById("cutBackToStructure")?.addEventListener("click",()=>showEditorPage("structure"));
 
 
@@ -7307,7 +7462,7 @@ function projectPatternFinishThickness(p,pat){
   return Math.round(total*100)/100;
 }
 function renderProjectView(){const p=activeProject();if(!p)return showHomePage();document.getElementById("projectNameInput").value=p.name;document.getElementById("projectMeta").textContent=`${p.units?.length||0} ユニット　/　${p.materialPatterns?.length||0} 材料パターン`;renderProjectUnits(p);renderProjectPatterns(p);document.getElementById("projectCutUnitCount").textContent=p.units?.length||0;document.getElementById("projectCutPatternCount").textContent=p.materialPatterns?.length||0;document.getElementById("projectCutLast").textContent=p.cutting?.lastResult?"生成済み":"未生成"}
-function showProjectPage(tab="units"){closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
+function showProjectPage(tab="units"){closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
 function openProject(id){currentProjectId=id;currentUnitId=null;showProjectPage("units")}
 function createNewProject(name){const p=createProjectObject(name);saveProject(p);currentProjectId=p.id;currentUnitId=null;showProjectPage("units")}
 function createUnitForProject(){const p=activeProject();if(!p)return;const n=(p.units?.length||0)+1;resetUnitState();currentUnitId=makeUnitId();$("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;cutState.materials=cloneMaterials(p.materials);cutState.patterns=clonePatterns(p.materialPatterns);cutState.additionalUnits=[];update();saveCurrentUnitIntoProject({silent:true});refreshProjectContext();showEditorPage("structure")}
@@ -7515,6 +7670,7 @@ document.getElementById("leftCompositionSection")?.addEventListener("change",()=
 document.getElementById("leftCompositionSection")?.addEventListener("click",e=>{if(e.target.closest("button"))setTimeout(refreshStructureAfterMaterialEdit,0)});
 
 function showHomePage(){
+  closeMobileSidebars();
   closeMobileOverflowMenu();
   document.body.classList.remove("mobileStructurePreview","page-cut","page-project");
   document.body.classList.add("page-home");
@@ -7527,6 +7683,7 @@ function showHomePage(){
 }
 function showEditorPage(action="structure"){
   document.body.classList.remove("page-home","page-cut","page-project");
+  closeMobileSidebars();
   closeMobileOverflowMenu();
   const title=document.querySelector(".mobilePageTitle");
   if(title)title.textContent=action==="three"?"3Dモデル":"構造入力";
@@ -7617,6 +7774,7 @@ function syncMobileMenuAvailability(){
 }
 function toggleMobileOverflowMenu(){
   if(window.innerWidth>760)return;
+  closeMobileSidebars();
   const menu=document.getElementById("mobileOverflowMenu");
   const btn=document.getElementById("mobileMenuBtn");
   if(!menu||!btn)return;
@@ -7656,17 +7814,122 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape")closeMobileOverflowMenu();
 });
 
+
+const mobileSidebarLayoutState={active:false,items:[]};
+
+function closeMobileSidebars(){
+  document.body.classList.remove("mobileSidebarLeftOpen","mobileSidebarRightOpen");
+  document.getElementById("mobileSidebarBackdrop")?.setAttribute("hidden","");
+  const left=document.getElementById("mobileLeftSidebar");
+  const right=document.getElementById("mobileRightSidebar");
+  const leftHandle=document.getElementById("mobileLeftSidebarHandle");
+  const rightHandle=document.getElementById("mobileRightSidebarHandle");
+  left?.setAttribute("aria-hidden","true");
+  right?.setAttribute("aria-hidden","true");
+  leftHandle?.setAttribute("aria-expanded","false");
+  rightHandle?.setAttribute("aria-expanded","false");
+}
+function openMobileSidebar(side){
+  if(window.innerWidth>760)return;
+  closeMobileOverflowMenu();
+  closeMobileSidebars();
+  const isLeft=side==="left";
+  document.body.classList.add(isLeft?"mobileSidebarLeftOpen":"mobileSidebarRightOpen");
+  const panel=document.getElementById(isLeft?"mobileLeftSidebar":"mobileRightSidebar");
+  const handle=document.getElementById(isLeft?"mobileLeftSidebarHandle":"mobileRightSidebarHandle");
+  document.getElementById("mobileSidebarBackdrop")?.removeAttribute("hidden");
+  panel?.setAttribute("aria-hidden","false");
+  handle?.setAttribute("aria-expanded","true");
+  if(isLeft){
+    const active=document.querySelector('[data-side-tabs="left"] .sideTab.active')?.dataset.sideTab||"region";
+    setSideTab("left",active);
+  }else{
+    renderTree();
+  }
+}
+document.querySelectorAll("[data-mobile-sidebar-open]").forEach(btn=>{
+  btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const side=btn.dataset.mobileSidebarOpen;
+    const alreadyOpen=document.body.classList.contains(side==="left"?"mobileSidebarLeftOpen":"mobileSidebarRightOpen");
+    if(alreadyOpen)closeMobileSidebars();
+    else openMobileSidebar(side);
+  });
+});
+document.querySelectorAll("[data-mobile-sidebar-close]").forEach(btn=>{
+  btn.addEventListener("click",closeMobileSidebars);
+});
+document.getElementById("mobileSidebarBackdrop")?.addEventListener("click",closeMobileSidebars);
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape")closeMobileSidebars();
+});
+
+function setupMobileSidebarLayout(){
+  if(mobileSidebarLayoutState.items.length)return;
+  const desired=[
+    {node:document.querySelector('[data-side-tabs="left"]'),target:"left"},
+    {node:document.getElementById("leftRegionSection"),target:"left"},
+    {node:document.getElementById("leftMaterialsSection"),target:"left"},
+    {node:document.getElementById("leftCompositionSection"),target:"left"},
+    {node:document.getElementById("rightHistorySection"),target:"right"}
+  ].filter(item=>item.node);
+
+  desired.forEach((item,index)=>{
+    const marker=document.createComment("mobile-sidebar-slot-"+index);
+    item.node.parentNode.insertBefore(marker,item.node);
+    mobileSidebarLayoutState.items.push({...item,marker});
+  });
+}
+function applyMobileSidebarLayout(){
+  setupMobileSidebarLayout();
+  const isMobile=window.innerWidth<=760;
+  const leftBody=document.getElementById("mobileLeftSidebarBody");
+  const rightBody=document.getElementById("mobileRightSidebarBody");
+  if(!leftBody||!rightBody)return;
+
+  if(isMobile&&!mobileSidebarLayoutState.active){
+    mobileSidebarLayoutState.items.forEach(({node,target})=>{
+      (target==="left"?leftBody:rightBody).appendChild(node);
+    });
+    mobileSidebarLayoutState.active=true;
+    setSideTab("left",document.querySelector('[data-side-tabs="left"] .sideTab.active')?.dataset.sideTab||"region");
+  }else if(!isMobile&&mobileSidebarLayoutState.active){
+    closeMobileSidebars();
+    mobileSidebarLayoutState.items.forEach(({node,marker})=>{
+      marker.parentNode.insertBefore(node,marker.nextSibling);
+    });
+    mobileSidebarLayoutState.active=false;
+  }
+}
+function syncMobileSidebarTop(){
+  if(window.innerWidth>760)return;
+  const isEditor=!document.body.classList.contains("page-home")&&!document.body.classList.contains("page-cut")&&!document.body.classList.contains("page-project");
+  if(!isEditor)return;
+  const meta=document.querySelector(".metaRow");
+  const metaBottom=meta?.getBoundingClientRect().bottom||133;
+  let top=Math.round(metaBottom+7);
+  if(document.body.classList.contains("mobileStructurePreview")){
+    const rect=document.getElementById("diagramView")?.getBoundingClientRect();
+    if(rect?.height)top=Math.round(rect.bottom+7);
+  }
+  const maxTop=Math.max(150,window.innerHeight-250);
+  top=Math.min(top,maxTop);
+  document.documentElement.style.setProperty("--mobile-sidebar-top",`${top}px`);
+}
+
 function syncMobileStructurePreview(){
   const isEditor=!document.body.classList.contains("page-home")&&!document.body.classList.contains("page-cut")&&!document.body.classList.contains("page-project");
   const enabled=window.innerWidth<=760&&isEditor&&state.view==="diagram";
   document.body.classList.toggle("mobileStructurePreview",enabled);
-  if(!enabled)return;
-  const header=document.querySelector(".mobileHeader");
-  const meta=document.querySelector(".metaRow");
-  const headerBottom=header?.getBoundingClientRect().bottom||57;
-  const metaHeight=meta?.getBoundingClientRect().height||70;
-  const top=Math.round(headerBottom+metaHeight+7);
-  document.documentElement.style.setProperty("--mobile-structure-preview-top",`${top}px`);
+  if(enabled){
+    const header=document.querySelector(".mobileHeader");
+    const meta=document.querySelector(".metaRow");
+    const headerBottom=header?.getBoundingClientRect().bottom||57;
+    const metaHeight=meta?.getBoundingClientRect().height||70;
+    const top=Math.round(headerBottom+metaHeight+7);
+    document.documentElement.style.setProperty("--mobile-structure-preview-top",`${top}px`);
+  }
+  requestAnimationFrame(syncMobileSidebarTop);
 }
 window.addEventListener("resize",()=>requestAnimationFrame(syncMobileStructurePreview));
 window.addEventListener("scroll",()=>{
@@ -7689,11 +7952,7 @@ function setupDedicatedMobileLayout(){
   const desired=[
     toolbar,
     metaRow,                                      // ユニット名 + 外寸
-    canvasWrap,                                   // 構造図 / 3D + 中央下の納まり設定
-    document.getElementById("leftRegionSection"),
-    document.getElementById("leftMaterialsSection"),
-    document.getElementById("leftCompositionSection"),
-    document.getElementById("rightHistorySection")
+    canvasWrap                                    // 構造図 / 3D + 中央下の納まり設定
   ].filter(Boolean);
 
   desired.forEach((node,index)=>{
@@ -7705,6 +7964,7 @@ function setupDedicatedMobileLayout(){
 
 function applyDedicatedMobileLayout(){
   setupDedicatedMobileLayout();
+  applyMobileSidebarLayout();
   const flow=document.getElementById("mobileFlow");
   if(!flow)return;
   const isMobile=window.innerWidth<=760;
@@ -7729,8 +7989,13 @@ function applyDedicatedMobileLayout(){
     });
   }
 }
-window.addEventListener("resize",applyDedicatedMobileLayout);
+window.addEventListener("resize",()=>{
+  applyDedicatedMobileLayout();
+  applyMobileSidebarLayout();
+  requestAnimationFrame(syncMobileSidebarTop);
+});
 applyDedicatedMobileLayout();
+applyMobileSidebarLayout();
 syncMobileStructurePreview();
 renderHomeProjects();
 refreshProjectContext();
