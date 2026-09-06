@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ma.｜案件 v62</title>
+<title>ma.｜案件 v63</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3159,9 +3159,114 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   }
 }
 
+
+/* ===== mobile 3D info + camera controls / v63 ===== */
+.mobileThreeInfo,.mobileThreeViews{display:none}
+
+@media(max-width:760px){
+  body.mobileThreeFullscreen .mobileThreeInfo{
+    display:flex!important;
+    position:fixed;
+    top:max(10px,env(safe-area-inset-top));
+    left:10px;
+    right:10px;
+    z-index:76;
+    min-height:48px;
+    align-items:center;
+    gap:10px;
+    padding:5px 10px 5px 5px;
+    border:1px solid rgba(92,84,73,.20);
+    border-radius:12px;
+    background:rgba(248,245,237,.82);
+    box-shadow:0 4px 16px rgba(40,36,31,.08);
+    backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
+  }
+  body.mobileThreeFullscreen .mobileThreeExit{
+    display:grid!important;
+    position:static!important;
+    flex:0 0 38px;
+    width:38px;
+    height:38px;
+    place-items:center;
+    padding:0;
+    border:1px solid rgba(92,84,73,.20);
+    border-radius:50%;
+    background:rgba(255,253,248,.78);
+    color:#4c473f;
+    box-shadow:none;
+    font-size:20px;
+    font-weight:700;
+    line-height:1;
+  }
+  body.mobileThreeFullscreen .mobileThreeInfoText{
+    display:flex;
+    min-width:0;
+    flex:1 1 auto;
+    flex-direction:column;
+    justify-content:center;
+    gap:2px;
+  }
+  body.mobileThreeFullscreen .mobileThreeInfoText strong{
+    overflow:hidden;
+    color:#332f2a;
+    font-size:13px;
+    font-weight:800;
+    line-height:1.15;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  body.mobileThreeFullscreen .mobileThreeInfoText span{
+    color:#756f66;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:.035em;
+    line-height:1.2;
+    white-space:nowrap;
+  }
+  body.mobileThreeFullscreen .mobileThreeViews{
+    display:grid!important;
+    position:fixed;
+    left:10px;
+    right:10px;
+    bottom:max(12px,env(safe-area-inset-bottom));
+    z-index:76;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:5px;
+    padding:5px;
+    border:1px solid rgba(92,84,73,.20);
+    border-radius:12px;
+    background:rgba(248,245,237,.84);
+    box-shadow:0 4px 16px rgba(40,36,31,.08);
+    backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
+  }
+  body.mobileThreeFullscreen .mobileThreeViews button{
+    min-width:0;
+    height:38px;
+    padding:0 4px;
+    border:0;
+    border-radius:8px;
+    background:transparent;
+    color:#5b554d;
+    font-size:9px;
+    font-weight:800;
+    line-height:1.1;
+    white-space:nowrap;
+  }
+  body.mobileThreeFullscreen .mobileThreeViews button.active{
+    background:#e7e1d5;
+    color:#2f2b26;
+    box-shadow:inset 0 0 0 1px rgba(92,84,73,.12);
+  }
+  body.mobileThreeFullscreen .mobileThreeViews button:active{
+    background:#ddd6c9;
+  }
+}
+
 </style>
 </head>
-<body data-build="ma-project-v62" class="page-home">
+<body data-build="ma-project-v63" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3589,7 +3694,22 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
           <button data-fixed-view="back">背面</button>
         </div>
         <canvas id="threeCanvas"></canvas>
-        <button id="mobileThreeExit" class="mobileThreeExit" type="button" aria-label="構造画面へ戻る">←</button>
+
+        <div id="mobileThreeInfo" class="mobileThreeInfo" aria-label="ユニット情報">
+          <button id="mobileThreeExit" class="mobileThreeExit" type="button" aria-label="構造画面へ戻る">←</button>
+          <div class="mobileThreeInfoText">
+            <strong id="mobileThreeUnitName">ユニット</strong>
+            <span id="mobileThreeDimensions">W 1800 · H 900 · D 450</span>
+          </div>
+        </div>
+
+        <div id="mobileThreeViews" class="mobileThreeViews" aria-label="カメラ視点">
+          <button type="button" data-mobile-three-view="front">正面</button>
+          <button type="button" data-mobile-three-view="rightFront">右斜め前</button>
+          <button type="button" data-mobile-three-view="leftFront">左斜め前</button>
+          <button type="button" data-mobile-three-view="back">背面</button>
+        </div>
+
         <div class="threeHint">
           <span>※ 外形の W:H:D 比率をそのまま反映して表示します。板厚は未入力なので3D上では表示用の仮厚みです。</span>
           <span>束・棚・巾木・背板の構造も反映します。3D内に「前／後ろ」表示を出します。</span>
@@ -6366,10 +6486,12 @@ function update(){
   renderFormulaList();
   renderTree();
   draw3D();
+  syncMobileThreeInfo();
 }
 function toast(msg){$("toast").textContent=msg;setTimeout(()=>{if($("toast").textContent===msg)$("toast").textContent=""},1800)}
 
 ["W","H","D"].forEach(id=>$(id).addEventListener("input",update));
+$("patternName")?.addEventListener("input",syncMobileThreeInfo);
 document.querySelectorAll("[data-joint]").forEach(group=>group.addEventListener("click",e=>{
   const b=e.target.closest("button[data-value]");if(!b)return;
   state.joints[group.dataset.joint]=b.dataset.value;update();
@@ -6431,7 +6553,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV62";
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV63"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6572,7 +6694,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:62,
+    version:63,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -8051,6 +8173,27 @@ function syncMobileSidebarTop(){
 }
 
 
+
+function syncMobileThreeInfo(){
+  const unitName=(document.getElementById("patternName")?.value||"").trim()||"ユニット";
+  const nameTarget=document.getElementById("mobileThreeUnitName");
+  const dimsTarget=document.getElementById("mobileThreeDimensions");
+  if(nameTarget)nameTarget.textContent=unitName;
+  if(dimsTarget)dimsTarget.textContent=`W ${formatFinishedMm(state.outer.W)} · H ${formatFinishedMm(state.outer.H)} · D ${formatFinishedMm(state.outer.D)}`;
+}
+function setMobileThreeViewActive(view){
+  document.querySelectorAll("[data-mobile-three-view]").forEach(btn=>{
+    btn.classList.toggle("active",btn.dataset.mobileThreeView===view);
+  });
+}
+document.querySelectorAll("[data-mobile-three-view]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const view=btn.dataset.mobileThreeView;
+    applyFixedView(view);
+    setMobileThreeViewActive(view);
+  });
+});
+
 function syncMobileThreeFullscreen(){
   const isEditor=!document.body.classList.contains("page-home")&&!document.body.classList.contains("page-cut")&&!document.body.classList.contains("page-project");
   const enabled=window.innerWidth<=760&&isEditor&&state.view==="three";
@@ -8058,8 +8201,13 @@ function syncMobileThreeFullscreen(){
   if(enabled){
     closeMobileSidebars();
     closeMobileOverflowMenu();
+    syncMobileThreeInfo();
+    setMobileThreeViewActive("front");
     window.scrollTo({top:0,behavior:"auto"});
-    requestAnimationFrame(request3D);
+    requestAnimationFrame(()=>{
+      applyFixedView("front");
+      request3D();
+    });
   }
 }
 
