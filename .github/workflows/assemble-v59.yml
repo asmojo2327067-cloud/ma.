@@ -23,7 +23,8 @@ jobs:
             bundle/v59-01.b64 \
             bundle/v59-02.b64 \
             bundle/v59-03.b64 \
-            bundle/v59-04.b64 \
+            bundle/v59-04x.b64 \
+            bundle/v59-04b.b64 \
             bundle/v59-05.b64 \
             bundle/v59-06.b64 \
             | tr -d '[:space:]' | base64 -d | gzip -d > index.html
