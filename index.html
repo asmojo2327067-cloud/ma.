@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v65</title>
+<title>ma.｜案件 v66</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -2996,7 +2996,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   }
   .mobileSidebarBody{
     flex:1 1 auto;min-height:0;
-    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    overflow-y:auto;overscroll-behavior:none;-webkit-overflow-scrolling:touch;
     padding:10px 10px 18px;
   }
 
@@ -3315,9 +3315,21 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   body.mobileStructurePreview #diagramZoomBadge.visible{display:block}
 }
 
+
+/* ===== mobile structure hard scroll edges / v66 ===== */
+@media(max-width:760px){
+  html.mobileStructureScrollLock,
+  html.mobileStructureScrollLock body.mobileStructurePreview{
+    overscroll-behavior-y:none!important;
+  }
+  body.mobileStructurePreview .mobileSidebarBody{
+    overscroll-behavior-y:none!important;
+  }
+}
+
 </style>
 </head>
-<body data-build="ma-project-v65" class="page-home">
+<body data-build="ma-project-v66" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -6606,7 +6618,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV65"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV66"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6747,7 +6759,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:65,
+    version:66,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -7639,7 +7651,7 @@ function runCutting(){
 }
 function renderCutResults(){const rec=document.getElementById("cutRecommendation"),res=document.getElementById("cuttingResults"),pur=document.getElementById("purchaseList");if(!lastCutResult||!lastCutResult.results?.length){if(res)res.innerHTML=`<div class="cutResultEmpty">${lastCutResult?.errors?.length?escapeAttr(lastCutResult.errors.join(" / ")):"木取りできる部材がありません。"}</div>`;if(rec)rec.innerHTML="";return}const stale=lastCutResult.sourceSignature!==cuttingSourceSignature(),totalSheets=lastCutResult.results.reduce((s,r)=>s+r.pack.sheetCount,0),pieceArea=lastCutResult.results.reduce((s,r)=>s+r.pack.pieceArea,0),sheetArea=lastCutResult.results.reduce((s,r)=>s+r.pack.totalSheetArea,0),yieldAll=sheetArea?pieceArea/sheetArea*100:0;rec.innerHTML=`<div class="cutRecommendCard">採用原板 合計 <b>${totalSheets}枚</b> ／ 全体歩留まり <b>${yieldAll.toFixed(1)}%</b>${stale?'<br><b class="cutDimError">構造または材料設定が変わっています。再生成してください。</b>':""}</div>`;res.innerHTML=lastCutResult.results.map(r=>{const counts={};r.pack.sheets.forEach(s=>counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]=(counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]||0)+1);const mix=Object.entries(counts).map(([k,v])=>`${k} × ${v}枚`).join(" ＋ "),rm=r.pack.maxRemnant;return `<article class="cutMaterialResult"><div class="cutMaterialResultHead"><div><strong><i class="cutMaterialColor" style="background:${r.mat.color}"></i>${escapeAttr(r.mat.name)}</strong><small>${mix}<br><b>最大端材 ${Math.round(rm.w)} × ${Math.round(rm.h)}</b>｜${r.mat.grain==="none"?"木目なし":r.mat.grain==="long"?"木目 長手":"木目 短手"}</small></div><div class="cutYieldBadge">歩留まり ${r.pack.yieldRate.toFixed(1)}%</div></div><div class="cutSheets">${r.pack.sheets.map((s,i)=>renderSheetVisual(s,i,r.mat)).join("")}</div></article>`}).join("");pur.innerHTML=lastCutResult.results.map(r=>{const counts={};r.pack.sheets.forEach(s=>counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]=(counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]||0)+1);return `<div class="purchaseItem"><div class="purchaseMaterial">${escapeAttr(r.mat.name)}<small>${r.mat.thickness}mm｜${r.mat.grain==="none"?"方向なし":r.mat.grain==="long"?"木目：長手":"木目：短手"}</small></div><div class="purchaseSheets">${Object.entries(counts).map(([k,v])=>`<span class="purchaseSheetTag">${escapeAttr(k)} × ${v}枚</span>`).join("")}</div></div>`}).join("")}
 document.getElementById("runCutting")?.addEventListener("click",runCutting);document.getElementById("cutPrintButton")?.addEventListener("click",()=>window.print());
-function showCutPage(){document.body.classList.remove("mobileThreeFullscreen");closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-project");document.body.classList.add("page-cut");const title=document.querySelector(".mobilePageTitle");if(title)title.textContent="木取り";setShellActive("cut");refreshProjectContext();syncCutSettingInputs();renderCutUnitSources();renderCutList();if(lastCutResult)renderCutResults();else resetCutResults();window.scrollTo({top:0,behavior:"auto"})}
+function showCutPage(){document.documentElement.classList.remove("mobileStructureScrollLock");document.body.classList.remove("mobileThreeFullscreen");closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-project");document.body.classList.add("page-cut");const title=document.querySelector(".mobilePageTitle");if(title)title.textContent="木取り";setShellActive("cut");refreshProjectContext();syncCutSettingInputs();renderCutUnitSources();renderCutList();if(lastCutResult)renderCutResults();else resetCutResults();window.scrollTo({top:0,behavior:"auto"})}
 document.getElementById("cutBackToStructure")?.addEventListener("click",()=>showEditorPage("structure"));
 
 
@@ -7772,7 +7784,7 @@ function projectPatternFinishThickness(p,pat){
   return Math.round(total*100)/100;
 }
 function renderProjectView(){const p=activeProject();if(!p)return showHomePage();document.getElementById("projectNameInput").value=p.name;document.getElementById("projectMeta").textContent=`${p.units?.length||0} ユニット　/　${p.materialPatterns?.length||0} 材料パターン`;renderProjectUnits(p);renderProjectPatterns(p);document.getElementById("projectCutUnitCount").textContent=p.units?.length||0;document.getElementById("projectCutPatternCount").textContent=p.materialPatterns?.length||0;document.getElementById("projectCutLast").textContent=p.cutting?.lastResult?"生成済み":"未生成"}
-function showProjectPage(tab="units"){document.body.classList.remove("mobileThreeFullscreen");closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
+function showProjectPage(tab="units"){document.documentElement.classList.remove("mobileStructureScrollLock");document.body.classList.remove("mobileThreeFullscreen");closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
 function openProject(id){currentProjectId=id;currentUnitId=null;showProjectPage("units")}
 function createNewProject(name){const p=createProjectObject(name);saveProject(p);currentProjectId=p.id;currentUnitId=null;showProjectPage("units")}
 function createUnitForProject(){const p=activeProject();if(!p)return;const n=(p.units?.length||0)+1;resetUnitState();currentUnitId=makeUnitId();$("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;cutState.materials=cloneMaterials(p.materials);cutState.patterns=clonePatterns(p.materialPatterns);cutState.additionalUnits=[];update();saveCurrentUnitIntoProject({silent:true});refreshProjectContext();showEditorPage("structure")}
@@ -7980,6 +7992,7 @@ document.getElementById("leftCompositionSection")?.addEventListener("change",()=
 document.getElementById("leftCompositionSection")?.addEventListener("click",e=>{if(e.target.closest("button"))setTimeout(refreshStructureAfterMaterialEdit,0)});
 
 function showHomePage(){
+  document.documentElement.classList.remove("mobileStructureScrollLock");
   document.body.classList.remove("mobileThreeFullscreen");
   closeMobileSidebars();
   closeMobileOverflowMenu();
@@ -8380,11 +8393,83 @@ function syncMobileThreeFullscreen(){
   }
 }
 
+
+(function setupMobileStructureEdgeGuard(){
+  let startY=0;
+  let startX=0;
+  let scroller=null;
+  let tracking=false;
+
+  function resolveScroller(target){
+    const sidebar=target.closest?.(".mobileSidebarBody");
+    if(sidebar)return sidebar;
+    return document.scrollingElement||document.documentElement;
+  }
+  function scrollMetrics(el){
+    if(el===document.scrollingElement||el===document.documentElement||el===document.body){
+      const root=document.scrollingElement||document.documentElement;
+      return{
+        top:root.scrollTop,
+        client:root.clientHeight,
+        size:root.scrollHeight
+      };
+    }
+    return{
+      top:el.scrollTop,
+      client:el.clientHeight,
+      size:el.scrollHeight
+    };
+  }
+
+  document.addEventListener("touchstart",e=>{
+    if(window.innerWidth>760||!document.body.classList.contains("mobileStructurePreview")||e.touches.length!==1){
+      tracking=false;
+      scroller=null;
+      return;
+    }
+    /* The illustration has its own pinch/pan interaction. */
+    if(e.target.closest?.("#diagramView .mainDiagramSvg")){
+      tracking=false;
+      scroller=null;
+      return;
+    }
+    tracking=true;
+    scroller=resolveScroller(e.target);
+    startY=e.touches[0].clientY;
+    startX=e.touches[0].clientX;
+  },{passive:true});
+
+  document.addEventListener("touchmove",e=>{
+    if(!tracking||!scroller||e.touches.length!==1)return;
+    if(window.innerWidth>760||!document.body.classList.contains("mobileStructurePreview"))return;
+
+    const dy=e.touches[0].clientY-startY;
+    const dx=e.touches[0].clientX-startX;
+    if(Math.abs(dy)<=Math.abs(dx))return;
+
+    const m=scrollMetrics(scroller);
+    const atTop=m.top<=0.5;
+    const atBottom=m.top+m.client>=m.size-0.5;
+
+    if((atTop&&dy>0)||(atBottom&&dy<0)){
+      e.preventDefault();
+    }
+  },{passive:false});
+
+  function stop(){
+    tracking=false;
+    scroller=null;
+  }
+  document.addEventListener("touchend",stop,{passive:true});
+  document.addEventListener("touchcancel",stop,{passive:true});
+})();
+
 function syncMobileStructurePreview(){
   const isEditor=!document.body.classList.contains("page-home")&&!document.body.classList.contains("page-cut")&&!document.body.classList.contains("page-project");
   const wasEnabled=document.body.classList.contains("mobileStructurePreview");
   const enabled=window.innerWidth<=760&&isEditor&&state.view==="diagram";
   document.body.classList.toggle("mobileStructurePreview",enabled);
+  document.documentElement.classList.toggle("mobileStructureScrollLock",enabled);
   if(enabled&&!wasEnabled)resetDiagramZoom();
   if(enabled){
     const header=document.querySelector(".mobileHeader");
