@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ma.｜案件 v61</title>
+<title>ma.｜案件 v62</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3026,9 +3026,142 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   }
 }
 
+
+/* ===== mobile 3D fullscreen / v62 ===== */
+.mobileThreeExit{display:none}
+
+@media(max-width:760px){
+  body.mobileThreeFullscreen{
+    padding:0!important;
+    overflow:hidden!important;
+    background:#f5f2ea!important;
+  }
+
+  /* 3D中は形を見ることだけに集中する。 */
+  body.mobileThreeFullscreen .mobileHeader,
+  body.mobileThreeFullscreen .mobileBottomNav,
+  body.mobileThreeFullscreen .mobileSidebarHandles,
+  body.mobileThreeFullscreen .mobileSidebarBackdrop,
+  body.mobileThreeFullscreen .mobileSidebar,
+  body.mobileThreeFullscreen .mobileOverflowMenu,
+  body.mobileThreeFullscreen .toolbar,
+  body.mobileThreeFullscreen .metaRow,
+  body.mobileThreeFullscreen #workspaceDock{
+    display:none!important;
+  }
+
+  body.mobileThreeFullscreen .mobileFlow{
+    position:fixed!important;
+    inset:0!important;
+    z-index:60;
+    display:block!important;
+    width:100vw!important;
+    height:100vh!important;
+    height:100dvh!important;
+    min-height:0!important;
+    padding:0!important;
+    margin:0!important;
+    overflow:hidden!important;
+    background:#f5f2ea!important;
+  }
+
+  body.mobileThreeFullscreen .canvasWrap{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    background:#f5f2ea!important;
+  }
+
+  body.mobileThreeFullscreen .canvasWrap>.card{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:#f5f2ea!important;
+  }
+
+  body.mobileThreeFullscreen #diagramView,
+  body.mobileThreeFullscreen #threeView .cardHead,
+  body.mobileThreeFullscreen #threeView .fixedViews,
+  body.mobileThreeFullscreen #threeView .threeHint{
+    display:none!important;
+  }
+
+  body.mobileThreeFullscreen #threeView:not(.hidden){
+    position:absolute!important;
+    inset:0!important;
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    margin:0!important;
+    padding:0!important;
+    background:#f5f2ea!important;
+  }
+
+  body.mobileThreeFullscreen #threeCanvas{
+    position:absolute!important;
+    inset:0!important;
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:100%!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:
+      linear-gradient(rgba(80,74,66,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(80,74,66,.035) 1px,transparent 1px),
+      #f5f2ea!important;
+    background-size:27px 27px!important;
+    touch-action:none!important;
+  }
+
+  /* 情報ではなく、画面を抜けるためだけの最小ボタン。 */
+  body.mobileThreeFullscreen .mobileThreeExit{
+    display:grid!important;
+    position:fixed;
+    top:max(10px,env(safe-area-inset-top));
+    left:10px;
+    z-index:75;
+    width:38px;
+    height:38px;
+    place-items:center;
+    padding:0;
+    border:1px solid rgba(92,84,73,.24);
+    border-radius:50%;
+    background:rgba(248,245,237,.72);
+    color:#4c473f;
+    box-shadow:0 3px 12px rgba(40,36,31,.08);
+    backdrop-filter:blur(5px);
+    -webkit-backdrop-filter:blur(5px);
+    font-size:20px;
+    font-weight:700;
+    line-height:1;
+  }
+  body.mobileThreeFullscreen .mobileThreeExit:active{
+    background:rgba(235,231,221,.9);
+  }
+}
+
 </style>
 </head>
-<body data-build="ma-project-v61" class="page-home">
+<body data-build="ma-project-v62" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3456,6 +3589,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
           <button data-fixed-view="back">背面</button>
         </div>
         <canvas id="threeCanvas"></canvas>
+        <button id="mobileThreeExit" class="mobileThreeExit" type="button" aria-label="構造画面へ戻る">←</button>
         <div class="threeHint">
           <span>※ 外形の W:H:D 比率をそのまま反映して表示します。板厚は未入力なので3D上では表示用の仮厚みです。</span>
           <span>束・棚・巾木・背板の構造も反映します。3D内に「前／後ろ」表示を出します。</span>
@@ -6297,7 +6431,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV61";
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV62";
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6424,6 +6558,7 @@ canvas.addEventListener("pointermove",e=>{
 canvas.addEventListener("pointerup",e=>{state.three.drag=false;try{canvas.releasePointerCapture(e.pointerId)}catch(_){ }});
 canvas.addEventListener("wheel",e=>{e.preventDefault();clearFixedViewActive();state.three.zoom=Math.max(.55,Math.min(2.2,state.three.zoom*(e.deltaY>0?.92:1.08)));request3D()},{passive:false});
 $("reset3D").addEventListener("click",()=>applyFixedView("front"));
+$("mobileThreeExit")?.addEventListener("click",()=>showEditorPage("structure"));
 window.addEventListener("resize",()=>requestAnimationFrame(draw3D));
 
 
@@ -6437,7 +6572,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:61,
+    version:62,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -7329,7 +7464,7 @@ function runCutting(){
 }
 function renderCutResults(){const rec=document.getElementById("cutRecommendation"),res=document.getElementById("cuttingResults"),pur=document.getElementById("purchaseList");if(!lastCutResult||!lastCutResult.results?.length){if(res)res.innerHTML=`<div class="cutResultEmpty">${lastCutResult?.errors?.length?escapeAttr(lastCutResult.errors.join(" / ")):"木取りできる部材がありません。"}</div>`;if(rec)rec.innerHTML="";return}const stale=lastCutResult.sourceSignature!==cuttingSourceSignature(),totalSheets=lastCutResult.results.reduce((s,r)=>s+r.pack.sheetCount,0),pieceArea=lastCutResult.results.reduce((s,r)=>s+r.pack.pieceArea,0),sheetArea=lastCutResult.results.reduce((s,r)=>s+r.pack.totalSheetArea,0),yieldAll=sheetArea?pieceArea/sheetArea*100:0;rec.innerHTML=`<div class="cutRecommendCard">採用原板 合計 <b>${totalSheets}枚</b> ／ 全体歩留まり <b>${yieldAll.toFixed(1)}%</b>${stale?'<br><b class="cutDimError">構造または材料設定が変わっています。再生成してください。</b>':""}</div>`;res.innerHTML=lastCutResult.results.map(r=>{const counts={};r.pack.sheets.forEach(s=>counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]=(counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]||0)+1);const mix=Object.entries(counts).map(([k,v])=>`${k} × ${v}枚`).join(" ＋ "),rm=r.pack.maxRemnant;return `<article class="cutMaterialResult"><div class="cutMaterialResultHead"><div><strong><i class="cutMaterialColor" style="background:${r.mat.color}"></i>${escapeAttr(r.mat.name)}</strong><small>${mix}<br><b>最大端材 ${Math.round(rm.w)} × ${Math.round(rm.h)}</b>｜${r.mat.grain==="none"?"木目なし":r.mat.grain==="long"?"木目 長手":"木目 短手"}</small></div><div class="cutYieldBadge">歩留まり ${r.pack.yieldRate.toFixed(1)}%</div></div><div class="cutSheets">${r.pack.sheets.map((s,i)=>renderSheetVisual(s,i,r.mat)).join("")}</div></article>`}).join("");pur.innerHTML=lastCutResult.results.map(r=>{const counts={};r.pack.sheets.forEach(s=>counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]=(counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]||0)+1);return `<div class="purchaseItem"><div class="purchaseMaterial">${escapeAttr(r.mat.name)}<small>${r.mat.thickness}mm｜${r.mat.grain==="none"?"方向なし":r.mat.grain==="long"?"木目：長手":"木目：短手"}</small></div><div class="purchaseSheets">${Object.entries(counts).map(([k,v])=>`<span class="purchaseSheetTag">${escapeAttr(k)} × ${v}枚</span>`).join("")}</div></div>`}).join("")}
 document.getElementById("runCutting")?.addEventListener("click",runCutting);document.getElementById("cutPrintButton")?.addEventListener("click",()=>window.print());
-function showCutPage(){closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-project");document.body.classList.add("page-cut");const title=document.querySelector(".mobilePageTitle");if(title)title.textContent="木取り";setShellActive("cut");refreshProjectContext();syncCutSettingInputs();renderCutUnitSources();renderCutList();if(lastCutResult)renderCutResults();else resetCutResults();window.scrollTo({top:0,behavior:"auto"})}
+function showCutPage(){document.body.classList.remove("mobileThreeFullscreen");closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-project");document.body.classList.add("page-cut");const title=document.querySelector(".mobilePageTitle");if(title)title.textContent="木取り";setShellActive("cut");refreshProjectContext();syncCutSettingInputs();renderCutUnitSources();renderCutList();if(lastCutResult)renderCutResults();else resetCutResults();window.scrollTo({top:0,behavior:"auto"})}
 document.getElementById("cutBackToStructure")?.addEventListener("click",()=>showEditorPage("structure"));
 
 
@@ -7462,7 +7597,7 @@ function projectPatternFinishThickness(p,pat){
   return Math.round(total*100)/100;
 }
 function renderProjectView(){const p=activeProject();if(!p)return showHomePage();document.getElementById("projectNameInput").value=p.name;document.getElementById("projectMeta").textContent=`${p.units?.length||0} ユニット　/　${p.materialPatterns?.length||0} 材料パターン`;renderProjectUnits(p);renderProjectPatterns(p);document.getElementById("projectCutUnitCount").textContent=p.units?.length||0;document.getElementById("projectCutPatternCount").textContent=p.materialPatterns?.length||0;document.getElementById("projectCutLast").textContent=p.cutting?.lastResult?"生成済み":"未生成"}
-function showProjectPage(tab="units"){closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
+function showProjectPage(tab="units"){document.body.classList.remove("mobileThreeFullscreen");closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
 function openProject(id){currentProjectId=id;currentUnitId=null;showProjectPage("units")}
 function createNewProject(name){const p=createProjectObject(name);saveProject(p);currentProjectId=p.id;currentUnitId=null;showProjectPage("units")}
 function createUnitForProject(){const p=activeProject();if(!p)return;const n=(p.units?.length||0)+1;resetUnitState();currentUnitId=makeUnitId();$("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;cutState.materials=cloneMaterials(p.materials);cutState.patterns=clonePatterns(p.materialPatterns);cutState.additionalUnits=[];update();saveCurrentUnitIntoProject({silent:true});refreshProjectContext();showEditorPage("structure")}
@@ -7670,6 +7805,7 @@ document.getElementById("leftCompositionSection")?.addEventListener("change",()=
 document.getElementById("leftCompositionSection")?.addEventListener("click",e=>{if(e.target.closest("button"))setTimeout(refreshStructureAfterMaterialEdit,0)});
 
 function showHomePage(){
+  document.body.classList.remove("mobileThreeFullscreen");
   closeMobileSidebars();
   closeMobileOverflowMenu();
   document.body.classList.remove("mobileStructurePreview","page-cut","page-project");
@@ -7722,10 +7858,7 @@ function showThreeFromShell(){
   const btn=document.querySelector('.viewTabs button[data-view="three"]');
   if(btn)btn.click();
   setShellActive("three");
-  setTimeout(()=>{
-    const target=document.getElementById("threeView");
-    if(target && window.innerWidth<=760) target.scrollIntoView({behavior:"smooth",block:"start"});
-  },30);
+  requestAnimationFrame(syncMobileThreeFullscreen);
 }
 document.querySelectorAll(".shellNavBtn").forEach(btn=>{
   btn.addEventListener("click",()=>{
@@ -7917,6 +8050,19 @@ function syncMobileSidebarTop(){
   document.documentElement.style.setProperty("--mobile-sidebar-top",`${top}px`);
 }
 
+
+function syncMobileThreeFullscreen(){
+  const isEditor=!document.body.classList.contains("page-home")&&!document.body.classList.contains("page-cut")&&!document.body.classList.contains("page-project");
+  const enabled=window.innerWidth<=760&&isEditor&&state.view==="three";
+  document.body.classList.toggle("mobileThreeFullscreen",enabled);
+  if(enabled){
+    closeMobileSidebars();
+    closeMobileOverflowMenu();
+    window.scrollTo({top:0,behavior:"auto"});
+    requestAnimationFrame(request3D);
+  }
+}
+
 function syncMobileStructurePreview(){
   const isEditor=!document.body.classList.contains("page-home")&&!document.body.classList.contains("page-cut")&&!document.body.classList.contains("page-project");
   const enabled=window.innerWidth<=760&&isEditor&&state.view==="diagram";
@@ -7929,6 +8075,7 @@ function syncMobileStructurePreview(){
     const top=Math.round(headerBottom+metaHeight+7);
     document.documentElement.style.setProperty("--mobile-structure-preview-top",`${top}px`);
   }
+  syncMobileThreeFullscreen();
   requestAnimationFrame(syncMobileSidebarTop);
 }
 window.addEventListener("resize",()=>requestAnimationFrame(syncMobileStructurePreview));
