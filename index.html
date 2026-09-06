@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ma.｜案件 v59</title>
+<title>ma.｜案件 v60</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -2697,9 +2697,211 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   color:var(--muted);
 }
 
+
+/* ===== smartphone structure editing / v60 ===== */
+:root{
+  --mobile-structure-preview-height:228px;
+  --mobile-structure-preview-top:132px;
+}
+.mobileOverflowMenu{display:none}
+
+@media(max-width:760px){
+  /* Header and unit bar must be visually opaque while fixed/sticky. */
+  .mobileHeader{
+    background:#f6f3eb!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .mobileMenuBtn{
+    display:grid;
+    place-items:center;
+    padding:0;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:25px;
+    font-weight:800;
+  }
+  .mobileMenuBtn[aria-expanded="true"]{
+    background:#e7e3d9;
+  }
+  .mobileOverflowMenu{
+    position:fixed;
+    top:51px;
+    right:10px;
+    z-index:80;
+    width:min(220px,calc(100vw - 20px));
+    padding:6px;
+    border:1px solid #c8c1b5;
+    border-radius:7px;
+    background:#fbfaf6;
+    box-shadow:0 12px 30px rgba(45,40,34,.18);
+  }
+  .mobileOverflowMenu:not([hidden]){display:grid;gap:2px}
+  .mobileOverflowMenu button{
+    width:100%;
+    min-height:42px;
+    padding:9px 11px;
+    border:0;
+    border-radius:5px;
+    background:transparent;
+    color:var(--ink);
+    text-align:left;
+    font-size:11px;
+    font-weight:700;
+  }
+  .mobileOverflowMenu button:active{background:#ebe7dd}
+  .mobileOverflowMenu button[hidden]{display:none!important}
+
+  /* Bottom navigation already switches Structure / 3D, so the duplicate toolbar is removed on phone. */
+  body:not(.page-home):not(.page-cut):not(.page-project) .toolbar{
+    display:none!important;
+  }
+
+  /* Compact, solid unit bar fixed immediately under the global header. */
+  body:not(.page-home):not(.page-cut):not(.page-project) .metaRow{
+    position:sticky!important;
+    top:57px!important;
+    z-index:34!important;
+    min-height:0!important;
+    padding:7px 12px 8px!important;
+    background:#f6f3eb!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    border-bottom:1px solid #c9c2b7!important;
+    box-shadow:0 5px 12px rgba(55,49,41,.08);
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerMeta{
+    gap:5px!important;
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerPattern label{
+    display:none!important;
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerPattern input{
+    height:34px!important;
+    padding:4px 8px!important;
+    background:#fffdf8!important;
+    border-color:#c9c2b7!important;
+    font-size:14px!important;
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerOuter{
+    gap:5px!important;
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerOuterLabel{
+    font-size:9px!important;
+    margin-right:2px!important;
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerOuter label{
+    gap:3px!important;
+    font-size:9px!important;
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerOuter input{
+    height:31px!important;
+    padding:3px 5px!important;
+    background:#fffdf8!important;
+    border-color:#c9c2b7!important;
+    font-size:12px!important;
+  }
+
+  /* Save moves to the overflow menu; keep toast available without consuming layout height. */
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerSaveWrap{
+    width:0!important;
+    height:0!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .centerSaveButton{
+    display:none!important;
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .metaToast{
+    position:fixed!important;
+    top:61px!important;
+    right:52px!important;
+    bottom:auto!important;
+    width:auto!important;
+    height:auto!important;
+    min-width:0!important;
+    max-width:calc(100vw - 110px);
+    z-index:82!important;
+    padding:4px 7px;
+    border-radius:4px;
+    background:#fbfaf6;
+    box-shadow:0 3px 10px rgba(45,40,34,.12);
+  }
+  body:not(.page-home):not(.page-cut):not(.page-project) .metaToast:empty{
+    display:none;
+  }
+
+  /*
+    Structure mode: keep the actual interactive drawing fixed under the unit bar.
+    The editor controls continue scrolling underneath, so edits can be made while
+    the drawing remains visible and updates live.
+  */
+  body.mobileStructurePreview:not(.page-home):not(.page-cut):not(.page-project) .canvasWrap{
+    padding-top:10px!important;
+  }
+  body.mobileStructurePreview:not(.page-home):not(.page-cut):not(.page-project) .canvasWrap>.card{
+    padding-top:calc(var(--mobile-structure-preview-height) + 12px)!important;
+  }
+  body.mobileStructurePreview:not(.page-home):not(.page-cut):not(.page-project) #diagramView:not(.hidden){
+    position:fixed!important;
+    left:12px!important;
+    right:12px!important;
+    top:var(--mobile-structure-preview-top)!important;
+    z-index:30!important;
+    width:auto!important;
+    height:var(--mobile-structure-preview-height)!important;
+    min-height:0!important;
+    padding:7px 8px 8px!important;
+    overflow:hidden!important;
+    display:flex!important;
+    flex-direction:column!important;
+    border:1px solid #c7c0b4;
+    border-radius:7px;
+    background:#fbfaf6;
+    box-shadow:0 8px 22px rgba(48,43,36,.13);
+  }
+  body.mobileStructurePreview #diagramView .cardHead{
+    flex:0 0 27px!important;
+    min-height:27px!important;
+    margin:0 0 2px!important;
+    padding:0 2px 5px!important;
+  }
+  body.mobileStructurePreview #diagramView .cardHead strong{
+    font-size:10px!important;
+  }
+  body.mobileStructurePreview #diagramView .handSub{
+    display:none!important;
+  }
+  body.mobileStructurePreview #diagramView .mainDiagramSvg{
+    flex:1 1 auto!important;
+    width:100%!important;
+    height:calc(var(--mobile-structure-preview-height) - 38px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    border-bottom:0!important;
+  }
+
+  /* Editing sections scroll to a position that stays below the fixed drawing. */
+  body.mobileStructurePreview .workspaceDock,
+  body.mobileStructurePreview #leftRegionSection,
+  body.mobileStructurePreview #leftMaterialsSection,
+  body.mobileStructurePreview #leftCompositionSection,
+  body.mobileStructurePreview #rightHistorySection{
+    scroll-margin-top:calc(var(--mobile-structure-preview-top) + var(--mobile-structure-preview-height) + 8px);
+  }
+
+  /* In 3D mode the drawing is not fixed; use the whole page as before. */
+  body:not(.mobileStructurePreview) #threeView:not(.hidden){
+    position:relative!important;
+  }
+}
+
 </style>
 </head>
-<body data-build="ma-project-v59" class="page-home">
+<body data-build="ma-project-v60" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -2722,8 +2924,13 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
     <div class="mobilePageTitle">ホーム</div>
     <div id="mobileProjectName" class="mobileProjectName" hidden></div>
   </div>
-  <button class="mobileMenuBtn" aria-label="メニュー">≡</button>
+  <button id="mobileMenuBtn" class="mobileMenuBtn" type="button" aria-label="メニュー" aria-expanded="false" aria-controls="mobileOverflowMenu">⋮</button>
 </header>
+<div id="mobileOverflowMenu" class="mobileOverflowMenu" hidden>
+  <button type="button" data-mobile-menu-action="save">ユニットを保存</button>
+  <button type="button" data-mobile-menu-action="project">案件へ戻る</button>
+  <button type="button" data-mobile-menu-action="home">ホームへ戻る</button>
+</div>
 
 <nav class="mobileBottomNav" aria-label="スマホナビゲーション">
   <button class="shellNavBtn active" data-shell-action="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5v8.2a1.3 1.3 0 0 1-1.3 1.3H5.3A1.3 1.3 0 0 1 4 18.7z"/><path d="M9 20v-6h6v6"/></svg><span>ホーム</span></button>
@@ -5936,7 +6143,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV59";
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV60";
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6041,6 +6248,7 @@ document.querySelectorAll(".viewTabs button").forEach(btn=>btn.addEventListener(
   }else{
     requestAnimationFrame(applyResponsiveDiagramViewport);
   }
+  requestAnimationFrame(syncMobileStructurePreview);
 }));
 
 document.querySelectorAll("#fixedViews button").forEach(btn=>{
@@ -6074,7 +6282,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:59,
+    version:60,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -6966,7 +7174,7 @@ function runCutting(){
 }
 function renderCutResults(){const rec=document.getElementById("cutRecommendation"),res=document.getElementById("cuttingResults"),pur=document.getElementById("purchaseList");if(!lastCutResult||!lastCutResult.results?.length){if(res)res.innerHTML=`<div class="cutResultEmpty">${lastCutResult?.errors?.length?escapeAttr(lastCutResult.errors.join(" / ")):"木取りできる部材がありません。"}</div>`;if(rec)rec.innerHTML="";return}const stale=lastCutResult.sourceSignature!==cuttingSourceSignature(),totalSheets=lastCutResult.results.reduce((s,r)=>s+r.pack.sheetCount,0),pieceArea=lastCutResult.results.reduce((s,r)=>s+r.pack.pieceArea,0),sheetArea=lastCutResult.results.reduce((s,r)=>s+r.pack.totalSheetArea,0),yieldAll=sheetArea?pieceArea/sheetArea*100:0;rec.innerHTML=`<div class="cutRecommendCard">採用原板 合計 <b>${totalSheets}枚</b> ／ 全体歩留まり <b>${yieldAll.toFixed(1)}%</b>${stale?'<br><b class="cutDimError">構造または材料設定が変わっています。再生成してください。</b>':""}</div>`;res.innerHTML=lastCutResult.results.map(r=>{const counts={};r.pack.sheets.forEach(s=>counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]=(counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]||0)+1);const mix=Object.entries(counts).map(([k,v])=>`${k} × ${v}枚`).join(" ＋ "),rm=r.pack.maxRemnant;return `<article class="cutMaterialResult"><div class="cutMaterialResultHead"><div><strong><i class="cutMaterialColor" style="background:${r.mat.color}"></i>${escapeAttr(r.mat.name)}</strong><small>${mix}<br><b>最大端材 ${Math.round(rm.w)} × ${Math.round(rm.h)}</b>｜${r.mat.grain==="none"?"木目なし":r.mat.grain==="long"?"木目 長手":"木目 短手"}</small></div><div class="cutYieldBadge">歩留まり ${r.pack.yieldRate.toFixed(1)}%</div></div><div class="cutSheets">${r.pack.sheets.map((s,i)=>renderSheetVisual(s,i,r.mat)).join("")}</div></article>`}).join("");pur.innerHTML=lastCutResult.results.map(r=>{const counts={};r.pack.sheets.forEach(s=>counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]=(counts[`${s.sheet.label} ${s.sheet.w}×${s.sheet.h}`]||0)+1);return `<div class="purchaseItem"><div class="purchaseMaterial">${escapeAttr(r.mat.name)}<small>${r.mat.thickness}mm｜${r.mat.grain==="none"?"方向なし":r.mat.grain==="long"?"木目：長手":"木目：短手"}</small></div><div class="purchaseSheets">${Object.entries(counts).map(([k,v])=>`<span class="purchaseSheetTag">${escapeAttr(k)} × ${v}枚</span>`).join("")}</div></div>`}).join("")}
 document.getElementById("runCutting")?.addEventListener("click",runCutting);document.getElementById("cutPrintButton")?.addEventListener("click",()=>window.print());
-function showCutPage(){document.body.classList.remove("page-home","page-project");document.body.classList.add("page-cut");const title=document.querySelector(".mobilePageTitle");if(title)title.textContent="木取り";setShellActive("cut");refreshProjectContext();syncCutSettingInputs();renderCutUnitSources();renderCutList();if(lastCutResult)renderCutResults();else resetCutResults();window.scrollTo({top:0,behavior:"auto"})}
+function showCutPage(){closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-project");document.body.classList.add("page-cut");const title=document.querySelector(".mobilePageTitle");if(title)title.textContent="木取り";setShellActive("cut");refreshProjectContext();syncCutSettingInputs();renderCutUnitSources();renderCutList();if(lastCutResult)renderCutResults();else resetCutResults();window.scrollTo({top:0,behavior:"auto"})}
 document.getElementById("cutBackToStructure")?.addEventListener("click",()=>showEditorPage("structure"));
 
 
@@ -7099,7 +7307,7 @@ function projectPatternFinishThickness(p,pat){
   return Math.round(total*100)/100;
 }
 function renderProjectView(){const p=activeProject();if(!p)return showHomePage();document.getElementById("projectNameInput").value=p.name;document.getElementById("projectMeta").textContent=`${p.units?.length||0} ユニット　/　${p.materialPatterns?.length||0} 材料パターン`;renderProjectUnits(p);renderProjectPatterns(p);document.getElementById("projectCutUnitCount").textContent=p.units?.length||0;document.getElementById("projectCutPatternCount").textContent=p.materialPatterns?.length||0;document.getElementById("projectCutLast").textContent=p.cutting?.lastResult?"生成済み":"未生成"}
-function showProjectPage(tab="units"){document.body.classList.remove("page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
+function showProjectPage(tab="units"){closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
 function openProject(id){currentProjectId=id;currentUnitId=null;showProjectPage("units")}
 function createNewProject(name){const p=createProjectObject(name);saveProject(p);currentProjectId=p.id;currentUnitId=null;showProjectPage("units")}
 function createUnitForProject(){const p=activeProject();if(!p)return;const n=(p.units?.length||0)+1;resetUnitState();currentUnitId=makeUnitId();$("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;cutState.materials=cloneMaterials(p.materials);cutState.patterns=clonePatterns(p.materialPatterns);cutState.additionalUnits=[];update();saveCurrentUnitIntoProject({silent:true});refreshProjectContext();showEditorPage("structure")}
@@ -7307,7 +7515,8 @@ document.getElementById("leftCompositionSection")?.addEventListener("change",()=
 document.getElementById("leftCompositionSection")?.addEventListener("click",e=>{if(e.target.closest("button"))setTimeout(refreshStructureAfterMaterialEdit,0)});
 
 function showHomePage(){
-  document.body.classList.remove("page-cut","page-project");
+  closeMobileOverflowMenu();
+  document.body.classList.remove("mobileStructurePreview","page-cut","page-project");
   document.body.classList.add("page-home");
   const title=document.querySelector(".mobilePageTitle");
   if(title)title.textContent="ホーム";
@@ -7318,6 +7527,7 @@ function showHomePage(){
 }
 function showEditorPage(action="structure"){
   document.body.classList.remove("page-home","page-cut","page-project");
+  closeMobileOverflowMenu();
   const title=document.querySelector(".mobilePageTitle");
   if(title)title.textContent=action==="three"?"3Dモデル":"構造入力";
   refreshProjectContext();
@@ -7327,6 +7537,7 @@ function showEditorPage(action="structure"){
   else showDiagramFromShell();
   requestAnimationFrame(()=>{
     applyResponsiveDiagramViewport();
+    syncMobileStructurePreview();
     if(state.view==="three")request3D();
   });
 }
@@ -7393,6 +7604,75 @@ window.addEventListener("resize",()=>{
 });
 applyResponsiveDiagramViewport();
 
+
+function closeMobileOverflowMenu(){
+  const menu=document.getElementById("mobileOverflowMenu");
+  const btn=document.getElementById("mobileMenuBtn");
+  if(menu)menu.hidden=true;
+  if(btn)btn.setAttribute("aria-expanded","false");
+}
+function syncMobileMenuAvailability(){
+  const projectBtn=document.querySelector('[data-mobile-menu-action="project"]');
+  if(projectBtn)projectBtn.hidden=!currentProjectId;
+}
+function toggleMobileOverflowMenu(){
+  if(window.innerWidth>760)return;
+  const menu=document.getElementById("mobileOverflowMenu");
+  const btn=document.getElementById("mobileMenuBtn");
+  if(!menu||!btn)return;
+  syncMobileMenuAvailability();
+  const opening=menu.hidden;
+  menu.hidden=!opening;
+  btn.setAttribute("aria-expanded",opening?"true":"false");
+}
+document.getElementById("mobileMenuBtn")?.addEventListener("click",e=>{
+  e.stopPropagation();
+  toggleMobileOverflowMenu();
+});
+document.getElementById("mobileOverflowMenu")?.addEventListener("click",e=>{
+  const action=e.target.closest("[data-mobile-menu-action]")?.dataset.mobileMenuAction;
+  if(!action)return;
+  closeMobileOverflowMenu();
+  if(action==="save"){
+    document.getElementById("savePattern")?.click();
+    return;
+  }
+  if(action==="project"){
+    if(currentProjectId)showProjectPage("units");
+    return;
+  }
+  if(action==="home"){
+    showHomePage();
+  }
+});
+document.addEventListener("click",e=>{
+  const menu=document.getElementById("mobileOverflowMenu");
+  const btn=document.getElementById("mobileMenuBtn");
+  if(!menu||menu.hidden)return;
+  if(menu.contains(e.target)||btn?.contains(e.target))return;
+  closeMobileOverflowMenu();
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape")closeMobileOverflowMenu();
+});
+
+function syncMobileStructurePreview(){
+  const isEditor=!document.body.classList.contains("page-home")&&!document.body.classList.contains("page-cut")&&!document.body.classList.contains("page-project");
+  const enabled=window.innerWidth<=760&&isEditor&&state.view==="diagram";
+  document.body.classList.toggle("mobileStructurePreview",enabled);
+  if(!enabled)return;
+  const header=document.querySelector(".mobileHeader");
+  const meta=document.querySelector(".metaRow");
+  const headerBottom=header?.getBoundingClientRect().bottom||57;
+  const metaHeight=meta?.getBoundingClientRect().height||70;
+  const top=Math.round(headerBottom+metaHeight+7);
+  document.documentElement.style.setProperty("--mobile-structure-preview-top",`${top}px`);
+}
+window.addEventListener("resize",()=>requestAnimationFrame(syncMobileStructurePreview));
+window.addEventListener("scroll",()=>{
+  if(document.body.classList.contains("mobileStructurePreview"))requestAnimationFrame(syncMobileStructurePreview);
+},{passive:true});
+
 const mobileLayoutState={active:false,items:[]};
 
 function setupDedicatedMobileLayout(){
@@ -7434,6 +7714,7 @@ function applyDedicatedMobileLayout(){
     mobileLayoutState.active=true;
     requestAnimationFrame(()=>{
       applyResponsiveDiagramViewport();
+      syncMobileStructurePreview();
       if(state.view==="three")request3D();
     });
   }else if(!isMobile&&mobileLayoutState.active){
@@ -7443,12 +7724,14 @@ function applyDedicatedMobileLayout(){
     mobileLayoutState.active=false;
     requestAnimationFrame(()=>{
       applyResponsiveDiagramViewport();
+      syncMobileStructurePreview();
       if(state.view==="three")request3D();
     });
   }
 }
 window.addEventListener("resize",applyDedicatedMobileLayout);
 applyDedicatedMobileLayout();
+syncMobileStructurePreview();
 renderHomeProjects();
 refreshProjectContext();
 
