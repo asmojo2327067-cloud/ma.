@@ -1,0 +1,53 @@
+name: Deploy ma v62
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-v62.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply v62 patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, gzip, hashlib, subprocess
+          baseline='c864ac4ebfd5f0beb8253bf781257564696e208c3713cf5a9dce3a3e3ab2f7bf'
+          target='7850f3cedf17f765a13143101ebee0b47d00f07824a8a4cee5b8f6a564ea1955'
+          p=Path('index.html')
+          got=hashlib.sha256(p.read_bytes()).hexdigest()
+          if got != baseline:
+              raise SystemExit(f'Unexpected v61 baseline: {got}')
+          payload='''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'''
+          patch=gzip.decompress(base64.b64decode(payload)).decode('utf-8')
+          Path('/tmp/v62.patch').write_text(patch, encoding='utf-8')
+          subprocess.run(['git','apply','/tmp/v62.patch'], check=True)
+          got=hashlib.sha256(p.read_bytes()).hexdigest()
+          if got != target:
+              raise SystemExit(f'v62 hash mismatch: {got}')
+          text=p.read_text(encoding='utf-8')
+          required=['<title>ma.｜案件 v62</title>','data-build="ma-project-v62"','mobileThreeFullscreen','mobileThreeExit']
+          missing=[x for x in required if x not in text]
+          if missing:
+              raise SystemExit(f'Missing v62 markers: {missing}')
+          print('v62 verified', got)
+          PY
+      - name: Commit v62
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Update ma. to v62"
+          git push
