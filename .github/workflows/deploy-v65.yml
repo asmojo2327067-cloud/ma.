@@ -1,0 +1,35 @@
+name: Deploy ma v65
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-v65.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify v64 baseline
+        run: |
+          grep -q 'data-build="ma-project-v64"' index.html
+      - name: Apply v65 patch
+        run: |
+          echo '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' | base64 -d | gzip -d > /tmp/v65.patch
+          patch -p0 < /tmp/v65.patch
+          echo "aad173178e34ae76ad9298e4990197ef705fd0979da0cec20494aebc3d714141  index.html" | sha256sum -c -
+          grep -q 'data-build="ma-project-v65"' index.html
+      - name: Commit v65
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Update ma. to v65"
+          git push
