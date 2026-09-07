@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v66</title>
+<title>ma.｜案件 v67</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3327,9 +3327,124 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   }
 }
 
+
+/* ===== smartphone interaction cleanup / v67 ===== */
+.regionDimensionsPanel{min-width:0}
+.regionDimensionsSummary{
+  margin:0 0 9px;
+  padding:8px 9px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:rgba(255,255,255,.34);
+  color:var(--muted);
+  font-size:9px;
+  line-height:1.55;
+}
+.regionDimensionsList{display:grid;gap:6px}
+.regionDimensionRow{
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(42px,.6fr) minmax(0,1.4fr);
+  align-items:center;
+  gap:8px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:rgba(255,255,255,.38);
+  color:var(--ink);
+  text-align:left;
+}
+.regionDimensionRow strong{font-size:11px}
+.regionDimensionRow span{font-size:10px;font-variant-numeric:tabular-nums;text-align:right}
+.regionDimensionRow.selected{
+  border-color:#817b70;
+  background:#e7e3da;
+  box-shadow:inset 3px 0 0 #817b70;
+}
+.regionDimensionEmpty{padding:12px 4px;color:var(--muted);font-size:9px}
+
+.mobileInputToolbar{display:none}
+
+@media(max-width:760px){
+  /* Four compact sidebar tabs instead of three. */
+  .mobileSidebar .sideTabs{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+
+  /* The old labeled buttons are gone. Only quiet edge affordances remain. */
+  .mobileSidebarHandles{
+    display:block;
+    top:var(--mobile-sidebar-top);
+    bottom:72px;
+    pointer-events:none;
+  }
+  .mobileEdgeBar{
+    position:fixed;
+    top:calc(var(--mobile-sidebar-top) + 38px);
+    width:4px;
+    height:62px;
+    border-radius:4px;
+    background:#aaa59d;
+    opacity:.62;
+    pointer-events:auto;
+    touch-action:none;
+  }
+  .mobileEdgeBarLeft{left:0}
+  .mobileEdgeBarRight{right:0}
+  body.mobileSidebarLeftOpen .mobileSidebarHandles,
+  body.mobileSidebarRightOpen .mobileSidebarHandles{
+    opacity:0;pointer-events:none;
+  }
+
+  /* Stronger selection is useful on a small drawing, without adding controls. */
+  body.mobileStructurePreview #cabinet .region.selected{
+    fill:rgba(105,101,94,.13);
+    stroke:#4f4b45;
+    stroke-width:3.2;
+    vector-effect:non-scaling-stroke;
+  }
+  body.mobileStructurePreview #cabinet .partSelectedSvg{
+    stroke-width:4.5!important;
+    vector-effect:non-scaling-stroke;
+  }
+
+  /* Web keyboard companion. VisualViewport keeps it above the iOS keyboard. */
+  .mobileInputToolbar{
+    position:fixed;
+    left:10px;right:10px;
+    bottom:calc(8px + var(--mobile-keyboard-offset,0px));
+    z-index:80;
+    height:42px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1.15fr;
+    gap:5px;
+    padding:4px;
+    border:1px solid #bcb6ac;
+    border-radius:9px;
+    background:rgba(247,244,237,.96);
+    box-shadow:0 8px 22px rgba(44,40,34,.18);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+  }
+  .mobileInputToolbar[hidden]{display:none!important}
+  .mobileInputToolbar button{
+    min-width:0;
+    height:32px;
+    padding:0 8px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fffdf8;
+    color:var(--ink);
+    font-size:11px;
+    font-weight:800;
+  }
+  .mobileInputToolbar button:disabled{opacity:.32}
+  .mobileInputToolbar #mobileInputDone{background:#e6e1d7}
+}
+
 </style>
 </head>
-<body data-build="ma-project-v66" class="page-home">
+<body data-build="ma-project-v67" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3578,6 +3693,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 
   <div class="sideTabs leftStructureTabs" data-side-tabs="left">
     <button class="sideTab active" data-side-tab="region" type="button">区画</button>
+    <button class="sideTab" data-side-tab="dimensions" type="button">寸法</button>
     <button class="sideTab" data-side-tab="materials" type="button">材料</button>
     <button class="sideTab" data-side-tab="composition" type="button">部材構成</button>
   </div>
@@ -3657,6 +3773,18 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
     </div>
     <p class="note">横基準と縦基準は常に保持します。「有効」「外から」で入力した数値・式は構造図と3Dの位置に反映します。</p>
     <button id="undoSplit" class="ghost danger" style="width:100%;margin-top:8px">選択区画の分割を戻す</button>
+  </div>
+
+  <div class="section sidePanel regionDimensionsPanel tabPanelHidden" id="leftDimensionsSection" data-left-panel="dimensions">
+    <div class="structureSideHeading">
+      <div>
+        <h3>区画の有効寸法</h3>
+        <p class="note">現在の構造から、各区画の開口 W × H を自動計算します。</p>
+      </div>
+      <span class="sideHandLabel">clear size</span>
+    </div>
+    <div id="regionDimensionsSummary" class="regionDimensionsSummary"></div>
+    <div id="regionDimensionsList" class="regionDimensionsList"></div>
   </div>
 
   <div class="section sidePanel structureMaterialPanel tabPanelHidden" id="leftMaterialsSection" data-left-panel="materials">
@@ -3992,13 +4120,9 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 
 <div id="mobileSidebarBackdrop" class="mobileSidebarBackdrop" hidden></div>
 
-<div id="mobileSidebarHandles" class="mobileSidebarHandles" aria-label="スマホサイドバー">
-  <button id="mobileLeftSidebarHandle" type="button" data-mobile-sidebar-open="left" aria-controls="mobileLeftSidebar" aria-expanded="false">
-    <span class="mobileSidebarHandleIcon">☰</span><span>設定</span>
-  </button>
-  <button id="mobileRightSidebarHandle" type="button" data-mobile-sidebar-open="right" aria-controls="mobileRightSidebar" aria-expanded="false">
-    <span>部材</span><span class="mobileSidebarHandleIcon">☷</span>
-  </button>
+<div id="mobileSidebarHandles" class="mobileSidebarHandles" aria-hidden="true">
+  <span id="mobileLeftEdgeBar" class="mobileEdgeBar mobileEdgeBarLeft"></span>
+  <span id="mobileRightEdgeBar" class="mobileEdgeBar mobileEdgeBarRight"></span>
 </div>
 
 <aside id="mobileLeftSidebar" class="mobileSidebar mobileSidebarLeft" aria-hidden="true" aria-label="設定サイドバー">
@@ -4016,6 +4140,12 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   </div>
   <div id="mobileRightSidebarBody" class="mobileSidebarBody"></div>
 </aside>
+
+<div id="mobileInputToolbar" class="mobileInputToolbar" hidden aria-label="入力移動">
+  <button id="mobileInputPrev" type="button">前へ</button>
+  <button id="mobileInputNext" type="button">次へ</button>
+  <button id="mobileInputDone" type="button">完了</button>
+</div>
 
 <script>
 const state={
@@ -5329,6 +5459,43 @@ function renderInnerBackboardDetail(){
   g.innerHTML=html;
 }
 
+
+function collectLeafRegions(node,out=[]){
+  if(!node)return out;
+  if(!node.split){out.push(node);return out}
+  node.split.children.forEach(child=>collectLeafRegions(child,out));
+  return out;
+}
+function renderRegionDimensions(){
+  const list=document.getElementById("regionDimensionsList");
+  const summary=document.getElementById("regionDimensionsSummary");
+  if(!list||!summary)return;
+  const rows=formulas();
+  const map=buildCutRegionMap(rows);
+  const leaves=collectLeafRegions(state.root,[]);
+  const bodyD=resolveCutFormula(bodyDepthFormula(),rows,map);
+  summary.textContent=`${leaves.length}区画｜開口有効 W × H${Number.isFinite(bodyD)?`｜本体奥行 ${formatFinishedMm(bodyD)} mm`:""}`;
+  if(!leaves.length){
+    list.innerHTML='<div class="regionDimensionEmpty">区画がありません。</div>';
+    return;
+  }
+  list.innerHTML=leaves.map(node=>{
+    const d=map[node.id];
+    const text=d&&Number.isFinite(d.W)&&Number.isFinite(d.H)
+      ?`W ${formatFinishedMm(d.W)} × H ${formatFinishedMm(d.H)} mm`
+      :"計算未確定";
+    return `<button type="button" class="regionDimensionRow${node.id===state.selected?" selected":""}" data-region-dimension="${node.id}">
+      <strong>${escapeAttr(node.id)}</strong><span>${text}</span>
+    </button>`;
+  }).join("");
+  list.querySelectorAll("[data-region-dimension]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      state.selected=btn.dataset.regionDimension;
+      update();
+    });
+  });
+}
+
 function renderSelected(){
   const hit=findRegion(state.root,state.selected);
   $("selectedInfo").innerHTML=hit?`<strong>${hit.node.id}</strong><br>${hit.node.split?"分割済み。中の区画を選択してください。":"この区画に束・棚・内背板を追加できます。"}`:"選択なし";
@@ -6430,6 +6597,7 @@ function updateLivePreview(){
   renderBackboardDetail();
   renderInnerBackboardDetail();
   renderSelected();
+  renderRegionDimensions();
   renderFormulaList();
   refreshActiveHistorySummary();
   draw3D();
@@ -6618,7 +6786,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV66"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV67"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6759,7 +6927,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:66,
+    version:67,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -6904,6 +7072,7 @@ function setSideTab(side,tab){
     const visible=panel.getAttribute(attr)===tab;
     panel.classList.toggle("tabPanelHidden",!visible);
   });
+  if(side==="left"&&tab==="dimensions")renderRegionDimensions();
   if(side==="left"&&tab==="materials")renderCutMaterials();
   if(side==="left"&&tab==="composition")renderCutPatterns();
 }
@@ -8293,6 +8462,71 @@ document.querySelectorAll("[data-mobile-sidebar-open]").forEach(btn=>{
 document.querySelectorAll("[data-mobile-sidebar-close]").forEach(btn=>{
   btn.addEventListener("click",closeMobileSidebars);
 });
+
+(function setupMobileSidebarEdgeGestures(){
+  const EDGE=24,OPEN_DISTANCE=46,CLOSE_DISTANCE=54;
+  let gesture=null;
+
+  function editorAllowsSidebar(){
+    return window.innerWidth<=760 &&
+      !document.body.classList.contains("page-home") &&
+      !document.body.classList.contains("page-cut") &&
+      !document.body.classList.contains("page-project") &&
+      !document.body.classList.contains("mobileThreeFullscreen");
+  }
+  function start(side,x,y,mode="open"){
+    gesture={side,startX:x,startY:y,mode,triggered:false};
+  }
+  function move(x,y,event){
+    if(!gesture||gesture.triggered)return;
+    const dx=x-gesture.startX,dy=y-gesture.startY;
+    if(Math.abs(dy)>Math.abs(dx)*1.25&&Math.abs(dy)>18){
+      gesture=null;
+      return;
+    }
+    const inward=gesture.side==="left"?dx:-dx;
+    if(gesture.mode==="open"&&inward>=OPEN_DISTANCE){
+      gesture.triggered=true;
+      event?.preventDefault?.();
+      openMobileSidebar(gesture.side);
+    }else if(gesture.mode==="close"&&inward<=-CLOSE_DISTANCE){
+      gesture.triggered=true;
+      event?.preventDefault?.();
+      closeMobileSidebars();
+    }
+  }
+  function stop(){gesture=null}
+
+  document.addEventListener("touchstart",e=>{
+    if(!editorAllowsSidebar()||e.touches.length!==1)return;
+    const t=e.touches[0],w=window.innerWidth;
+    const leftOpen=document.body.classList.contains("mobileSidebarLeftOpen");
+    const rightOpen=document.body.classList.contains("mobileSidebarRightOpen");
+    if(leftOpen){start("left",t.clientX,t.clientY,"close");return}
+    if(rightOpen){start("right",t.clientX,t.clientY,"close");return}
+    if(t.clientX<=EDGE)start("left",t.clientX,t.clientY,"open");
+    else if(t.clientX>=w-EDGE)start("right",t.clientX,t.clientY,"open");
+  },{passive:true});
+  document.addEventListener("touchmove",e=>{
+    if(!gesture||e.touches.length!==1)return;
+    move(e.touches[0].clientX,e.touches[0].clientY,e);
+  },{passive:false});
+  document.addEventListener("touchend",stop,{passive:true});
+  document.addEventListener("touchcancel",stop,{passive:true});
+
+  /* Mouse/pointer support makes the same edge interaction testable and usable on touch laptops. */
+  document.querySelectorAll(".mobileEdgeBar").forEach(bar=>{
+    bar.addEventListener("pointerdown",e=>{
+      if(!editorAllowsSidebar())return;
+      const side=bar.classList.contains("mobileEdgeBarLeft")?"left":"right";
+      start(side,e.clientX,e.clientY,"open");
+      bar.setPointerCapture?.(e.pointerId);
+    });
+    bar.addEventListener("pointermove",e=>move(e.clientX,e.clientY,e));
+    bar.addEventListener("pointerup",stop);
+    bar.addEventListener("pointercancel",stop);
+  });
+})();
 document.getElementById("mobileSidebarBackdrop")?.addEventListener("click",closeMobileSidebars);
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape")closeMobileSidebars();
@@ -8303,6 +8537,7 @@ function setupMobileSidebarLayout(){
   const desired=[
     {node:document.querySelector('[data-side-tabs="left"]'),target:"left"},
     {node:document.getElementById("leftRegionSection"),target:"left"},
+    {node:document.getElementById("leftDimensionsSection"),target:"left"},
     {node:document.getElementById("leftMaterialsSection"),target:"left"},
     {node:document.getElementById("leftCompositionSection"),target:"left"},
     {node:document.getElementById("rightHistorySection"),target:"right"}
@@ -8352,6 +8587,89 @@ function syncMobileSidebarTop(){
 }
 
 
+
+
+(function setupMobileInputToolbar(){
+  const toolbar=document.getElementById("mobileInputToolbar");
+  const prev=document.getElementById("mobileInputPrev");
+  const next=document.getElementById("mobileInputNext");
+  const done=document.getElementById("mobileInputDone");
+  if(!toolbar||!prev||!next||!done)return;
+
+  let current=null;
+  const editableSelector='input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled])';
+
+  function isMobileEditor(){
+    return window.innerWidth<=760 &&
+      !document.body.classList.contains("page-home") &&
+      !document.body.classList.contains("page-cut") &&
+      !document.body.classList.contains("page-project") &&
+      !document.body.classList.contains("mobileThreeFullscreen");
+  }
+  function visible(el){
+    const r=el.getBoundingClientRect(),s=getComputedStyle(el);
+    if(el.closest?.('.mobileSidebar[aria-hidden="true"]'))return false;
+    return s.display!=="none"&&s.visibility!=="hidden"&&r.width>0&&r.height>0;
+  }
+  function fields(){
+    return [...document.querySelectorAll(editableSelector)].filter(visible);
+  }
+  function refreshButtons(){
+    const all=fields(),i=all.indexOf(current);
+    prev.disabled=i<=0;
+    next.disabled=i<0||i>=all.length-1;
+  }
+  function showFor(el){
+    if(!isMobileEditor()||!el?.matches?.(editableSelector)){hide();return}
+    current=el;
+    toolbar.hidden=false;
+    refreshButtons();
+    syncKeyboardOffset();
+  }
+  function hide(){
+    current=null;
+    toolbar.hidden=true;
+    document.documentElement.style.setProperty("--mobile-keyboard-offset","0px");
+  }
+  function moveField(delta){
+    const all=fields(),i=all.indexOf(current),target=all[i+delta];
+    if(!target)return;
+    target.focus({preventScroll:true});
+    target.scrollIntoView({block:"center",behavior:"smooth"});
+    if(typeof target.select==="function"&&target.tagName==="INPUT")target.select();
+  }
+  function syncKeyboardOffset(){
+    if(toolbar.hidden)return;
+    const vv=window.visualViewport;
+    if(!vv){document.documentElement.style.setProperty("--mobile-keyboard-offset","0px");return}
+    const offset=Math.max(0,window.innerHeight-(vv.height+vv.offsetTop));
+    document.documentElement.style.setProperty("--mobile-keyboard-offset",`${Math.round(offset)}px`);
+  }
+
+  document.addEventListener("focusin",e=>showFor(e.target));
+  document.addEventListener("focusout",()=>{
+    setTimeout(()=>{
+      if(toolbar.contains(document.activeElement))return;
+      if(document.activeElement?.matches?.(editableSelector))showFor(document.activeElement);
+      else hide();
+    },0);
+  });
+  prev.addEventListener("pointerdown",e=>e.preventDefault());
+  next.addEventListener("pointerdown",e=>e.preventDefault());
+  done.addEventListener("pointerdown",e=>e.preventDefault());
+  prev.addEventListener("click",()=>moveField(-1));
+  next.addEventListener("click",()=>moveField(1));
+  done.addEventListener("click",()=>{
+    current?.blur?.();
+    hide();
+  });
+  window.visualViewport?.addEventListener("resize",syncKeyboardOffset);
+  window.visualViewport?.addEventListener("scroll",syncKeyboardOffset);
+  window.addEventListener("resize",()=>{
+    if(!isMobileEditor())hide();
+    else syncKeyboardOffset();
+  });
+})();
 
 function syncMobileThreeInfo(){
   const projectName=(activeProject()?.name||"").trim()||"案件未設定";
