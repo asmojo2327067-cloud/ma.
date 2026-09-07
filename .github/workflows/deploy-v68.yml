@@ -1,0 +1,61 @@
+name: Deploy ma v68
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-v68.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-v68:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch index.html to v68
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          if 'data-build="ma-project-v68"' in s:
+              print('index.html already v68')
+              raise SystemExit(0)
+          replacements=[
+              ('<title>ma.｜案件 v67</title>','<title>ma.｜案件 v68</title>'),
+              ('version:67,','version:68,'),
+              ('data-build="ma-project-v67"','data-build="ma-project-v68"'),
+              ('const WORKSPACE_DOCK_KEY="maWorkspaceDockV67"','const WORKSPACE_DOCK_KEY="maWorkspaceDockV68"'),
+              ('''  .mobileSidebarBackdrop{\n    position:fixed;\n    left:0;right:0;\n    top:var(--mobile-sidebar-top);\n    bottom:72px;''','''  .mobileSidebarBackdrop{\n    position:fixed;\n    left:0;right:0;\n    top:0;\n    bottom:0;'''),
+              ('''  .mobileSidebar{\n    display:flex;\n    position:fixed;\n    top:var(--mobile-sidebar-top);\n    bottom:72px;''','''  .mobileSidebar{\n    display:flex;\n    position:fixed;\n    top:0;\n    bottom:0;'''),
+              ('''  .mobileSidebarHandles{\n    display:block;\n    top:var(--mobile-sidebar-top);\n    bottom:72px;\n    pointer-events:none;\n  }\n  .mobileEdgeBar{\n    position:fixed;\n    top:calc(var(--mobile-sidebar-top) + 38px);\n    width:4px;\n    height:62px;\n    border-radius:4px;\n    background:#aaa59d;\n    opacity:.62;''','''  .mobileSidebarHandles{\n    display:block;\n    top:0;\n    bottom:0;\n    pointer-events:none;\n  }\n  .mobileEdgeBar{\n    position:fixed;\n    top:0;\n    bottom:0;\n    width:4px;\n    height:auto;\n    border-radius:0;\n    background:#aaa59d;\n    opacity:.42;''')
+          ]
+          for old,new in replacements:
+              if old not in s:
+                  raise SystemExit('Missing expected v67 target: '+old[:80])
+              s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+      - name: Verify v68 markers
+        shell: python
+        run: |
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf-8')
+          required=['ma.｜案件 v68','data-build="ma-project-v68"','top:0;\n    bottom:0;\n    width:4px;\n    height:auto;']
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit('Verification failed: '+repr(missing))
+          print('v68 verification PASS')
+      - name: Commit v68
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No index change needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Update ma. to v68 full-height mobile sidebars'
+          git push origin main
