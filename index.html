@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v74</title>
+<title>ma.｜案件 v75</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3479,9 +3479,21 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 .centerOuter input.formulaInvalid{border-color:#b77872!important;box-shadow:inset 0 0 0 1px rgba(160,75,65,.12)}
 .centerOuter input[type="text"]{font-variant-numeric:tabular-nums}
 @media(max-width:760px){#workspaceDock .dockRegionStructure{height:auto;display:block;padding:4px 1px;overflow:visible}#workspaceDock .dockRegionStructure>.field,#workspaceDock .dockRegionStructure>.innerBackControls,#workspaceDock .dockRegionStructure>.addButtons{margin-top:9px}}
+
+/* ===== role split + custom parts / v75 ===== */
+.historyAddPartButton{
+  flex:0 0 auto;border:1px solid var(--ink);background:var(--ink);color:#f7f3ea;
+  border-radius:3px;padding:7px 9px;font-size:9px;font-weight:800;white-space:nowrap
+}
+.historyManualTag{display:inline-block;margin-left:5px;padding:1px 4px;border:1px solid var(--line);border-radius:999px;font-size:7px;color:var(--muted)}
+.historyDeletePart{
+  width:100%;margin-top:10px;border:1px solid #c9aaa4;background:transparent;color:#955b53;
+  border-radius:3px;padding:7px;font-size:9px;font-weight:750
+}
+
 </style>
 </head>
-<body data-build="ma-project-v74" class="page-home">
+<body data-build="ma-project-v75" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3729,15 +3741,15 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   </div>
 
   <div class="sideTabs leftStructureTabs" data-side-tabs="left">
-    <button class="sideTab active" data-side-tab="dimensions" type="button">寸法</button>
+    <button class="sideTab active" data-side-tab="dimensions" type="button">区画寸法</button>
     <button class="sideTab" data-side-tab="materials" type="button">材料</button>
-    <button class="sideTab" data-side-tab="composition" type="button">部材構成</button>
+    <button class="sideTab" data-side-tab="composition" type="button">構成マスター</button>
   </div>
 
   <div class="section sidePanel regionDimensionsPanel tabPanelHidden" id="leftDimensionsSection" data-left-panel="dimensions">
     <div class="structureSideHeading">
       <div>
-        <h3>区画の有効寸法</h3>
+        <h3>区画寸法</h3>
         <p class="note">各区画の有効寸法を確認し、その W × H × D を外寸にした新しいユニットを作れます。</p>
       </div>
       <span class="sideHandLabel">clear size</span>
@@ -3758,7 +3770,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 
   <div class="section sidePanel structureCompositionPanel tabPanelHidden" id="leftCompositionSection" data-left-panel="composition">
     <div class="structureSideHeading">
-      <div><h3>部材構成</h3><p class="note">芯材・表・裏を組み合わせて仕上厚を作ります。</p></div>
+      <div><h3>構成マスター</h3><p class="note">芯材・表・裏を組み合わせ、部材へ割り当てる構成を作ります。</p></div>
       <span class="sideHandLabel">composition</span>
     </div>
     <div class="cutStandardMaterialNote structureStandardNote">芯材：標準材料＋登録材料 / 表・裏：登録材料のみ</div>
@@ -4084,10 +4096,10 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   <div class="section historySection sidePanel rightPartsOnly" id="rightHistorySection">
     <div class="historyHeading">
       <div>
-        <h3>部材一覧</h3>
-        <p class="note">全部材の仕上がり寸法・計算式・部材構成を確認できます。クリックすると図でも選択できます。</p>
+        <h3>部材</h3>
+        <p class="note">構造からの自動部材と、図に出ない追加部材をまとめて管理します。</p>
       </div>
-      <div class="historyBadge">all parts</div>
+      <button id="addCustomPart" class="historyAddPartButton" type="button">＋ 部材を追加</button>
     </div>
     <div id="tree" class="historyList"></div>
     <div id="historyEditor" class="historyEditor"></div>
@@ -4106,10 +4118,10 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   <span id="mobileRightEdgeBar" class="mobileEdgeBar mobileEdgeBarRight"></span>
 </div>
 
-<aside id="mobileLeftSidebar" class="mobileSidebar mobileSidebarLeft" aria-hidden="true" aria-label="設定サイドバー">
+<aside id="mobileLeftSidebar" class="mobileSidebar mobileSidebarLeft" aria-hidden="true" aria-label="データサイドバー">
   <div class="mobileSidebarHead">
-    <div><strong>設定</strong><span>structure</span></div>
-    <button type="button" data-mobile-sidebar-close aria-label="設定サイドバーを閉じる">×</button>
+    <div><strong>データ</strong><span>master / dimensions</span></div>
+    <button type="button" data-mobile-sidebar-close aria-label="データサイドバーを閉じる">×</button>
   </div>
   <div id="mobileLeftSidebarBody" class="mobileSidebarBody"></div>
 </aside>
@@ -4198,6 +4210,8 @@ const state={
   historySelection:"",
   selectedPartId:null,
   parts:[],
+  customParts:[],
+  nextCustomPart:1,
   partNames:{},
   partGrain:{},
   overrides:{},
@@ -4598,21 +4612,21 @@ function regionContentParts(){
 }
 
 function formulas(){
-  return[...outerParts(),...innerBoxParts(),...state.parts,...regionContentParts(),...plinthPart(),...backboardPart(),...innerBackboardParts()].map(p=>{
+  return[...outerParts(),...innerBoxParts(),...state.parts,...state.customParts,...regionContentParts(),...plinthPart(),...backboardPart(),...innerBackboardParts()].map(p=>{
     const o=state.overrides[p.id]||{};
     const defaultDepth=(p.kind==="divider"||p.kind==="shelf")?bodyDepthFormula():p.depthFormula;
     return{...p,name:state.partNames[p.id]??p.name,grainMode:partGrainMode(p.id),lengthFormula:o.lengthFormula??p.lengthFormula,depthFormula:o.depthFormula??defaultDepth};
   });
 }
 function basePartName(partId){
-  const all=[...outerParts(),...innerBoxParts(),...state.parts,...regionContentParts(),...plinthPart(),...backboardPart(),...innerBackboardParts()];
+  const all=[...outerParts(),...innerBoxParts(),...state.parts,...state.customParts,...regionContentParts(),...plinthPart(),...backboardPart(),...innerBackboardParts()];
   return all.find(p=>p.id===partId)?.name||partId;
 }
 function partDisplayName(partId){
   return state.partNames[partId]??basePartName(partId);
 }
 function rawPartById(partId){
-  return [...outerParts(),...innerBoxParts(),...state.parts,...regionContentParts(),...plinthPart(),...backboardPart(),...innerBackboardParts()].find(p=>p.id===partId)||null;
+  return [...outerParts(),...innerBoxParts(),...state.parts,...state.customParts,...regionContentParts(),...plinthPart(),...backboardPart(),...innerBackboardParts()].find(p=>p.id===partId)||null;
 }
 function partDimensionLabels(partOrId){
   const p=typeof partOrId==="string"?rawPartById(partOrId):partOrId;
@@ -4714,6 +4728,9 @@ function setPartName(partId,value,{live=false}={}){
   else delete state.partNames[partId];
 
   // Keep legacy split-part name in sync too.
+  const customPart=state.customParts.find(p=>p.id===partId);
+  if(customPart&&clean)customPart.name=clean;
+
   const splitPart=state.parts.find(p=>p.id===partId);
   if(splitPart&&clean){
     splitPart.name=clean;
@@ -5803,6 +5820,28 @@ function formatFinishedMm(v){
   return Number.isInteger(rounded)?String(rounded):rounded.toFixed(1);
 }
 
+function addCustomPart(){
+  const id=`EXTRA_${state.nextCustomPart++}`;
+  const part={id,kind:"custom",name:"追加部材",qty:1,lengthFormula:"W",depthFormula:"60",grainMode:"dim1"};
+  state.customParts.push(part);
+  state.historySelection=`part:${id}`;
+  state.selectedPartId=id;
+  update();
+  requestAnimationFrame(()=>document.getElementById("historyGenericPartName")?.focus());
+}
+function deleteCustomPart(partId){
+  const p=state.customParts.find(x=>x.id===partId);
+  if(!p)return;
+  state.customParts=state.customParts.filter(x=>x.id!==partId);
+  delete state.overrides[partId];
+  delete state.partNames[partId];
+  delete state.partGrain[partId];
+  delete cutState.partPatterns[partId];
+  if(state.selectedPartId===partId)state.selectedPartId=null;
+  state.historySelection="";
+  invalidateCutResult();
+  update();
+}
 function historyPartCategory(part){
   const id=part.id||"",kind=part.kind||"";
   if(["LEFT","RIGHT","TOP","BOTTOM"].includes(id))return "外箱";
@@ -5815,6 +5854,7 @@ function historyPartCategory(part){
   if(id.startsWith("PLINTH_"))return "巾木";
   if(id==="BACKBOARD")return "背板";
   if(id.startsWith("INNER_BACK_")||kind==="innerBackboard")return "内背板";
+  if(kind==="custom")return "追加部材";
   return "部材";
 }
 function historyPartOrder(part){
@@ -5834,6 +5874,7 @@ function historyPartOrder(part){
   }
   if(id==="BACKBOARD")return 500;
   if(id.startsWith("INNER_BACK_")||kind==="innerBackboard")return 510;
+  if(kind==="custom")return 800;
   return 900;
 }
 function collectHistoryEntries(){
@@ -6003,6 +6044,7 @@ function renderHistoryEditor(){
         </div>
         <div class="historyPartInsertNote">部材名から選択して挿入。厚みは仕上がり厚、寸法参照はその部材の仕上がり寸法です。</div>
       </div>
+      ${part.kind==="custom"?`<div class="field"><label>数量</label><input id="historyGenericQty" type="text" inputmode="numeric" value="${Math.max(1,+part.qty||1)}"></div>`:""}
       <div class="historyFinishedBox">
         <span>仕上がり寸法</span>
         <strong>${escapeAttr(historyFinishedSize(part).text)}</strong>
@@ -6017,11 +6059,19 @@ function renderHistoryEditor(){
       <div class="partGrainField">
         <label>木目方向</label>
         <select id="historyGenericGrain">${grainOptionsMarkup(part)}</select>
-      </div>`;
+      </div>
+      ${part.kind==="custom"?`<button id="historyDeleteCustomPart" class="historyDeletePart" type="button">この追加部材を削除</button>`:""}`;
 
     $("historyGenericPartName")?.addEventListener("focus",()=>setSelectedPart(part.id));
     $("historyGenericPartName")?.addEventListener("input",e=>setPartName(part.id,e.target.value,{live:true}));
-    $("historyGenericPartName")?.addEventListener("change",e=>setPartName(part.id,e.target.value));
+    $("historyGenericPartName")?.addEventListener("change",e=>{
+      if(part.kind==="custom"){
+        setPartName(part.id,e.target.value,{live:true});
+        scheduleUnitAutoSave();
+      }else{
+        setPartName(part.id,e.target.value);
+      }
+    });
 
     let historyFormulaTarget="length";
     const refreshPartInsertButtons=()=>{
@@ -6051,14 +6101,30 @@ function renderHistoryEditor(){
 
     $("historyGenericLength")?.addEventListener("input",e=>{
       state.overrides[part.id]={...(state.overrides[part.id]||{}),lengthFormula:e.target.value};
+      const raw=state.customParts.find(p=>p.id===part.id);
+      if(raw)raw.lengthFormula=e.target.value;
       invalidateCutResult();updateLivePreview();
     });
     $("historyGenericDepth")?.addEventListener("input",e=>{
       state.overrides[part.id]={...(state.overrides[part.id]||{}),depthFormula:e.target.value};
+      const raw=state.customParts.find(p=>p.id===part.id);
+      if(raw)raw.depthFormula=e.target.value;
       invalidateCutResult();updateLivePreview();
     });
     $("historyGenericPattern")?.addEventListener("change",e=>assignPatternToPartIds([part.id],e.target.value));
     $("historyGenericGrain")?.addEventListener("change",e=>setPartGrain(part.id,e.target.value));
+    const syncCustomQty=e=>{
+      const raw=state.customParts.find(p=>p.id===part.id);
+      if(raw){
+        raw.qty=Math.max(1,Math.floor(+e.target.value||1));
+        invalidateCutResult();
+        refreshActiveHistorySummary();
+        scheduleUnitAutoSave();
+      }
+    };
+    $("historyGenericQty")?.addEventListener("input",syncCustomQty);
+    $("historyGenericQty")?.addEventListener("change",syncCustomQty);
+    $("historyDeleteCustomPart")?.addEventListener("click",()=>deleteCustomPart(part.id));
     return;
   }
 
@@ -6888,7 +6954,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV74"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV75"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -7029,7 +7095,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:74,
+    version:75,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -7044,6 +7110,14 @@ function snapshot(){
       regionContents:JSON.parse(JSON.stringify(state.regionContents||{})),
       placementRefs:{horizontal:state.horizontalRef,vertical:state.verticalRef},
       regionTree:state.root,
+      customParts:state.customParts.map(p=>({
+        ...p,
+        name:state.partNames[p.id]??p.name,
+        lengthFormula:state.overrides[p.id]?.lengthFormula??p.lengthFormula,
+        depthFormula:state.overrides[p.id]?.depthFormula??p.depthFormula,
+        grainMode:partGrainMode(p.id)
+      })),
+      nextCustomPart:state.nextCustomPart,
       partNames:{...state.partNames},
       partGrain:{...state.partGrain},
       parts:formulas()
@@ -7085,6 +7159,7 @@ function scheduleUnitAutoSave(){
   clearTimeout(unitAutoSaveTimer);
   unitAutoSaveTimer=setTimeout(()=>saveCurrentUnit({silent:true}),650);
 }
+document.getElementById("addCustomPart")?.addEventListener("click",addCustomPart);
 $("savePattern").onclick=()=>saveCurrentUnit();
 document.getElementById("cutSaveButton")?.addEventListener("click",()=>saveCurrentUnit());
 $("patternName").addEventListener("input",()=>{document.title=`ma.｜${$("patternName").value.trim()||"ユニット 01"}`;scheduleUnitAutoSave()});
@@ -7369,6 +7444,14 @@ function compactUnitSourceSnapshot(data){
       regionContents:JSON.parse(JSON.stringify(s.regionContents||{})),
       placementRefs:{...(s.placementRefs||{})},
       regionTree:JSON.parse(JSON.stringify(s.regionTree||{id:"R1",split:null})),
+      customParts:Array.isArray(s.customParts)?s.customParts.map(p=>({
+        ...p,
+        name:s.partNames?.[p.id]??p.name,
+        lengthFormula:s.overrides?.[p.id]?.lengthFormula??p.lengthFormula,
+        depthFormula:s.overrides?.[p.id]?.depthFormula??p.depthFormula,
+        grainMode:s.partGrain?.[p.id]??p.grainMode
+      })):[],
+      nextCustomPart:+s.nextCustomPart||1,
       partGrain:{...(s.partGrain||{})},
       parts:Array.isArray(s.parts)?s.parts.map(p=>({...p})):[]
     },
@@ -8181,6 +8264,7 @@ function applySnapshotToEditor(data){
   state.innerBox={top:"none",sides:"none",bottom:"none",gapFormula:"0",...(s.innerBox||{})};
   state.regionContents=JSON.parse(JSON.stringify(s.regionContents||{}));
   state.horizontalRef=s.placementRefs?.horizontal||"left";state.verticalRef=s.placementRefs?.vertical||"top";state.root=s.regionTree||{id:"R1",split:null};
+  state.customParts=Array.isArray(s.customParts)?s.customParts.map(p=>({...p})):[];state.nextCustomPart=Math.max(+s.nextCustomPart||1,...state.customParts.map(p=>(+String(p.id||"").replace(/^EXTRA_/,"")||0)+1));
   state.parts=Array.isArray(s.parts)?s.parts.filter(p=>/^P\d+$/.test(p.id||"")).map(p=>({...p})):[];state.partNames={...(s.partNames||{})};Object.entries(state.partNames).forEach(([id,name])=>{if(/^P\d+$/.test(id)&&/^(束|棚) P\d+$/.test(name||""))state.partNames[id]=String(name).replace(/ P\d+$/,"")});state.partGrain={...(s.partGrain||{})};state.overrides={};state.selected=state.root.id||"R1";state.historySelection="";state.selectedPartId=null;
   const counters=deriveNextCounters(state.root);state.nextRegion=counters.nextRegion;state.nextPart=counters.nextPart;state.nextHistory=counters.nextHistory;
   if(!s.partGrain&&Array.isArray(s.parts)){
@@ -8238,6 +8322,8 @@ function resetUnitState(){
     regionContents:{},
     placementRefs:{horizontal:"left",vertical:"top"},
     regionTree:{id:"R1",split:null},
+    customParts:[],
+    nextCustomPart:1,
     parts:[],
     cutting:defaultCutState()
   });
