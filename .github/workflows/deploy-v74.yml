@@ -1,0 +1,28 @@
+name: Deploy v74
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  update-v74:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply v74
+        run: python .github/scripts/apply_v74.py
+      - name: Verify v74
+        run: grep -q 'ma-project-v74' index.html
+      - name: Commit v74
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes to commit'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Update ma. to v74'
+          git push
