@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v68</title>
+<title>ma.｜案件 v72</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3342,21 +3342,38 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 }
 .regionDimensionsList{display:grid;gap:6px}
 .regionDimensionRow{
-  width:100%;
   display:grid;
-  grid-template-columns:minmax(42px,.6fr) minmax(0,1.4fr);
-  align-items:center;
-  gap:8px;
-  padding:9px 10px;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:stretch;
+  gap:5px;
+}
+.regionDimensionSelect,
+.regionDimensionCreate{
   border:1px solid var(--line);
   border-radius:4px;
   background:rgba(255,255,255,.38);
   color:var(--ink);
+}
+.regionDimensionSelect{
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(42px,.5fr) minmax(0,1.5fr);
+  align-items:center;
+  gap:8px;
+  padding:9px 10px;
   text-align:left;
 }
-.regionDimensionRow strong{font-size:11px}
-.regionDimensionRow span{font-size:10px;font-variant-numeric:tabular-nums;text-align:right}
-.regionDimensionRow.selected{
+.regionDimensionSelect strong{font-size:11px}
+.regionDimensionSelect span{font-size:9.5px;font-variant-numeric:tabular-nums;text-align:right;line-height:1.45}
+.regionDimensionCreate{
+  width:58px;
+  padding:6px 5px;
+  font-size:8.5px;
+  font-weight:800;
+  line-height:1.25;
+}
+.regionDimensionCreate:hover{background:#e8e4db}
+.regionDimensionRow.selected .regionDimensionSelect{
   border-color:#817b70;
   background:#e7e3da;
   box-shadow:inset 3px 0 0 #817b70;
@@ -3443,9 +3460,15 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   .mobileInputToolbar #mobileInputDone{background:#e6e1d7}
 }
 
+
+
+
+/* ===== legacy front-content panel removed from UI / v71 ===== */
+#workspaceDock .legacyRegionContentPanel{display:none!important}
+
 </style>
 </head>
-<body data-build="ma-project-v68" class="page-home">
+<body data-build="ma-project-v72" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3780,7 +3803,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
     <div class="structureSideHeading">
       <div>
         <h3>区画の有効寸法</h3>
-        <p class="note">現在の構造から、各区画の開口 W × H を自動計算します。</p>
+        <p class="note">各区画の有効寸法を確認し、その W × H × D を外寸にした新しいユニットを作れます。</p>
       </div>
       <span class="sideHandLabel">clear size</span>
     </div>
@@ -3917,7 +3940,6 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
         <div class="workspaceDockBar">
           <div class="workspaceDockTabs" role="tablist" aria-label="納まり">
             <button type="button" class="active" data-workspace-dock-tab="box" role="tab">箱の構成</button>
-            <button type="button" data-workspace-dock-tab="region" role="tab">区画</button>
             <button type="button" data-workspace-dock-tab="joint" role="tab">四隅</button>
             <button type="button" data-workspace-dock-tab="plinth" role="tab">巾木</button>
             <button type="button" data-workspace-dock-tab="backboard" role="tab">背板</button>
@@ -3960,7 +3982,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
             </div>
           </section>
 
-          <section class="workspaceDockPanel" data-workspace-dock-panel="region">
+          <section class="workspaceDockPanel legacyRegionContentPanel" data-workspace-dock-panel="region" hidden>
             <div class="regionContentPanel">
               <div class="regionContentHead">
                 <div>
@@ -5467,6 +5489,52 @@ function collectLeafRegions(node,out=[]){
   node.split.children.forEach(child=>collectLeafRegions(child,out));
   return out;
 }
+function regionDimensionData(regionId){
+  const rows=formulas();
+  const map=buildCutRegionMap(rows);
+  const d=map[regionId];
+  const bodyD=resolveCutFormula(bodyDepthFormula(),rows,map);
+  if(!d||![d.W,d.H,bodyD].every(Number.isFinite))return null;
+  if(d.W<=0||d.H<=0||bodyD<=0)return null;
+  return{W:d.W,H:d.H,D:bodyD};
+}
+function createUnitFromRegionDimensions(regionId){
+  const dims=regionDimensionData(regionId);
+  if(!dims){toast("この区画の寸法を確定できません");return}
+  const sourceName=$("patternName").value.trim()||"ユニット";
+  if(currentProjectId){
+    saveCurrentUnitIntoProject({silent:true});
+    const p=activeProject();
+    if(!p)return;
+    const n=(p.units?.length||0)+1;
+    resetUnitState();
+    $("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;
+    state.outer={W:dims.W,H:dims.H,D:dims.D};
+    $("W").value=formatFinishedMm(dims.W);
+    $("H").value=formatFinishedMm(dims.H);
+    $("D").value=formatFinishedMm(dims.D);
+    cutState.materials=cloneMaterials(p.materials);
+    cutState.patterns=clonePatterns(p.materialPatterns);
+    cutState.additionalUnits=[];
+    update();
+    saveCurrentUnitIntoProject({silent:true});
+    refreshProjectContext();
+  }else{
+    saveCurrentUnit({silent:true});
+    const n=listSavedUnits().length+1;
+    resetUnitState();
+    $("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;
+    state.outer={W:dims.W,H:dims.H,D:dims.D};
+    $("W").value=formatFinishedMm(dims.W);
+    $("H").value=formatFinishedMm(dims.H);
+    $("D").value=formatFinishedMm(dims.D);
+    update();
+    saveCurrentUnit({silent:true});
+  }
+  closeMobileSidebars();
+  showEditorPage("structure");
+  toast(`${sourceName} / ${regionId} の有効寸法から新しいユニットを作成しました`);
+}
 function renderRegionDimensions(){
   const list=document.getElementById("regionDimensionsList");
   const summary=document.getElementById("regionDimensionsSummary");
@@ -5475,25 +5543,32 @@ function renderRegionDimensions(){
   const map=buildCutRegionMap(rows);
   const leaves=collectLeafRegions(state.root,[]);
   const bodyD=resolveCutFormula(bodyDepthFormula(),rows,map);
-  summary.textContent=`${leaves.length}区画｜開口有効 W × H${Number.isFinite(bodyD)?`｜本体奥行 ${formatFinishedMm(bodyD)} mm`:""}`;
+  summary.textContent=`${leaves.length}区画｜有効 W × H × D を新しいユニット外寸として使えます`;
   if(!leaves.length){
     list.innerHTML='<div class="regionDimensionEmpty">区画がありません。</div>';
     return;
   }
   list.innerHTML=leaves.map(node=>{
     const d=map[node.id];
-    const text=d&&Number.isFinite(d.W)&&Number.isFinite(d.H)
-      ?`W ${formatFinishedMm(d.W)} × H ${formatFinishedMm(d.H)} mm`
+    const valid=d&&Number.isFinite(d.W)&&Number.isFinite(d.H)&&Number.isFinite(bodyD);
+    const text=valid
+      ?`W ${formatFinishedMm(d.W)} × H ${formatFinishedMm(d.H)} × D ${formatFinishedMm(bodyD)} mm`
       :"計算未確定";
-    return `<button type="button" class="regionDimensionRow${node.id===state.selected?" selected":""}" data-region-dimension="${node.id}">
-      <strong>${escapeAttr(node.id)}</strong><span>${text}</span>
-    </button>`;
+    return `<div class="regionDimensionRow${node.id===state.selected?" selected":""}">
+      <button type="button" class="regionDimensionSelect" data-region-dimension="${node.id}">
+        <strong>${escapeAttr(node.id)}</strong><span>${text}</span>
+      </button>
+      <button type="button" class="regionDimensionCreate" data-region-create-unit="${node.id}" ${valid?"":"disabled"}>新規<br>ユニット</button>
+    </div>`;
   }).join("");
   list.querySelectorAll("[data-region-dimension]").forEach(btn=>{
     btn.addEventListener("click",()=>{
       state.selected=btn.dataset.regionDimension;
       update();
     });
+  });
+  list.querySelectorAll("[data-region-create-unit]").forEach(btn=>{
+    btn.addEventListener("click",()=>createUnitFromRegionDimensions(btn.dataset.regionCreateUnit));
   });
 }
 
@@ -6787,7 +6862,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV68"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV72"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6798,7 +6873,8 @@ function clampWorkspaceDockHeight(value){
 function loadWorkspaceDockState(){
   try{
     const saved=JSON.parse(localStorage.getItem(WORKSPACE_DOCK_KEY)||"{}");
-    if(["box","region","joint","plinth","backboard"].includes(saved.tab))workspaceDockState.tab=saved.tab;
+    if(["box","joint","plinth","backboard"].includes(saved.tab))workspaceDockState.tab=saved.tab;
+    else if(saved.tab==="region")workspaceDockState.tab="box";
     if(Number.isFinite(+saved.height))workspaceDockState.height=clampWorkspaceDockHeight(+saved.height);
     workspaceDockState.lastExpandedHeight=workspaceDockState.height;
     workspaceDockState.collapsed=!!saved.collapsed;
@@ -6832,7 +6908,7 @@ function applyWorkspaceDockState({redraw=true}={}){
   });
 }
 function setWorkspaceDockTab(tab){
-  if(!["box","region","joint","plinth","backboard"].includes(tab))return;
+  if(!["box","joint","plinth","backboard"].includes(tab))return;
   workspaceDockState.tab=tab;
   if(workspaceDockState.collapsed)workspaceDockState.collapsed=false;
   applyWorkspaceDockState();
@@ -6928,7 +7004,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:68,
+    version:72,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
