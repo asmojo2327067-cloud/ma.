@@ -22,142 +22,22 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import base64
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-
-          checks=[
-            '<title>ma.｜案件 v75</title>',
-            'version:75,',
-            'data-build="ma-project-v75"',
-            'const WORKSPACE_DOCK_KEY="maWorkspaceDockV75"',
-            '>構成マスター<',
-            '</style>'
-          ]
+          checks=['<title>ma.｜案件 v75</title>','version:75,','data-build="ma-project-v75"','const WORKSPACE_DOCK_KEY="maWorkspaceDockV75"','>構成マスター<','</style>']
           missing=[x for x in checks if x not in s]
           if missing:
               raise SystemExit('missing expected v75 markers: '+repr(missing))
-
           s=s.replace('<title>ma.｜案件 v75</title>','<title>ma.｜案件 v77</title>',1)
           s=s.replace('version:75,','version:77,',1)
           s=s.replace('data-build="ma-project-v75"','data-build="ma-project-v77"',1)
           s=s.replace('const WORKSPACE_DOCK_KEY="maWorkspaceDockV75"','const WORKSPACE_DOCK_KEY="maWorkspaceDockV77"',1)
           s=s.replace('>構成マスター<','>材料構成<')
           s=s.replace('<h3>構成マスター</h3>','<h3>材料構成</h3>')
-
-          css=r'''
-/* ===== unified tab controls / v77 ===== */
-:root{
-  --tab-control-h:30px;
-  --tab-control-radius:4px;
-  --tab-control-font:9px;
-  --tab-control-bg:#fff;
-  --tab-control-border:var(--line);
-  --tab-control-active:#32312d;
-  --tab-control-active-text:#fff;
-}
-#workspaceDock .seg button,
-#workspaceDock .edgeBtn,
-#workspaceDock .toggleBtn,
-#workspaceDock .innerBoxButtons button,
-#workspaceDock .jointTextChoices button,
-#workspaceDock .step button,
-.left .seg button,
-.left .edgeBtn,
-.left .toggleBtn,
-.left .step button,
-.mobileSidebar .seg button,
-.mobileSidebar .edgeBtn,
-.mobileSidebar .toggleBtn,
-.mobileSidebar .step button{
-  min-height:var(--tab-control-h)!important;
-  height:var(--tab-control-h)!important;
-  border:1px solid var(--tab-control-border)!important;
-  border-radius:var(--tab-control-radius)!important;
-  background:var(--tab-control-bg)!important;
-  color:var(--muted)!important;
-  padding:5px 8px!important;
-  font-size:var(--tab-control-font)!important;
-  font-weight:750!important;
-  line-height:1.1!important;
-  box-shadow:none!important;
-}
-#workspaceDock .seg button.active,
-#workspaceDock .edgeBtn.on,
-#workspaceDock .toggleBtn.on,
-#workspaceDock .innerBoxButtons button.active,
-#workspaceDock .jointTextChoices button.active,
-.left .seg button.active,
-.left .edgeBtn.on,
-.left .toggleBtn.on,
-.mobileSidebar .seg button.active,
-.mobileSidebar .edgeBtn.on,
-.mobileSidebar .toggleBtn.on{
-  background:var(--tab-control-active)!important;
-  border-color:var(--tab-control-active)!important;
-  color:var(--tab-control-active-text)!important;
-}
-#workspaceDock .addButtons button,
-#workspaceDock .ghost,
-.left .structureAddButton,
-.mobileSidebar .structureAddButton,
-#rightHistorySection .historyAddPartButton{
-  min-height:var(--tab-control-h)!important;
-  height:var(--tab-control-h)!important;
-  border:1px solid var(--tab-control-border)!important;
-  border-radius:var(--tab-control-radius)!important;
-  background:var(--tab-control-bg)!important;
-  color:var(--ink)!important;
-  padding:5px 9px!important;
-  font-size:var(--tab-control-font)!important;
-  font-weight:800!important;
-  line-height:1.1!important;
-  box-shadow:none!important;
-}
-#workspaceDock .addButtons button,
-.left .structureAddButton,
-.mobileSidebar .structureAddButton,
-#rightHistorySection .historyAddPartButton{
-  background:var(--tab-control-active)!important;
-  border-color:var(--tab-control-active)!important;
-  color:var(--tab-control-active-text)!important;
-}
-#workspaceDock .ghost.danger,
-#rightHistorySection .historyDeletePart{
-  min-height:var(--tab-control-h)!important;
-  height:var(--tab-control-h)!important;
-  border:1px solid #c9aaa4!important;
-  border-radius:var(--tab-control-radius)!important;
-  background:#fff!important;
-  color:#955b53!important;
-  padding:5px 9px!important;
-  font-size:var(--tab-control-font)!important;
-  font-weight:800!important;
-  line-height:1.1!important;
-}
-#workspaceDock .step button,
-.left .step button,
-.mobileSidebar .step button{
-  padding:0!important;
-  font-size:15px!important;
-}
-.dockSettingsPanel .seg button,
-.dockSettingsPanel .edgeBtn,
-.dockSettingsPanel .toggleBtn{
-  min-height:var(--tab-control-h)!important;
-  height:var(--tab-control-h)!important;
-}
-.sideTab,
-.workspaceDockTabs button{
-  min-height:30px;
-  border-radius:4px!important;
-  font-size:9.5px!important;
-  font-weight:750!important;
-  padding:6px 10px!important;
-}
-'''
+          css=base64.b64decode('LyogPT09PT0gdW5pZmllZCB0YWIgY29udHJvbHMgLyB2NzcgPT09PT0gKi8KOnJvb3R7CiAgLS10YWItY29udHJvbC1oOjMwcHg7CiAgLS10YWItY29udHJvbC1yYWRpdXM6NHB4OwogIC0tdGFiLWNvbnRyb2wtZm9udDo5cHg7CiAgLS10YWItY29udHJvbC1iZzojZmZmOwogIC0tdGFiLWNvbnRyb2wtYm9yZGVyOnZhcigtLWxpbmUpOwogIC0tdGFiLWNvbnRyb2wtYWN0aXZlOiMzMjMxMmQ7CiAgLS10YWItY29udHJvbC1hY3RpdmUtdGV4dDojZmZmOwp9CiN3b3Jrc3BhY2VEb2NrIC5zZWcgYnV0dG9uLAojd29ya3NwYWNlRG9jayAuZWRnZUJ0biwKI3dvcmtzcGFjZURvY2sgLnRvZ2dsZUJ0biwKI3dvcmtzcGFjZURvY2sgLmlubmVyQm94QnV0dG9ucyBidXR0b24sCiN3b3Jrc3BhY2VEb2NrIC5qb2ludFRleHRDaG9pY2VzIGJ1dHRvbiwKI3dvcmtzcGFjZURvY2sgLnN0ZXAgYnV0dG9uLAoubGVmdCAuc2VnIGJ1dHRvbiwKLmxlZnQgLmVkZ2VCdG4sCi5sZWZ0IC50b2dnbGVCdG4sCi5sZWZ0IC5zdGVwIGJ1dHRvbiwKLm1vYmlsZVNpZGViYXIgLnNlZyBidXR0b24sCi5tb2JpbGVTaWRlYmFyIC5lZGdlQnRuLAoubW9iaWxlU2lkZWJhciAudG9nZ2xlQnRuLAoubW9iaWxlU2lkZWJhciAuc3RlcCBidXR0b257CiAgbWluLWhlaWdodDp2YXIoLS10YWItY29udHJvbC1oKSFpbXBvcnRhbnQ7CiAgaGVpZ2h0OnZhcigtLXRhYi1jb250cm9sLWgpIWltcG9ydGFudDsKICBib3JkZXI6MXB4IHNvbGlkIHZhcigtLXRhYi1jb250cm9sLWJvcmRlcikhaW1wb3J0YW50OwogIGJvcmRlci1yYWRpdXM6dmFyKC0tdGFiLWNvbnRyb2wtcmFkaXVzKSFpbXBvcnRhbnQ7CiAgYmFja2dyb3VuZDp2YXIoLS10YWItY29udHJvbC1iZykhaW1wb3J0YW50OwogIGNvbG9yOnZhcigtLW11dGVkKSFpbXBvcnRhbnQ7CiAgcGFkZGluZzo1cHggOHB4IWltcG9ydGFudDsKICBmb250LXNpemU6dmFyKC0tdGFiLWNvbnRyb2wtZm9udCkhaW1wb3J0YW50OwogIGZvbnQtd2VpZ2h0Ojc1MCFpbXBvcnRhbnQ7CiAgbGluZS1oZWlnaHQ6MS4xIWltcG9ydGFudDsKICBib3gtc2hhZG93Om5vbmUhaW1wb3J0YW50Owp9CiN3b3Jrc3BhY2VEb2NrIC5zZWcgYnV0dG9uLmFjdGl2ZSwKI3dvcmtzcGFjZURvY2sgLmVkZ2VCdG4ub24sCiN3b3Jrc3BhY2VEb2NrIC50b2dnbGVCdG4ub24sCiN3b3Jrc3BhY2VEb2NrIC5pbm5lckJveEJ1dHRvbnMgYnV0dG9uLmFjdGl2ZSwKI3dvcmtzcGFjZURvY2sgLmpvaW50VGV4dENob2ljZXMgYnV0dG9uLmFjdGl2ZSwKLmxlZnQgLnNlZyBidXR0b24uYWN0aXZlLAoubGVmdCAuZWRnZUJ0bi5vbiwKLmxlZnQgLnRvZ2dsZUJ0bi5vbiwKLm1vYmlsZVNpZGViYXIgLnNlZyBidXR0b24uYWN0aXZlLAoubW9iaWxlU2lkZWJhciAuZWRnZUJ0bi5vbiwKLm1vYmlsZVNpZGViYXIgLnRvZ2dsZUJ0bi5vbnsKICBiYWNrZ3JvdW5kOnZhcigtLXRhYi1jb250cm9sLWFjdGl2ZSkhaW1wb3J0YW50OwogIGJvcmRlci1jb2xvcjp2YXIoLS10YWItY29udHJvbC1hY3RpdmUpIWltcG9ydGFudDsKICBjb2xvcjp2YXIoLS10YWItY29udHJvbC1hY3RpdmUtdGV4dCkhaW1wb3J0YW50Owp9CiN3b3Jrc3BhY2VEb2NrIC5hZGRCdXR0b25zIGJ1dHRvbiwKI3dvcmtzcGFjZURvY2sgLmdob3N0LAoubGVmdCAuc3RydWN0dXJlQWRkQnV0dG9uLAoubW9iaWxlU2lkZWJhciAuc3RydWN0dXJlQWRkQnV0dG9uLAojcmlnaHRIaXN0b3J5U2VjdGlvbiAuaGlzdG9yeUFkZFBhcnRCdXR0b257CiAgbWluLWhlaWdodDp2YXIoLS10YWItY29udHJvbC1oKSFpbXBvcnRhbnQ7CiAgaGVpZ2h0OnZhcigtLXRhYi1jb250cm9sLWgpIWltcG9ydGFudDsKICBib3JkZXI6MXB4IHNvbGlkIHZhcigtLXRhYi1jb250cm9sLWJvcmRlcikhaW1wb3J0YW50OwogIGJvcmRlci1yYWRpdXM6dmFyKC0tdGFiLWNvbnRyb2wtcmFkaXVzKSFpbXBvcnRhbnQ7CiAgYmFja2dyb3VuZDp2YXIoLS10YWItY29udHJvbC1iZykhaW1wb3J0YW50OwogIGNvbG9yOnZhcigtLWluaykhaW1wb3J0YW50OwogIHBhZGRpbmc6NXB4IDlweCFpbXBvcnRhbnQ7CiAgZm9udC1zaXplOnZhcigtLXRhYi1jb250cm9sLWZvbnQpIWltcG9ydGFudDsKICBmb250LXdlaWdodDo4MDAhaW1wb3J0YW50OwogIGxpbmUtaGVpZ2h0OjEuMSFpbXBvcnRhbnQ7CiAgYm94LXNoYWRvdzpub25lIWltcG9ydGFudDsKfQojd29ya3NwYWNlRG9jayAuYWRkQnV0dG9ucyBidXR0b24sCi5sZWZ0IC5zdHJ1Y3R1cmVBZGRCdXR0b24sCi5tb2JpbGVTaWRlYmFyIC5zdHJ1Y3R1cmVBZGRCdXR0b24sCiNyaWdodEhpc3RvcnlTZWN0aW9uIC5oaXN0b3J5QWRkUGFydEJ1dHRvbnsKICBiYWNrZ3JvdW5kOnZhcigtLXRhYi1jb250cm9sLWFjdGl2ZSkhaW1wb3J0YW50OwogIGJvcmRlci1jb2xvcjp2YXIoLS10YWItY29udHJvbC1hY3RpdmUpIWltcG9ydGFudDsKICBjb2xvcjp2YXIoLS10YWItY29udHJvbC1hY3RpdmUtdGV4dCkhaW1wb3J0YW50Owp9CiN3b3Jrc3BhY2VEb2NrIC5naG9zdC5kYW5nZXIsCiNyaWdodEhpc3RvcnlTZWN0aW9uIC5oaXN0b3J5RGVsZXRlUGFydHsKICBtaW4taGVpZ2h0OnZhcigtLXRhYi1jb250cm9sLWgpIWltcG9ydGFudDsKICBoZWlnaHQ6dmFyKC0tdGFiLWNvbnRyb2wtaCkhaW1wb3J0YW50OwogIGJvcmRlcjoxcHggc29saWQgI2M5YWFhNCFpbXBvcnRhbnQ7CiAgYm9yZGVyLXJhZGl1czp2YXIoLS10YWItY29udHJvbC1yYWRpdXMpIWltcG9ydGFudDsKICBiYWNrZ3JvdW5kOiNmZmYhaW1wb3J0YW50OwogIGNvbG9yOiM5NTViNTMhaW1wb3J0YW50OwogIHBhZGRpbmc6NXB4IDlweCFpbXBvcnRhbnQ7CiAgZm9udC1zaXplOnZhcigtLXRhYi1jb250cm9sLWZvbnQpIWltcG9ydGFudDsKICBmb250LXdlaWdodDo4MDAhaW1wb3J0YW50OwogIGxpbmUtaGVpZ2h0OjEuMSFpbXBvcnRhbnQ7Cn0KI3dvcmtzcGFjZURvY2sgLnN0ZXAgYnV0dG9uLAoubGVmdCAuc3RlcCBidXR0b24sCi5tb2JpbGVTaWRlYmFyIC5zdGVwIGJ1dHRvbnsKICBwYWRkaW5nOjAhaW1wb3J0YW50OwogIGZvbnQtc2l6ZToxNXB4IWltcG9ydGFudDsKfQouZG9ja1NldHRpbmdzUGFuZWwgLnNlZyBidXR0b24sCi5kb2NrU2V0dGluZ3NQYW5lbCAuZWRnZUJ0biwKLmRvY2tTZXR0aW5nc1BhbmVsIC50b2dnbGVCdG57CiAgbWluLWhlaWdodDp2YXIoLS10YWItY29udHJvbC1oKSFpbXBvcnRhbnQ7CiAgaGVpZ2h0OnZhcigtLXRhYi1jb250cm9sLWgpIWltcG9ydGFudDsKfQouc2lkZVRhYiwKLndvcmtzcGFjZURvY2tUYWJzIGJ1dHRvbnsKICBtaW4taGVpZ2h0OjMwcHg7CiAgYm9yZGVyLXJhZGl1czo0cHghaW1wb3J0YW50OwogIGZvbnQtc2l6ZTo5LjVweCFpbXBvcnRhbnQ7CiAgZm9udC13ZWlnaHQ6NzUwIWltcG9ydGFudDsKICBwYWRkaW5nOjZweCAxMHB4IWltcG9ydGFudDsKfQo=').decode('utf-8')
           if '/* ===== unified tab controls / v77 ===== */' not in s:
               s=s.replace('</style>',css+'\n</style>',1)
-
           for marker in ['<title>ma.｜案件 v77</title>','data-build="ma-project-v77"','>材料構成<','--tab-control-h:30px']:
               if marker not in s:
                   raise SystemExit('v77 verification failed: '+marker)
