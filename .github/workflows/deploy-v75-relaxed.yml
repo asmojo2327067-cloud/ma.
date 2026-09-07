@@ -1,0 +1,39 @@
+name: Deploy v75 relaxed
+on:
+  workflow_run:
+    workflows: ["Deploy v74"]
+    types: [completed]
+permissions:
+  contents: write
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply v75 patch against current main
+        shell: bash
+        run: |
+          awk '/^H4s/{flag=1} flag{print} /^EOF$/{exit}' .github/workflows/deploy-v75.yml | sed '$d' > /tmp/patch.b64
+          base64 -d /tmp/patch.b64 | gzip -d > /tmp/v75.patch
+          patch -p1 -F10 < /tmp/v75.patch || true
+          grep -q 'data-build="ma-project-v75"' index.html
+          grep -q 'function addCustomPart()' index.html
+          grep -q 'customParts:state.customParts.map' index.html
+          grep -q '<strong>データ</strong>' index.html
+          grep -q '>区画寸法<' index.html
+          grep -q '>構成マスター<' index.html
+          node --check <(python3 - <<'PY'
+          import re
+          s=open('index.html').read()
+          print(re.search(r'<script>(.*)</script>',s,re.S).group(1))
+          PY
+          )
+      - name: Commit v75
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Update ma. to v75"
+          git push
