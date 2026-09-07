@@ -31,3 +31,4 @@ jobs:
           git add index.html
           git commit -m 'Deploy v79: Sketch Craft theme'
           git push
+# v79 trigger
