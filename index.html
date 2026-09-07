@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v72</title>
+<title>ma.｜案件 v74</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3385,7 +3385,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 @media(max-width:760px){
   /* Four compact sidebar tabs instead of three. */
   .mobileSidebar .sideTabs{
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
   }
 
   /* The old labeled buttons are gone. Only quiet edge affordances remain. */
@@ -3463,12 +3463,25 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 
 
 
-/* ===== legacy front-content panel removed from UI / v71 ===== */
-#workspaceDock .legacyRegionContentPanel{display:none!important}
 
+
+/* ===== structural region editor moved to center dock / v74 ===== */
+#workspaceDock .dockRegionStructure{height:100%;min-height:0;margin:0;padding:2px 4px;border:0;background:transparent;display:grid;grid-template-columns:minmax(150px,.7fr) minmax(160px,.85fr) minmax(170px,.95fr) minmax(220px,1.25fr);gap:7px 10px;align-content:start;overflow:auto}
+#workspaceDock .dockRegionStructure>h3{grid-column:1/-1;margin:0;font-size:10px}
+#workspaceDock .dockRegionStructure>.selectedBox{grid-column:1}
+#workspaceDock .dockRegionStructure>.innerBackControls{grid-column:2 / 4;grid-row:2 / span 3}
+#workspaceDock .dockRegionStructure>.field{margin:0}
+#workspaceDock .dockRegionStructure>.addButtons{grid-column:4;grid-row:2}
+#workspaceDock .dockRegionStructure>p.note{grid-column:4;grid-row:3;margin:0;font-size:8px;line-height:1.45}
+#workspaceDock .dockRegionStructure>#undoSplit{grid-column:4;grid-row:4;margin-top:0!important}
+#workspaceDock .dockRegionStructure input{min-width:0}
+#legacyRegionContentHost{display:none!important}
+.centerOuter input.formulaInvalid{border-color:#b77872!important;box-shadow:inset 0 0 0 1px rgba(160,75,65,.12)}
+.centerOuter input[type="text"]{font-variant-numeric:tabular-nums}
+@media(max-width:760px){#workspaceDock .dockRegionStructure{height:auto;display:block;padding:4px 1px;overflow:visible}#workspaceDock .dockRegionStructure>.field,#workspaceDock .dockRegionStructure>.innerBackControls,#workspaceDock .dockRegionStructure>.addButtons{margin-top:9px}}
 </style>
 </head>
-<body data-build="ma-project-v72" class="page-home">
+<body data-build="ma-project-v74" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3716,13 +3729,197 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   </div>
 
   <div class="sideTabs leftStructureTabs" data-side-tabs="left">
-    <button class="sideTab active" data-side-tab="region" type="button">区画</button>
-    <button class="sideTab" data-side-tab="dimensions" type="button">寸法</button>
+    <button class="sideTab active" data-side-tab="dimensions" type="button">寸法</button>
     <button class="sideTab" data-side-tab="materials" type="button">材料</button>
     <button class="sideTab" data-side-tab="composition" type="button">部材構成</button>
   </div>
 
-  <div class="section sidePanel" id="leftRegionSection" data-left-panel="region">
+  <div class="section sidePanel regionDimensionsPanel tabPanelHidden" id="leftDimensionsSection" data-left-panel="dimensions">
+    <div class="structureSideHeading">
+      <div>
+        <h3>区画の有効寸法</h3>
+        <p class="note">各区画の有効寸法を確認し、その W × H × D を外寸にした新しいユニットを作れます。</p>
+      </div>
+      <span class="sideHandLabel">clear size</span>
+    </div>
+    <div id="regionDimensionsSummary" class="regionDimensionsSummary"></div>
+    <div id="regionDimensionsList" class="regionDimensionsList"></div>
+  </div>
+
+  <div class="section sidePanel structureMaterialPanel tabPanelHidden" id="leftMaterialsSection" data-left-panel="materials">
+    <div class="structureSideHeading">
+      <div><h3>登録材料</h3><p class="note">案件ごとに使う仕上材などを登録します。</p></div>
+      <span class="sideHandLabel">materials</span>
+    </div>
+    <div class="structureStandardNote">ランバー・積層合板・MDF・ベニアは標準材料として部材構成から常時選択できます。</div>
+    <div id="cutMaterials" class="cutMaterials structureCutMaterials"></div>
+    <button id="addCutMaterial" class="cutAddMaterial structureAddButton" type="button">＋ 材料を追加</button>
+  </div>
+
+  <div class="section sidePanel structureCompositionPanel tabPanelHidden" id="leftCompositionSection" data-left-panel="composition">
+    <div class="structureSideHeading">
+      <div><h3>部材構成</h3><p class="note">芯材・表・裏を組み合わせて仕上厚を作ります。</p></div>
+      <span class="sideHandLabel">composition</span>
+    </div>
+    <div class="cutStandardMaterialNote structureStandardNote">芯材：標準材料＋登録材料 / 表・裏：登録材料のみ</div>
+    <div id="cutPatterns" class="cutPatterns structureCutPatterns"></div>
+    <button id="addCutPattern" class="cutAddMaterial structureAddButton" type="button">＋ 部材構成を追加</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="toolbar">
+    <button id="toggleLeftSidebar" class="sidebarToggle sidebarToggleLeft" type="button" aria-label="左サイドバーを隠す" title="左サイドバー">
+      <span class="sidebarToggleIcon">◧</span>
+    </button>
+
+    <div class="toolbarProjectContext" id="editorProjectContext">
+      <span class="toolbarProjectLabel">案件</span>
+      <strong id="editorProjectName">案件未設定</strong>
+    </div>
+
+    <div class="toolbarRightGroup">
+      <div class="viewTabs">
+      <button data-view="diagram" class="active">構造図</button>
+      <button data-view="three">3D</button>
+      </div>
+      <button id="toggleRightSidebar" class="sidebarToggle sidebarToggleRight" type="button" aria-label="右サイドバーを隠す" title="右サイドバー">
+        <span class="sidebarToggleIcon">◨</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="metaRow">
+    <div class="centerMeta">
+      <div class="centerPattern">
+        <label for="patternName">ユニット名</label>
+        <input id="patternName" data-role="unit-name" type="text" value="ユニット 01">
+      </div>
+      <div class="centerOuter">
+        <span class="centerOuterLabel">外寸</span>
+        <label>W <input id="W" type="text" inputmode="decimal" value="1800" autocomplete="off"></label>
+        <label>H <input id="H" type="text" inputmode="decimal" value="900" autocomplete="off"></label>
+        <label>D <input id="D" type="text" inputmode="decimal" value="450" autocomplete="off"></label>
+      </div>
+      <div class="centerSaveWrap">
+        <button id="savePattern" class="centerSaveButton" type="button">ユニット保存</button>
+        <div id="toast" class="metaToast" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="canvasWrap">
+    <div class="card">
+      <div id="diagramView">
+        <div class="cardHead">
+          <div>
+            <strong>構造図</strong>
+            <div class="handSub">build the structure.</div>
+          </div>
+          <span>下部ドックから納まりを編集</span>
+        </div>
+        <svg class="mainDiagramSvg" viewBox="0 0 980 680" aria-label="pattern diagram">
+          <defs>
+            <marker id="arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+              <path d="M7 3.5 L0 0 L0 7 z" fill="#77736b"/>
+            </marker>
+          </defs>
+          <g id="dims"></g>
+          <g id="cabinet"></g>
+        </svg>
+        <div id="diagramZoomBadge" aria-hidden="true">100%</div>
+
+        
+
+      </div>
+
+      <div id="threeView" class="hidden">
+        <div class="cardHead">
+          <strong>3Dモデル</strong>
+          <div style="display:flex;gap:8px;align-items:center"><span>固定視点＋自由回転</span><button id="reset3D" class="ghost" style="padding:6px 9px;font-size:10px">視点リセット</button></div>
+        </div>
+        <div class="fixedViews" id="fixedViews">
+          <button data-fixed-view="front" class="active">正面</button>
+          <button data-fixed-view="rightFront">右斜め前</button>
+          <button data-fixed-view="leftFront">左斜め前</button>
+          <button data-fixed-view="back">背面</button>
+        </div>
+        <canvas id="threeCanvas"></canvas>
+
+        <div id="mobileThreeInfo" class="mobileThreeInfo" aria-label="ユニット情報">
+          <button id="mobileThreeExit" class="mobileThreeExit" type="button" aria-label="構造画面へ戻る">←</button>
+          <div class="mobileThreeInfoText">
+            <span id="mobileThreeProjectName" class="mobileThreeProjectName">案件 / 案件未設定</span>
+            <strong id="mobileThreeUnitName">ユニット</strong>
+            <span id="mobileThreeDimensions">W 1800 · H 900 · D 450</span>
+          </div>
+        </div>
+
+        <div id="mobileThreeViews" class="mobileThreeViews" aria-label="カメラ視点">
+          <button type="button" data-mobile-three-view="front">正面</button>
+          <button type="button" data-mobile-three-view="rightFront">右斜め前</button>
+          <button type="button" data-mobile-three-view="leftFront">左斜め前</button>
+          <button type="button" data-mobile-three-view="back">背面</button>
+        </div>
+
+        <div class="threeHint">
+          <span>※ 外形の W:H:D 比率をそのまま反映して表示します。板厚は未入力なので3D上では表示用の仮厚みです。</span>
+          <span>束・棚・巾木・背板の構造も反映します。3D内に「前／後ろ」表示を出します。</span>
+        </div>
+      </div>
+
+      <section id="workspaceDock" class="workspaceDock" data-dock-tab="box" aria-label="納まりドック">
+        <div id="workspaceDockHandle" class="workspaceDockHandle" title="ドラッグで高さ変更 / ダブルクリックで折りたたみ">
+          <span></span>
+        </div>
+        <div class="workspaceDockBar">
+          <div class="workspaceDockTabs" role="tablist" aria-label="納まり">
+            <button type="button" class="active" data-workspace-dock-tab="box" role="tab">箱の構成</button>
+            <button type="button" data-workspace-dock-tab="region" role="tab">区画</button>
+            <button type="button" data-workspace-dock-tab="joint" role="tab">四隅</button>
+            <button type="button" data-workspace-dock-tab="plinth" role="tab">巾木</button>
+            <button type="button" data-workspace-dock-tab="backboard" role="tab">背板</button>
+          </div>
+          <div class="workspaceDockHint">ドラッグで高さ調整　/　ダブルクリックで折りたたみ</div>
+        </div>
+        <div class="workspaceDockBody">
+
+          <section class="workspaceDockPanel active" data-workspace-dock-panel="box">
+            <div class="innerBoxCards">
+              <div class="innerBoxCard">
+                <div class="innerBoxCardHead"><strong>内天板</strong><span id="innerTopStateLabel">なし</span></div>
+                <div class="innerBoxButtons" data-inner-box-top>
+                  <button type="button" data-mode="none" class="active">なし</button>
+                  <button type="button" data-mode="outer">側板内</button>
+                  <button type="button" data-mode="inner">内側板間</button>
+                </div>
+              </div>
+              <div class="innerBoxCard">
+                <div class="innerBoxCardHead"><strong>内側板</strong><span id="innerSidesStateLabel">なし</span></div>
+                <div class="innerBoxButtons four" data-inner-box-sides>
+                  <button type="button" data-mode="none" class="active">なし</button>
+                  <button type="button" data-mode="left">左</button>
+                  <button type="button" data-mode="right">右</button>
+                  <button type="button" data-mode="both">両側</button>
+                </div>
+                <label class="innerBoxGapField">外側板から
+                  <input id="innerBoxGap" type="text" value="0" inputmode="decimal">
+                  <span>mm / 式</span>
+                </label>
+              </div>
+              <div class="innerBoxCard">
+                <div class="innerBoxCardHead"><strong>内地板</strong><span id="innerBottomStateLabel">なし</span></div>
+                <div class="innerBoxButtons" data-inner-box-bottom>
+                  <button type="button" data-mode="none" class="active">なし</button>
+                  <button type="button" data-mode="outer">側板内</button>
+                  <button type="button" data-mode="inner">内側板間</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="workspaceDockPanel" data-workspace-dock-panel="region">
+  <div class="section sidePanel dockRegionStructure" id="leftRegionSection">
     <h3>選択中の区画</h3>
     <div id="selectedInfo" class="selectedBox">外箱</div>
 
@@ -3799,245 +3996,6 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
     <button id="undoSplit" class="ghost danger" style="width:100%;margin-top:8px">選択区画の分割を戻す</button>
   </div>
 
-  <div class="section sidePanel regionDimensionsPanel tabPanelHidden" id="leftDimensionsSection" data-left-panel="dimensions">
-    <div class="structureSideHeading">
-      <div>
-        <h3>区画の有効寸法</h3>
-        <p class="note">各区画の有効寸法を確認し、その W × H × D を外寸にした新しいユニットを作れます。</p>
-      </div>
-      <span class="sideHandLabel">clear size</span>
-    </div>
-    <div id="regionDimensionsSummary" class="regionDimensionsSummary"></div>
-    <div id="regionDimensionsList" class="regionDimensionsList"></div>
-  </div>
-
-  <div class="section sidePanel structureMaterialPanel tabPanelHidden" id="leftMaterialsSection" data-left-panel="materials">
-    <div class="structureSideHeading">
-      <div><h3>登録材料</h3><p class="note">案件ごとに使う仕上材などを登録します。</p></div>
-      <span class="sideHandLabel">materials</span>
-    </div>
-    <div class="structureStandardNote">ランバー・積層合板・MDF・ベニアは標準材料として部材構成から常時選択できます。</div>
-    <div id="cutMaterials" class="cutMaterials structureCutMaterials"></div>
-    <button id="addCutMaterial" class="cutAddMaterial structureAddButton" type="button">＋ 材料を追加</button>
-  </div>
-
-  <div class="section sidePanel structureCompositionPanel tabPanelHidden" id="leftCompositionSection" data-left-panel="composition">
-    <div class="structureSideHeading">
-      <div><h3>部材構成</h3><p class="note">芯材・表・裏を組み合わせて仕上厚を作ります。</p></div>
-      <span class="sideHandLabel">composition</span>
-    </div>
-    <div class="cutStandardMaterialNote structureStandardNote">芯材：標準材料＋登録材料 / 表・裏：登録材料のみ</div>
-    <div id="cutPatterns" class="cutPatterns structureCutPatterns"></div>
-    <button id="addCutPattern" class="cutAddMaterial structureAddButton" type="button">＋ 部材構成を追加</button>
-  </div>
-</aside>
-
-<main class="main">
-  <div class="toolbar">
-    <button id="toggleLeftSidebar" class="sidebarToggle sidebarToggleLeft" type="button" aria-label="左サイドバーを隠す" title="左サイドバー">
-      <span class="sidebarToggleIcon">◧</span>
-    </button>
-
-    <div class="toolbarProjectContext" id="editorProjectContext">
-      <span class="toolbarProjectLabel">案件</span>
-      <strong id="editorProjectName">案件未設定</strong>
-    </div>
-
-    <div class="toolbarRightGroup">
-      <div class="viewTabs">
-      <button data-view="diagram" class="active">構造図</button>
-      <button data-view="three">3D</button>
-      </div>
-      <button id="toggleRightSidebar" class="sidebarToggle sidebarToggleRight" type="button" aria-label="右サイドバーを隠す" title="右サイドバー">
-        <span class="sidebarToggleIcon">◨</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="metaRow">
-    <div class="centerMeta">
-      <div class="centerPattern">
-        <label for="patternName">ユニット名</label>
-        <input id="patternName" data-role="unit-name" type="text" value="ユニット 01">
-      </div>
-      <div class="centerOuter">
-        <span class="centerOuterLabel">外寸</span>
-        <label>W <input id="W" type="number" value="1800" min="1"></label>
-        <label>H <input id="H" type="number" value="900" min="1"></label>
-        <label>D <input id="D" type="number" value="450" min="1"></label>
-      </div>
-      <div class="centerSaveWrap">
-        <button id="savePattern" class="centerSaveButton" type="button">ユニット保存</button>
-        <div id="toast" class="metaToast" aria-live="polite"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="canvasWrap">
-    <div class="card">
-      <div id="diagramView">
-        <div class="cardHead">
-          <div>
-            <strong>構造図</strong>
-            <div class="handSub">build the structure.</div>
-          </div>
-          <span>下部ドックから納まりを編集</span>
-        </div>
-        <svg class="mainDiagramSvg" viewBox="0 0 980 680" aria-label="pattern diagram">
-          <defs>
-            <marker id="arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-              <path d="M7 3.5 L0 0 L0 7 z" fill="#77736b"/>
-            </marker>
-          </defs>
-          <g id="dims"></g>
-          <g id="cabinet"></g>
-        </svg>
-        <div id="diagramZoomBadge" aria-hidden="true">100%</div>
-
-        
-
-      </div>
-
-      <div id="threeView" class="hidden">
-        <div class="cardHead">
-          <strong>3Dモデル</strong>
-          <div style="display:flex;gap:8px;align-items:center"><span>固定視点＋自由回転</span><button id="reset3D" class="ghost" style="padding:6px 9px;font-size:10px">視点リセット</button></div>
-        </div>
-        <div class="fixedViews" id="fixedViews">
-          <button data-fixed-view="front" class="active">正面</button>
-          <button data-fixed-view="rightFront">右斜め前</button>
-          <button data-fixed-view="leftFront">左斜め前</button>
-          <button data-fixed-view="back">背面</button>
-        </div>
-        <canvas id="threeCanvas"></canvas>
-
-        <div id="mobileThreeInfo" class="mobileThreeInfo" aria-label="ユニット情報">
-          <button id="mobileThreeExit" class="mobileThreeExit" type="button" aria-label="構造画面へ戻る">←</button>
-          <div class="mobileThreeInfoText">
-            <span id="mobileThreeProjectName" class="mobileThreeProjectName">案件 / 案件未設定</span>
-            <strong id="mobileThreeUnitName">ユニット</strong>
-            <span id="mobileThreeDimensions">W 1800 · H 900 · D 450</span>
-          </div>
-        </div>
-
-        <div id="mobileThreeViews" class="mobileThreeViews" aria-label="カメラ視点">
-          <button type="button" data-mobile-three-view="front">正面</button>
-          <button type="button" data-mobile-three-view="rightFront">右斜め前</button>
-          <button type="button" data-mobile-three-view="leftFront">左斜め前</button>
-          <button type="button" data-mobile-three-view="back">背面</button>
-        </div>
-
-        <div class="threeHint">
-          <span>※ 外形の W:H:D 比率をそのまま反映して表示します。板厚は未入力なので3D上では表示用の仮厚みです。</span>
-          <span>束・棚・巾木・背板の構造も反映します。3D内に「前／後ろ」表示を出します。</span>
-        </div>
-      </div>
-
-      <section id="workspaceDock" class="workspaceDock" data-dock-tab="box" aria-label="納まりドック">
-        <div id="workspaceDockHandle" class="workspaceDockHandle" title="ドラッグで高さ変更 / ダブルクリックで折りたたみ">
-          <span></span>
-        </div>
-        <div class="workspaceDockBar">
-          <div class="workspaceDockTabs" role="tablist" aria-label="納まり">
-            <button type="button" class="active" data-workspace-dock-tab="box" role="tab">箱の構成</button>
-            <button type="button" data-workspace-dock-tab="joint" role="tab">四隅</button>
-            <button type="button" data-workspace-dock-tab="plinth" role="tab">巾木</button>
-            <button type="button" data-workspace-dock-tab="backboard" role="tab">背板</button>
-          </div>
-          <div class="workspaceDockHint">ドラッグで高さ調整　/　ダブルクリックで折りたたみ</div>
-        </div>
-        <div class="workspaceDockBody">
-
-          <section class="workspaceDockPanel active" data-workspace-dock-panel="box">
-            <div class="innerBoxCards">
-              <div class="innerBoxCard">
-                <div class="innerBoxCardHead"><strong>内天板</strong><span id="innerTopStateLabel">なし</span></div>
-                <div class="innerBoxButtons" data-inner-box-top>
-                  <button type="button" data-mode="none" class="active">なし</button>
-                  <button type="button" data-mode="outer">側板内</button>
-                  <button type="button" data-mode="inner">内側板間</button>
-                </div>
-              </div>
-              <div class="innerBoxCard">
-                <div class="innerBoxCardHead"><strong>内側板</strong><span id="innerSidesStateLabel">なし</span></div>
-                <div class="innerBoxButtons four" data-inner-box-sides>
-                  <button type="button" data-mode="none" class="active">なし</button>
-                  <button type="button" data-mode="left">左</button>
-                  <button type="button" data-mode="right">右</button>
-                  <button type="button" data-mode="both">両側</button>
-                </div>
-                <label class="innerBoxGapField">外側板から
-                  <input id="innerBoxGap" type="text" value="0" inputmode="decimal">
-                  <span>mm / 式</span>
-                </label>
-              </div>
-              <div class="innerBoxCard">
-                <div class="innerBoxCardHead"><strong>内地板</strong><span id="innerBottomStateLabel">なし</span></div>
-                <div class="innerBoxButtons" data-inner-box-bottom>
-                  <button type="button" data-mode="none" class="active">なし</button>
-                  <button type="button" data-mode="outer">側板内</button>
-                  <button type="button" data-mode="inner">内側板間</button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="workspaceDockPanel legacyRegionContentPanel" data-workspace-dock-panel="region" hidden>
-            <div class="regionContentPanel">
-              <div class="regionContentHead">
-                <div>
-                  <strong id="regionContentTitle">R1 区画構成</strong>
-                  <span id="regionContentHint">正面図の区画をクリックして編集</span>
-                </div>
-              </div>
-              <div id="regionContentDisabled" class="regionContentDisabled hidden">分割済みの区画です。中の区画を選択してください。</div>
-              <div id="regionContentCards" class="regionContentCards">
-                <div class="regionContentCard">
-                  <div class="regionContentCardHead">
-                    <strong>可動棚</strong>
-                    <button id="movShelfToggle" class="miniToggle" type="button">なし</button>
-                  </div>
-                  <div class="regionContentFields">
-                    <label>枚数 <input id="movShelfCount" type="number" min="1" max="12" value="2"></label>
-                    <label>前引き <input id="movShelfSetback" type="text" value="20"><span>mm / 式</span></label>
-                  </div>
-                  <div class="regionContentNote">区画は分割せず、可動棚として部材化</div>
-                </div>
-
-                <div class="regionContentCard">
-                  <div class="regionContentCardHead">
-                    <strong>抽斗</strong>
-                    <button id="drawerToggle" class="miniToggle" type="button">なし</button>
-                  </div>
-                  <div class="regionContentFields">
-                    <label>段数 <input id="drawerCount" type="number" min="1" max="12" value="3"></label>
-                    <div class="regionMiniSeg" id="drawerFit">
-                      <button type="button" data-value="inside" class="active">内収まり</button>
-                      <button type="button" data-value="overlay">かぶせ</button>
-                    </div>
-                    <label><span id="drawerAllowanceLabel">隙間</span> <input id="drawerAllowance" type="text" value="2"><span>mm / 式</span></label>
-                  </div>
-                  <div class="regionContentNote">現段階は前板を自動部材化。抽斗箱は次の詳細設定で追加</div>
-                </div>
-
-                <div class="regionContentCard">
-                  <div class="regionContentCardHead">
-                    <strong>扉</strong>
-                    <button id="doorToggle" class="miniToggle" type="button">なし</button>
-                  </div>
-                  <div class="regionMiniSeg three" id="doorType">
-                    <button type="button" data-value="left" class="active">左吊元</button>
-                    <button type="button" data-value="right">右吊元</button>
-                    <button type="button" data-value="double">両開き</button>
-                  </div>
-                  <div class="regionMiniSeg" id="doorFit">
-                    <button type="button" data-value="inside" class="active">内収まり</button>
-                    <button type="button" data-value="overlay">かぶせ</button>
-                  </div>
-                  <label class="regionAllowance"><span id="doorAllowanceLabel">隙間</span> <input id="doorAllowance" type="text" value="2"><span>mm / 式</span></label>
-                </div>
-              </div>
-            </div>
           </section>
 
           <section class="workspaceDockPanel" data-workspace-dock-panel="joint">
@@ -4164,6 +4122,63 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
   <div id="mobileRightSidebarBody" class="mobileSidebarBody"></div>
 </aside>
 
+<div id="legacyRegionContentHost" hidden aria-hidden="true">
+            <div class="regionContentPanel">
+              <div class="regionContentHead">
+                <div>
+                  <strong id="regionContentTitle">R1 区画構成</strong>
+                  <span id="regionContentHint">正面図の区画をクリックして編集</span>
+                </div>
+              </div>
+              <div id="regionContentDisabled" class="regionContentDisabled hidden">分割済みの区画です。中の区画を選択してください。</div>
+              <div id="regionContentCards" class="regionContentCards">
+                <div class="regionContentCard">
+                  <div class="regionContentCardHead">
+                    <strong>可動棚</strong>
+                    <button id="movShelfToggle" class="miniToggle" type="button">なし</button>
+                  </div>
+                  <div class="regionContentFields">
+                    <label>枚数 <input id="movShelfCount" type="number" min="1" max="12" value="2"></label>
+                    <label>前引き <input id="movShelfSetback" type="text" value="20"><span>mm / 式</span></label>
+                  </div>
+                  <div class="regionContentNote">区画は分割せず、可動棚として部材化</div>
+                </div>
+
+                <div class="regionContentCard">
+                  <div class="regionContentCardHead">
+                    <strong>抽斗</strong>
+                    <button id="drawerToggle" class="miniToggle" type="button">なし</button>
+                  </div>
+                  <div class="regionContentFields">
+                    <label>段数 <input id="drawerCount" type="number" min="1" max="12" value="3"></label>
+                    <div class="regionMiniSeg" id="drawerFit">
+                      <button type="button" data-value="inside" class="active">内収まり</button>
+                      <button type="button" data-value="overlay">かぶせ</button>
+                    </div>
+                    <label><span id="drawerAllowanceLabel">隙間</span> <input id="drawerAllowance" type="text" value="2"><span>mm / 式</span></label>
+                  </div>
+                  <div class="regionContentNote">現段階は前板を自動部材化。抽斗箱は次の詳細設定で追加</div>
+                </div>
+
+                <div class="regionContentCard">
+                  <div class="regionContentCardHead">
+                    <strong>扉</strong>
+                    <button id="doorToggle" class="miniToggle" type="button">なし</button>
+                  </div>
+                  <div class="regionMiniSeg three" id="doorType">
+                    <button type="button" data-value="left" class="active">左吊元</button>
+                    <button type="button" data-value="right">右吊元</button>
+                    <button type="button" data-value="double">両開き</button>
+                  </div>
+                  <div class="regionMiniSeg" id="doorFit">
+                    <button type="button" data-value="inside" class="active">内収まり</button>
+                    <button type="button" data-value="overlay">かぶせ</button>
+                  </div>
+                  <label class="regionAllowance"><span id="doorAllowanceLabel">隙間</span> <input id="doorAllowance" type="text" value="2"><span>mm / 式</span></label>
+                </div>
+              </div>
+            </div>
+          </div>
 <div id="mobileInputToolbar" class="mobileInputToolbar" hidden aria-label="入力移動">
   <button id="mobileInputPrev" type="button">前へ</button>
   <button id="mobileInputNext" type="button">次へ</button>
@@ -4173,6 +4188,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #threeCanvas{flex:1 1 aut
 <script>
 const state={
   outer:{W:1800,H:900,D:450},
+  outerFormula:{W:"1800",H:"900",D:"450"},
   joints:{tl:"side",tr:"side",bl:"side",br:"side"},
   selected:"R1",
   root:{id:"R1",split:null,innerBackboard:null},
@@ -4217,10 +4233,18 @@ const state={
 };
 const $=id=>document.getElementById(id);
 
+function resolveOuterDimension(axis,formulas=state.outerFormula,stack=[]){
+  if(stack.includes(axis))return NaN;
+  let e=String(formulas?.[axis]??"").trim();
+  if(!e)return NaN;
+  e=e.replace(/\b([WHD])\b/g,(_all,ref)=>{const v=resolveOuterDimension(ref,formulas,[...stack,axis]);return Number.isFinite(v)?`(${v})`:"NaN"});
+  if(!/^[0-9+\-*/().\s]+$/.test(e))return NaN;
+  try{const v=Function(`"use strict";return (${e})`)();return Number.isFinite(v)&&v>0?v:NaN}catch(_){return NaN}
+}
 function readOuter(){
-  state.outer.W=+($("W").value||1);
-  state.outer.H=+($("H").value||1);
-  state.outer.D=+($("D").value||1);
+  const formulas={W:$("W").value,H:$("H").value,D:$("D").value};
+  state.outerFormula={...formulas};
+  ["W","H","D"].forEach(axis=>{const input=$(axis);const v=resolveOuterDimension(axis,formulas,[]);const valid=Number.isFinite(v)&&v>0;input.classList.toggle("formulaInvalid",!valid);input.setAttribute("aria-invalid",valid?"false":"true");input.title=valid?`計算結果 ${formatFinishedMm(v)} mm`:"計算式を確認してください";if(valid)state.outer[axis]=Math.round(v*1000)/1000});
 }
 function newRegion(){return{id:"R"+(state.nextRegion++),split:null,innerBackboard:null}}
 function findRegion(node,id,parent=null){
@@ -5510,9 +5534,10 @@ function createUnitFromRegionDimensions(regionId){
     resetUnitState();
     $("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;
     state.outer={W:dims.W,H:dims.H,D:dims.D};
-    $("W").value=formatFinishedMm(dims.W);
-    $("H").value=formatFinishedMm(dims.H);
-    $("D").value=formatFinishedMm(dims.D);
+    state.outerFormula={W:formatFinishedMm(dims.W),H:formatFinishedMm(dims.H),D:formatFinishedMm(dims.D)};
+    $("W").value=state.outerFormula.W;
+    $("H").value=state.outerFormula.H;
+    $("D").value=state.outerFormula.D;
     cutState.materials=cloneMaterials(p.materials);
     cutState.patterns=clonePatterns(p.materialPatterns);
     cutState.additionalUnits=[];
@@ -5525,9 +5550,10 @@ function createUnitFromRegionDimensions(regionId){
     resetUnitState();
     $("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;
     state.outer={W:dims.W,H:dims.H,D:dims.D};
-    $("W").value=formatFinishedMm(dims.W);
-    $("H").value=formatFinishedMm(dims.H);
-    $("D").value=formatFinishedMm(dims.D);
+    state.outerFormula={W:formatFinishedMm(dims.W),H:formatFinishedMm(dims.H),D:formatFinishedMm(dims.D)};
+    $("W").value=state.outerFormula.W;
+    $("H").value=state.outerFormula.H;
+    $("D").value=state.outerFormula.D;
     update();
     saveCurrentUnit({silent:true});
   }
@@ -6862,7 +6888,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV72"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV74"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -6873,8 +6899,7 @@ function clampWorkspaceDockHeight(value){
 function loadWorkspaceDockState(){
   try{
     const saved=JSON.parse(localStorage.getItem(WORKSPACE_DOCK_KEY)||"{}");
-    if(["box","joint","plinth","backboard"].includes(saved.tab))workspaceDockState.tab=saved.tab;
-    else if(saved.tab==="region")workspaceDockState.tab="box";
+    if(["box","region","joint","plinth","backboard"].includes(saved.tab))workspaceDockState.tab=saved.tab;
     if(Number.isFinite(+saved.height))workspaceDockState.height=clampWorkspaceDockHeight(+saved.height);
     workspaceDockState.lastExpandedHeight=workspaceDockState.height;
     workspaceDockState.collapsed=!!saved.collapsed;
@@ -6908,7 +6933,7 @@ function applyWorkspaceDockState({redraw=true}={}){
   });
 }
 function setWorkspaceDockTab(tab){
-  if(!["box","joint","plinth","backboard"].includes(tab))return;
+  if(!["box","region","joint","plinth","backboard"].includes(tab))return;
   workspaceDockState.tab=tab;
   if(workspaceDockState.collapsed)workspaceDockState.collapsed=false;
   applyWorkspaceDockState();
@@ -7004,12 +7029,13 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:72,
+    version:74,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
     structure:{
       outerPreview:{...state.outer},
+      outerFormula:{...state.outerFormula},
       variables:["W","H","D","左側板厚","右側板厚","天板厚","地板厚","内天板厚","左内側板厚","右内側板厚","内地板厚","束厚","棚板厚","巾木高さ","巾木厚","前巾木厚","左巾木厚","右巾木厚","後巾木厚","背板厚","内背板厚"],
       joints:{...state.joints},
       plinth:{...state.plinth,edges:{...state.plinth.edges},sideDrop:{...state.plinth.sideDrop}},
@@ -7159,7 +7185,7 @@ document.querySelectorAll("[data-side-tabs] .sideTab").forEach(btn=>{
     setSideTab(side,btn.dataset.sideTab);
   });
 });
-setSideTab("left","region");
+/* v74 side tab init after cutState */
 
 
 
@@ -7255,6 +7281,7 @@ function defaultCutState(){
 let cutState=migrateStandardMaterialsInState(defaultCutState());
 sanitizeFinishMaterialsInPatterns(cutState.patterns,cutState.materials);
 let lastCutResult=null;
+setSideTab("left","dimensions");
 
 function normalizeCutState(raw){
   const base=defaultCutState();
@@ -7334,6 +7361,7 @@ function compactUnitSourceSnapshot(data){
     name:data.name||"ユニット",
     structure:{
       outerPreview:{...(s.outerPreview||{W:1800,H:900,D:450})},
+      outerFormula:{W:String(s.outerPreview?.W??1800),H:String(s.outerPreview?.H??900),D:String(s.outerPreview?.D??450),...(s.outerFormula||{})},
       joints:{...(s.joints||{})},
       plinth:JSON.parse(JSON.stringify(s.plinth||{})),
       backboard:{...(s.backboard||{})},
@@ -8146,6 +8174,7 @@ function applySnapshotToEditor(data){
   const s=data.structure||data;
   currentUnitId=data.id||currentUnitId||makeUnitId();
   state.outer={...(s.outerPreview||{W:1800,H:900,D:450})};
+  state.outerFormula={W:String(state.outer.W),H:String(state.outer.H),D:String(state.outer.D),...(s.outerFormula||{})};
   state.joints={tl:"side",tr:"side",bl:"side",br:"side",...(s.joints||{})};
   state.plinth={enabled:false,seq:null,heightFormula:"100",frontSetbackFormula:"50",rearSetbackFormula:"0",frontBackLengthFormula:"W",sideDepthFormula:"D - 前引き - 後引き",edges:{front:true,left:true,right:true,back:true},sideDrop:{left:"body",right:"body"},...(s.plinth||{})};
   state.backboard={enabled:true,seq:1,mode:"inside",...(s.backboard||{})};
@@ -8176,7 +8205,7 @@ function applySnapshotToEditor(data){
   }
   cutState=migrateStandardMaterialsInState(normalizeCutState(data.cutting));
   sanitizeFinishMaterialsInPatterns(cutState.patterns,cutState.materials);lastCutResult=data.cutting?.lastResult||null;
-  $("patternName").value=data.name||"ユニット 01";$("W").value=state.outer.W;$("H").value=state.outer.H;$("D").value=state.outer.D;$("plinthHeight").value=state.plinth.heightFormula;$("plinthFrontSetback").value=state.plinth.frontSetbackFormula;$("plinthRearSetback").value=state.plinth.rearSetbackFormula;$("plinthFrontBackLength").value=state.plinth.frontBackLengthFormula;$("plinthSideDepth").value=state.plinth.sideDepthFormula;update();
+  $("patternName").value=data.name||"ユニット 01";$("W").value=state.outerFormula.W;$("H").value=state.outerFormula.H;$("D").value=state.outerFormula.D;$("plinthHeight").value=state.plinth.heightFormula;$("plinthFrontSetback").value=state.plinth.frontSetbackFormula;$("plinthRearSetback").value=state.plinth.rearSetbackFormula;$("plinthFrontBackLength").value=state.plinth.frontBackLengthFormula;$("plinthSideDepth").value=state.plinth.sideDepthFormula;update();
 }
 function openSavedUnit(key){
   try{
@@ -8195,6 +8224,7 @@ function resetUnitState(){
   applySnapshotToEditor({id:currentUnitId,
     name:"ユニット 01",
     outerPreview:{W:1800,H:900,D:450},
+    outerFormula:{W:"1800",H:"900",D:"450"},
     joints:{tl:"side",tr:"side",bl:"side",br:"side"},
     plinth:{
       enabled:false,seq:null,heightFormula:"100",frontSetbackFormula:"50",
@@ -8613,7 +8643,6 @@ function setupMobileSidebarLayout(){
   if(mobileSidebarLayoutState.items.length)return;
   const desired=[
     {node:document.querySelector('[data-side-tabs="left"]'),target:"left"},
-    {node:document.getElementById("leftRegionSection"),target:"left"},
     {node:document.getElementById("leftDimensionsSection"),target:"left"},
     {node:document.getElementById("leftMaterialsSection"),target:"left"},
     {node:document.getElementById("leftCompositionSection"),target:"left"},
