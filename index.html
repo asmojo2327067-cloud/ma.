@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v84</title>
+<title>ma.｜案件 v86</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -4007,9 +4007,22 @@ body #workspaceDock .ghost.danger,body #rightHistorySection .historyDeletePart{
   .mobileBottomNav .shellNavBtn.active{background-position:42.857143% 50%!important;}
 }
 
+/* ===== ma. v86 restrained Sketch Craft image buttons ===== */
+:root{--btn-normal:url("assets/btn-v86-normal.svg?v=86");--btn-selected:url("assets/btn-v86-selected.svg?v=86");--btn-primary:url("assets/btn-v86-primary.svg?v=86");--btn-danger:url("assets/btn-v86-danger.svg?v=86");--btn-tab:url("assets/btn-v86-tab.svg?v=86");--btn-tab-active:url("assets/btn-v86-tab-active.svg?v=86");}
+#workspaceDock .seg button,#workspaceDock .edgeBtn,#workspaceDock .toggleBtn,#workspaceDock .innerBoxButtons button,#workspaceDock .jointTextChoices button,#workspaceDock .step button,.left .seg button,.left .edgeBtn,.left .toggleBtn,.left .step button,.right .seg button,.right .edgeBtn,.right .toggleBtn,.right .step button,.mobileSidebar .seg button,.mobileSidebar .edgeBtn,.mobileSidebar .toggleBtn,.mobileSidebar .step button{flex:0 0 auto!important;align-self:center!important;height:30px!important;min-height:30px!important;max-height:30px!important;padding:3px 9px 5px!important;background:transparent var(--btn-normal) center/100% 100% no-repeat!important;border:0!important;border-radius:0!important;box-shadow:none!important;color:#3D342E!important;font-size:9px!important;font-weight:700!important;line-height:1!important}
+#workspaceDock .seg button.active,#workspaceDock .edgeBtn.on,#workspaceDock .toggleBtn.on,#workspaceDock .innerBoxButtons button.active,#workspaceDock .jointTextChoices button.active,.left .seg button.active,.left .edgeBtn.on,.left .toggleBtn.on,.right .seg button.active,.right .edgeBtn.on,.right .toggleBtn.on,.mobileSidebar .seg button.active,.mobileSidebar .edgeBtn.on,.mobileSidebar .toggleBtn.on{background-image:var(--btn-selected)!important;color:#6B4A34!important}
+#workspaceDock .addButtons button,.left .structureAddButton,.mobileSidebar .structureAddButton,#rightHistorySection .historyAddPartButton,.homePrimaryAction,.projectPrimaryButton,.centerSaveButton,.cutSaveButton,.cutGenerateButton{flex:0 0 auto!important;align-self:center!important;height:32px!important;min-height:32px!important;max-height:32px!important;padding:4px 10px 6px!important;background:transparent var(--btn-primary) center/100% 100% no-repeat!important;border:0!important;border-radius:0!important;box-shadow:none!important;color:#874722!important;font-size:9px!important;font-weight:750!important;line-height:1!important}
+#workspaceDock .ghost.danger,#rightHistorySection .historyDeletePart,.projectDangerButton{height:30px!important;min-height:30px!important;max-height:30px!important;background:transparent var(--btn-danger) center/100% 100% no-repeat!important;border:0!important;box-shadow:none!important;color:#9A5F52!important}
+.sideTab,.workspaceDockTabs button,.viewTabs button,.fixedViews button{flex:0 0 auto!important;height:30px!important;min-height:30px!important;max-height:30px!important;padding:4px 10px 5px!important;background:transparent var(--btn-tab) center/100% 100% no-repeat!important;border:0!important;border-radius:0!important;box-shadow:none!important;color:#6F675F!important;font-size:9px!important;font-weight:700!important}
+.sideTab.active,.workspaceDockTabs button.active,.viewTabs button.active,.fixedViews button.active{background-image:var(--btn-tab-active)!important;color:#6B4A34!important}
+.sidebarToggle,.mobileMenuBtn,.mobileSidebarClose,.mobileThreeExit{width:32px!important;min-width:32px!important;max-width:32px!important;height:32px!important;min-height:32px!important;max-height:32px!important;padding:5px!important;background:transparent var(--btn-normal) center/100% 100% no-repeat!important;border:0!important;box-shadow:none!important}
+.step button{width:32px!important;min-width:32px!important;max-width:32px!important;padding:0!important;font-size:13px!important}.jointTextChoices,.seg,.edgeGrid,.innerBoxButtons{align-items:center!important}.jointTextChoices button{flex-grow:0!important;flex-shrink:0!important}
+.mobileBottomNav .shellNavBtn{background:none!important;border:0!important;box-shadow:none!important;height:auto!important;min-height:0!important;max-height:none!important;color:#6F675F!important}.mobileBottomNav .shellNavBtn.active{background:none!important;color:#A85F32!important}button:active{transform:translateY(1px)!important}
+@media(max-width:760px){#workspaceDock .seg button,#workspaceDock .edgeBtn,#workspaceDock .toggleBtn,#workspaceDock .innerBoxButtons button,#workspaceDock .jointTextChoices button,.mobileSidebar .seg button,.mobileSidebar .edgeBtn,.mobileSidebar .toggleBtn{height:30px!important;min-height:30px!important;max-height:30px!important}#workspaceDock .addButtons button,.mobileSidebar .structureAddButton,#rightHistorySection .historyAddPartButton{height:32px!important;min-height:32px!important;max-height:32px!important}}
+
 </style>
 </head>
-<body data-build="ma-project-v84" class="page-home">
+<body data-build="ma-project-v86" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -7491,7 +7504,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV84"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV86"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -7633,7 +7646,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:84,
+    version:86,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
