@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v89</title>
+<title>ma.｜案件 v91</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -4217,9 +4217,19 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
   }
 }
 
+
+/* ===== ma. v90 / illustration is display-only ===== */
+#cabinet,#cabinet *,#sketchView,#sketchView *{pointer-events:none!important;cursor:default!important;}
+/* ===== ma. v91 / inner backboard belongs to Backboard tab ===== */
+#leftBackboardSection .innerBackMoved{margin-top:12px;padding-top:10px;border-top:1px solid var(--lineSoft);}
+#leftBackboardSection .dockSubSectionTitle{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px;}
+#leftBackboardSection .dockSubSectionTitle strong{font-size:11px;color:var(--ink);}
+#leftBackboardSection .dockSubSectionTitle span{font-size:8px;color:var(--muted);}
+#leftBackboardSection .innerBackControls{margin-top:0!important;}
+
 </style>
 </head>
-<body data-build="ma-project-v89" class="page-home">
+<body data-build="ma-project-v91" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -4635,14 +4645,14 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
           <div class="dockContextMain">
             <span class="dockContextEyebrow">選択中</span>
             <strong id="dockContextTitle">外箱</strong>
-            <span id="dockContextHint">図面の部材や区画をタップすると、その設定を開きます。</span>
+            <span id="dockContextHint">設定は下のタブから選びます。</span>
           </div>
           <button id="dockContextClose" class="dockContextClose" type="button" aria-label="設定シートを閉じる">×</button>
         </div>
         <div class="workspaceDockBar">
           <div class="workspaceDockTabs" role="tablist" aria-label="納まり">
             <button type="button" class="active" data-workspace-dock-tab="box" role="tab">箱の構成</button>
-            <button type="button" data-workspace-dock-tab="region" role="tab">区画</button>
+            <button type="button" data-workspace-dock-tab="region" role="tab">棚・束</button>
             <button type="button" data-workspace-dock-tab="joint" role="tab">四隅</button>
             <button type="button" data-workspace-dock-tab="plinth" role="tab">巾木</button>
             <button type="button" data-workspace-dock-tab="backboard" role="tab">背板</button>
@@ -4690,29 +4700,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
     <h3>選択中の区画</h3>
     <div id="selectedInfo" class="selectedBox">外箱</div>
 
-    <div class="innerBackControls">
-      <div class="row">
-        <div>
-          <strong style="font-size:12px">区画の内背板</strong>
-          <div class="note">選択区画ごとに設定</div>
-        </div>
-        <button id="innerBackToggle" class="toggleBtn">＋ 内背板</button>
-      </div>
-      <div id="innerBackFields" class="hidden">
-        <div class="field">
-          <label>奥行位置の基準</label>
-          <div class="seg" id="innerBackRef">
-            <button data-value="front">前から</button>
-            <button data-value="back" class="active">後ろから</button>
-          </div>
-        </div>
-        <div class="field">
-          <label>基準からの位置・式</label>
-          <input id="innerBackFormula" type="text" value="50" placeholder="例: 50 / D/4">
-        </div>
-        <div id="innerBackStatus" class="note" style="margin-top:7px"></div>
-      </div>
-    </div>
+
 
     <div class="field">
       <label>追加枚数</label>
@@ -4836,6 +4824,35 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
       </div>
       <div id="backboardModeNote" class="selectedBox" style="margin-top:9px">箱の内側に収まるサイズ</div>
       <p class="note">外貼りのときも外寸 D は変えません。箱本体・束・棚の奥行は <strong>D - 背板厚</strong> として扱います。</p>
+    <div class="innerBackMoved">
+      <div class="dockSubSectionTitle">
+        <strong>内背</strong>
+        <span>選択区画ごと</span>
+      </div>
+    <div class="innerBackControls">
+      <div class="row">
+        <div>
+          <strong style="font-size:12px">区画の内背板</strong>
+          <div class="note">選択区画ごとに設定</div>
+        </div>
+        <button id="innerBackToggle" class="toggleBtn">＋ 内背板</button>
+      </div>
+      <div id="innerBackFields" class="hidden">
+        <div class="field">
+          <label>奥行位置の基準</label>
+          <div class="seg" id="innerBackRef">
+            <button data-value="front">前から</button>
+            <button data-value="back" class="active">後ろから</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>基準からの位置・式</label>
+          <input id="innerBackFormula" type="text" value="50" placeholder="例: 50 / D/4">
+        </div>
+        <div id="innerBackStatus" class="note" style="margin-top:7px"></div>
+      </div>
+    </div>
+    </div>
     </div>
   </div>
             </div>
@@ -6109,20 +6126,8 @@ function drawRegion(node,rx,ry,rw,rh,realW,realH){
 
   g.innerHTML=html;
   appendSelectedGrainSvg(g);
-  g.querySelectorAll("[data-part-id]").forEach(el=>el.addEventListener("click",e=>{
-    e.stopPropagation();
-    setSelectedPart(el.dataset.partId);
-  }));
-  g.querySelectorAll("[data-region]").forEach(el=>el.addEventListener("click",e=>{
-    e.stopPropagation();
-    state.selected=el.dataset.region;
-    update();
-    openContextSettings({
-      tab:"region",
-      title:`区画 ${el.dataset.region}`,
-      hint:"この区画だけの分割・位置・内背板を編集します。"
-    });
-  }));
+  // v90: illustration is display-only. No part click/tap interaction.
+  // v90: illustration is display-only. No region click/tap interaction.
 }
 
 function jointTextCardMarkup(key,title,winner){
@@ -7759,7 +7764,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV89"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV91"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -7809,7 +7814,7 @@ function setWorkspaceDockTab(tab){
   if(workspaceDockState.collapsed)workspaceDockState.collapsed=false;
   applyWorkspaceDockState();
   saveWorkspaceDockState();
-  const labels={box:["箱の構成","内天板・内側板・内地板を設定します。"],region:["区画","選択中の区画だけを編集します。"],joint:["四隅","四隅の勝ち負けを1か所ずつ確認します。"],plinth:["巾木","巾木の有無・位置・寸法を編集します。"],backboard:["背板","背板の納まりを編集します。"]};
+  const labels={box:["箱の構成","内天板・内側板・内地板を設定します。"],region:["棚・束","選択中の区画に棚・束を追加・配置します。"],joint:["四隅","四隅の勝ち負けを1か所ずつ確認します。"],plinth:["巾木","巾木の有無・位置・寸法を編集します。"],backboard:["背板","背板の納まりを編集します。"]};
   if(!state.selectedPartId){
     const v=labels[tab];
     const title=document.getElementById("dockContextTitle");
@@ -7912,7 +7917,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:89,
+    version:91,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
