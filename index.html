@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v88</title>
+<title>ma.｜案件 v89</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -4165,9 +4165,61 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
   pointer-events:none!important;
 }
 
+
+/* ===== ma. v89 / mobile inline editor, no bottom sheet ===== */
+@media(max-width:760px){
+  body.mobileStructurePreview .main{padding-bottom:78px!important;}
+
+  body.mobileStructurePreview #workspaceDock,
+  body.mobileStructurePreview.mobileContextSheetOpen #workspaceDock,
+  body.mobileStructurePreview:not(.mobileContextSheetOpen) #workspaceDock{
+    position:relative!important;
+    left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;
+    z-index:auto!important;
+    width:auto!important;height:auto!important;max-height:none!important;min-height:0!important;
+    margin:8px 8px 18px!important;
+    border:1px solid var(--line)!important;
+    border-radius:10px!important;
+    box-shadow:0 3px 12px rgba(74,58,45,.07)!important;
+    transform:none!important;opacity:1!important;pointer-events:auto!important;
+    overflow:visible!important;visibility:visible!important;transition:none!important;
+    background:rgba(252,249,242,.92)!important;
+  }
+
+  body.mobileStructurePreview #workspaceDockHandle{display:none!important;}
+
+  body.mobileStructurePreview .dockContextBar{
+    min-height:45px!important;padding:7px 11px!important;border-radius:10px 10px 0 0!important;
+  }
+  body.mobileStructurePreview .dockContextMain{
+    grid-template-columns:auto 1fr!important;gap:2px 8px!important;
+  }
+  body.mobileStructurePreview .dockContextEyebrow{font-size:7px!important;}
+  body.mobileStructurePreview #dockContextTitle{font-size:12px!important;}
+  body.mobileStructurePreview #dockContextHint{
+    grid-column:1 / -1!important;white-space:normal!important;font-size:8px!important;line-height:1.3!important;
+  }
+  body.mobileStructurePreview .dockContextClose{display:none!important;}
+
+  body.mobileStructurePreview .workspaceDockBar{
+    position:sticky!important;top:0!important;z-index:2!important;
+    min-height:38px!important;overflow-x:auto!important;padding:0 5px!important;
+    background:rgba(252,249,242,.97)!important;
+  }
+  body.mobileStructurePreview .workspaceDockTabs{width:max-content!important;min-width:100%!important;}
+  body.mobileStructurePreview .workspaceDockTabs button{min-width:67px!important;flex:1 0 auto!important;}
+  body.mobileStructurePreview .workspaceDockHint{display:none!important;}
+  body.mobileStructurePreview .workspaceDockBody{
+    height:auto!important;max-height:none!important;overflow:visible!important;padding:8px 10px 18px!important;
+  }
+  body.mobileStructurePreview:not(.mobileContextSheetOpen)::after{
+    content:none!important;display:none!important;
+  }
+}
+
 </style>
 </head>
-<body data-build="ma-project-v88" class="page-home">
+<body data-build="ma-project-v89" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -5480,7 +5532,9 @@ function openContextSettings({tab,title,hint,mobileOpen=true}={}){
   if(titleEl&&title)titleEl.textContent=title;
   if(hintEl&&hint)hintEl.textContent=hint;
   if(mobileOpen&&window.matchMedia("(max-width:760px)").matches){
-    document.body.classList.add("mobileContextSheetOpen");
+    requestAnimationFrame(()=>{
+      document.getElementById("workspaceDock")?.scrollIntoView({block:"start",behavior:"smooth"});
+    });
   }
 }
 function setSelectedPart(partId,{rerenderFormula=false}={}){
@@ -7705,7 +7759,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV88"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV89"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -7779,12 +7833,9 @@ function initWorkspaceDock(){
   dock.querySelectorAll("[data-workspace-dock-tab]").forEach(btn=>{
     btn.addEventListener("click",()=>{
       setWorkspaceDockTab(btn.dataset.workspaceDockTab);
-      if(window.matchMedia("(max-width:760px)").matches)document.body.classList.add("mobileContextSheetOpen");
     });
   });
-  document.getElementById("dockContextClose")?.addEventListener("click",()=>{
-    document.body.classList.remove("mobileContextSheetOpen");
-  });
+  document.getElementById("dockContextClose")?.addEventListener("click",()=>{});
   handle.addEventListener("dblclick",e=>{e.preventDefault();toggleWorkspaceDockCollapsed()});
   handle.addEventListener("pointerdown",e=>{
     if(e.button!==0)return;
@@ -7861,7 +7912,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:88,
+    version:89,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
