@@ -1,0 +1,32 @@
+name: Deploy v84
+on:
+  push:
+    paths:
+      - '.github/scripts/apply_v84.py'
+      - '.github/workflows/deploy-v84.yml'
+      - 'assets/sc-buttons-v84.jpg'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply v84
+        run: python .github/scripts/apply_v84.py
+      - name: Verify v84
+        run: |
+          grep -q 'ma-project-v84' index.html
+          grep -q 'sc-buttons-v84.jpg?v=84' index.html
+      - name: Commit v84
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Deploy v84: original Sketch Craft image buttons'
+          git push
