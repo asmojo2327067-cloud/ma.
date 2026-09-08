@@ -1,0 +1,31 @@
+name: Deploy v80
+on:
+  push:
+    paths:
+      - '.github/scripts/apply_v80.py'
+      - '.github/workflows/deploy-v80.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply v80 patch
+        run: python .github/scripts/apply_v80.py
+      - name: Verify v80
+        run: |
+          grep -q 'ma-project-v80' index.html
+          grep -q 'Sketch Craft / full visual system' index.html
+      - name: Commit v80
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Deploy v80: full Sketch Craft visual system'
+          git push
