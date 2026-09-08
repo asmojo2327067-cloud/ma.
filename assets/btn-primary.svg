@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" preserveAspectRatio="none">
+<defs><filter id="s" x="-10%" y="-30%" width="120%" height="170%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#4C3A2B" flood-opacity=".2"/></filter></defs>
+<path filter="url(#s)" d="M30 25 L690 21 L695 148 L28 155 Z" fill="#FCF9F2" stroke="#A85F32" stroke-width="4"/>
+<path d="M39 31 L681 29 L687 141 L37 148 Z" fill="none" stroke="#C7783D" stroke-opacity=".42" stroke-width="2"/>
+</svg>
