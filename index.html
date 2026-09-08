@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v87</title>
+<title>ma.｜案件 v88</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3935,9 +3935,239 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
   .sketchReferenceNote{max-width:340px;font-size:9px}
 }
 
+
+/* ===== ma. v88 / focused interaction refinement ===== */
+
+/* calmer hierarchy */
+.workspaceDockPanel h3,
+.left .section h3,
+.right .section h3{
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:.02em!important;
+  color:var(--ink)!important;
+}
+.workspaceDockPanel .note,
+.left .note,.right .note{
+  font-size:9px!important;
+  color:var(--muted)!important;
+  line-height:1.45!important;
+}
+
+/* context header: selected target first, controls second */
+.dockContextBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:42px;
+  padding:7px 14px 7px 16px;
+  border-bottom:1px solid rgba(200,185,165,.75);
+  background:rgba(252,249,242,.84);
+}
+.dockContextMain{
+  min-width:0;
+  display:grid;
+  grid-template-columns:auto auto minmax(0,1fr);
+  align-items:baseline;
+  gap:7px 10px;
+}
+.dockContextEyebrow{
+  font-size:7.5px;
+  letter-spacing:.12em;
+  color:var(--craft);
+  font-weight:800;
+}
+#dockContextTitle{
+  font-size:12px;
+  color:var(--ink);
+  white-space:nowrap;
+}
+#dockContextHint{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:8.5px;
+  color:var(--muted);
+}
+.dockContextClose{
+  display:none;
+  border:0!important;
+  background:transparent!important;
+  color:var(--muted)!important;
+  box-shadow:none!important;
+  width:28px;
+  height:28px;
+  padding:0!important;
+  font-size:17px!important;
+}
+
+/* tabs and selected states are intentionally quieter */
+.sideTab.active,.workspaceDockTabs button.active{
+  color:var(--craft-deep)!important;
+  background:rgba(199,120,61,.035)!important;
+  border-bottom-color:rgba(168,95,50,.7)!important;
+}
+#workspaceDock .seg button.active,#workspaceDock .edgeBtn.on,#workspaceDock .toggleBtn.on,
+#workspaceDock .innerBoxButtons button.active,#workspaceDock .jointTextChoices button.active,
+.left .seg button.active,.left .edgeBtn.on,.left .toggleBtn.on,
+.mobileSidebar .seg button.active,.mobileSidebar .edgeBtn.on,.mobileSidebar .toggleBtn.on{
+  color:var(--craft-deep)!important;
+  border-color:rgba(168,95,50,.62)!important;
+  background:#F3E7DA!important;
+  background-image:none!important;
+  box-shadow:0 1px 3px rgba(74,58,45,.08)!important;
+}
+
+/* direct selection on the drawing reads as an editing target */
+#cabinet [data-part-id],
+#cabinet [data-region]{
+  cursor:pointer;
+}
+#cabinet [data-part-id]:hover{
+  filter:brightness(.985);
+}
+#cabinet .partSelectedSvg{
+  stroke:var(--craft)!important;
+  stroke-width:2.2!important;
+}
+.formulaCard.selectedPartCard{
+  outline:1px solid rgba(168,95,50,.36)!important;
+  box-shadow:0 3px 10px rgba(74,58,45,.08)!important;
+  background:rgba(252,249,242,.98)!important;
+}
+
+/* desktop: keep the drawing dominant; dock reads like a compact inspector */
+@media(min-width:761px){
+  .workspaceDock{
+    --dock-height:310px;
+  }
+  .workspaceDockBody{
+    padding-top:2px!important;
+  }
+  .workspaceDockBar{
+    min-height:35px!important;
+  }
+  .workspaceDockHint{
+    opacity:.55;
+  }
+}
+
+/* mobile: turn structural settings into a real bottom sheet */
+@media(max-width:760px){
+  body.mobileStructurePreview .main{
+    padding-bottom:78px!important;
+  }
+  body.mobileStructurePreview #workspaceDock{
+    position:fixed!important;
+    left:8px!important;
+    right:8px!important;
+    bottom:80px!important;
+    top:auto!important;
+    z-index:54!important;
+    height:min(58vh,470px)!important;
+    max-height:min(58vh,470px)!important;
+    min-height:0!important;
+    border:1px solid var(--line-strong)!important;
+    border-radius:15px 15px 8px 8px!important;
+    box-shadow:0 -8px 26px rgba(74,58,45,.16)!important;
+    transform:translateY(calc(100% + 82px));
+    opacity:0;
+    pointer-events:none;
+    transition:transform .18s ease,opacity .16s ease!important;
+    overflow:hidden!important;
+  }
+  body.mobileStructurePreview.mobileContextSheetOpen #workspaceDock{
+    transform:translateY(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+  body.page-structure #workspaceDockHandle{
+    height:16px!important;
+    min-height:16px!important;
+    pointer-events:none!important;
+  }
+  body.page-structure #workspaceDockHandle span{
+    width:38px!important;
+    height:3px!important;
+    border-radius:999px!important;
+    background:#B9AA99!important;
+  }
+  .dockContextBar{
+    min-height:47px!important;
+    padding:5px 10px 7px 12px!important;
+  }
+  .dockContextMain{
+    grid-template-columns:auto 1fr!important;
+    gap:2px 8px!important;
+  }
+  .dockContextEyebrow{font-size:7px!important}
+  #dockContextTitle{font-size:12px!important}
+  #dockContextHint{
+    grid-column:1 / -1;
+    font-size:8px!important;
+    white-space:normal!important;
+    line-height:1.25!important;
+  }
+  .dockContextClose{display:block!important}
+  .workspaceDockBar{
+    overflow-x:auto!important;
+    min-height:38px!important;
+    padding:0 6px!important;
+  }
+  .workspaceDockTabs{
+    width:max-content!important;
+    min-width:100%!important;
+  }
+  .workspaceDockTabs button{
+    min-width:67px!important;
+    flex:1 0 auto!important;
+  }
+  .workspaceDockHint{display:none!important}
+  .workspaceDockBody{
+    height:calc(100% - 101px)!important;
+    overflow:auto!important;
+    overscroll-behavior:contain!important;
+    padding:8px 10px 18px!important;
+  }
+
+  /* when sheet is closed, leave the diagram clear and tappable */
+  body.mobileStructurePreview:not(.mobileContextSheetOpen) #workspaceDock{
+    visibility:visible!important;
+  }
+
+  /* a small cue above the bottom nav */
+  body.mobileStructurePreview:not(.mobileContextSheetOpen)::after{
+    content:"図面をタップして設定";
+    position:fixed;
+    left:50%;
+    bottom:72px;
+    transform:translateX(-50%);
+    z-index:28;
+    padding:5px 10px 6px;
+    border:1px solid rgba(200,185,165,.8);
+    border-radius:999px;
+    background:rgba(252,249,242,.92);
+    color:var(--muted);
+    font-size:8px;
+    letter-spacing:.03em;
+    box-shadow:0 2px 8px rgba(74,58,45,.07);
+    pointer-events:none;
+  }
+}
+
+
+/* v88 direct-manipulation hit target fix:
+   labels and decorative grain lines must never steal taps from the actual part/region. */
+#cabinet text,
+#cabinet .grainLine,
+#cabinet .selectedGrainGuide{
+  pointer-events:none!important;
+}
+
 </style>
 </head>
-<body data-build="ma-project-v87" class="page-home">
+<body data-build="ma-project-v88" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -4348,6 +4578,14 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
       <section id="workspaceDock" class="workspaceDock" data-dock-tab="box" aria-label="納まりドック">
         <div id="workspaceDockHandle" class="workspaceDockHandle" title="ドラッグで高さ変更 / ダブルクリックで折りたたみ">
           <span></span>
+        </div>
+        <div id="dockContextBar" class="dockContextBar" aria-live="polite">
+          <div class="dockContextMain">
+            <span class="dockContextEyebrow">選択中</span>
+            <strong id="dockContextTitle">外箱</strong>
+            <span id="dockContextHint">図面の部材や区画をタップすると、その設定を開きます。</span>
+          </div>
+          <button id="dockContextClose" class="dockContextClose" type="button" aria-label="設定シートを閉じる">×</button>
         </div>
         <div class="workspaceDockBar">
           <div class="workspaceDockTabs" role="tablist" aria-label="納まり">
@@ -5218,6 +5456,33 @@ function isPartSelected(partId){
   if(state.selectedPartId===partId)return true;
   return state.selectedPartId==="PLINTH_GROUP"&&String(partId).startsWith("PLINTH_");
 }
+function contextualDockTabForPart(partId){
+  const id=String(partId||"");
+  if(id.startsWith("PLINTH_")||id==="PLINTH_GROUP")return "plinth";
+  if(id==="BACKBOARD"||id.startsWith("INNER_BACK_"))return "backboard";
+  if(id.startsWith("DIV_")||id.startsWith("SHELF_")||id.startsWith("MOV_SHELF_"))return "region";
+  return "box";
+}
+function contextualPartTitle(partId){
+  if(!partId)return "外箱";
+  try{return partDisplayName(partId)||partId}catch(_){return partId}
+}
+function focusSelectedFormulaCard(partId){
+  requestAnimationFrame(()=>{
+    const card=[...document.querySelectorAll(".formulaCard[data-formula-part]")].find(c=>isPartSelected(c.dataset.formulaPart));
+    if(card&&window.matchMedia("(min-width:761px)").matches)card.scrollIntoView({block:"nearest",behavior:"smooth"});
+  });
+}
+function openContextSettings({tab,title,hint,mobileOpen=true}={}){
+  if(tab)setWorkspaceDockTab(tab);
+  const titleEl=document.getElementById("dockContextTitle");
+  const hintEl=document.getElementById("dockContextHint");
+  if(titleEl&&title)titleEl.textContent=title;
+  if(hintEl&&hint)hintEl.textContent=hint;
+  if(mobileOpen&&window.matchMedia("(max-width:760px)").matches){
+    document.body.classList.add("mobileContextSheetOpen");
+  }
+}
 function setSelectedPart(partId,{rerenderFormula=false}={}){
   state.selectedPartId=partId||null;
   document.querySelectorAll(".formulaCard[data-formula-part]").forEach(card=>{
@@ -5226,6 +5491,18 @@ function setSelectedPart(partId,{rerenderFormula=false}={}){
   renderCabinet();
   draw3D();
   if(rerenderFormula)renderFormulaList();
+  if(partId){
+    const tab=contextualDockTabForPart(partId);
+    openContextSettings({
+      tab,
+      title:contextualPartTitle(partId),
+      hint:tab==="region"?"区画の配置・寸法を編集します。":
+           tab==="plinth"?"巾木の有無・位置・寸法を編集します。":
+           tab==="backboard"?"背板の納まりを編集します。":
+           "選択した部材の構成を確認します。"
+    });
+    focusSelectedFormulaCard(partId);
+  }
 }
 function partSvgAttrs(partId,baseClass){
   return `class="${baseClass}${isPartSelected(partId)?" partSelectedSvg":""}" data-part-id="${partId}"`;
@@ -5782,7 +6059,16 @@ function drawRegion(node,rx,ry,rw,rh,realW,realH){
     e.stopPropagation();
     setSelectedPart(el.dataset.partId);
   }));
-  g.querySelectorAll("[data-region]").forEach(el=>el.addEventListener("click",e=>{e.stopPropagation();state.selected=el.dataset.region;update()}));
+  g.querySelectorAll("[data-region]").forEach(el=>el.addEventListener("click",e=>{
+    e.stopPropagation();
+    state.selected=el.dataset.region;
+    update();
+    openContextSettings({
+      tab:"region",
+      title:`区画 ${el.dataset.region}`,
+      hint:"この区画だけの分割・位置・内背板を編集します。"
+    });
+  }));
 }
 
 function jointTextCardMarkup(key,title,winner){
@@ -7419,7 +7705,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV87"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV88"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -7469,6 +7755,14 @@ function setWorkspaceDockTab(tab){
   if(workspaceDockState.collapsed)workspaceDockState.collapsed=false;
   applyWorkspaceDockState();
   saveWorkspaceDockState();
+  const labels={box:["箱の構成","内天板・内側板・内地板を設定します。"],region:["区画","選択中の区画だけを編集します。"],joint:["四隅","四隅の勝ち負けを1か所ずつ確認します。"],plinth:["巾木","巾木の有無・位置・寸法を編集します。"],backboard:["背板","背板の納まりを編集します。"]};
+  if(!state.selectedPartId){
+    const v=labels[tab];
+    const title=document.getElementById("dockContextTitle");
+    const hint=document.getElementById("dockContextHint");
+    if(title&&v)title.textContent=v[0];
+    if(hint&&v)hint.textContent=v[1];
+  }
 }
 function toggleWorkspaceDockCollapsed(){
   workspaceDockState.collapsed=!workspaceDockState.collapsed;
@@ -7483,7 +7777,13 @@ function initWorkspaceDock(){
   loadWorkspaceDockState();
   applyWorkspaceDockState({redraw:false});
   dock.querySelectorAll("[data-workspace-dock-tab]").forEach(btn=>{
-    btn.addEventListener("click",()=>setWorkspaceDockTab(btn.dataset.workspaceDockTab));
+    btn.addEventListener("click",()=>{
+      setWorkspaceDockTab(btn.dataset.workspaceDockTab);
+      if(window.matchMedia("(max-width:760px)").matches)document.body.classList.add("mobileContextSheetOpen");
+    });
+  });
+  document.getElementById("dockContextClose")?.addEventListener("click",()=>{
+    document.body.classList.remove("mobileContextSheetOpen");
   });
   handle.addEventListener("dblclick",e=>{e.preventDefault();toggleWorkspaceDockCollapsed()});
   handle.addEventListener("pointerdown",e=>{
@@ -7561,7 +7861,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:87,
+    version:88,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
