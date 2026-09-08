@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v80</title>
+<title>ma.｜案件 v81</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3903,9 +3903,41 @@ input:focus,select:focus,textarea:focus{
   content:"";display:block;width:42px;height:1px;margin-top:4px;
   background:var(--sc-accent);opacity:.52;transform:rotate(-1.4deg);transform-origin:left center;
 }
+
+/* ===== v81 / Sketch Craft reference image ===== */
+.viewTabs{grid-template-columns:repeat(3,1fr)!important}
+body:not(.page-home):not(.page-cut):not(.page-project) #sketchView{flex:1 1 auto;min-height:0;overflow:hidden}
+body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){display:flex;flex-direction:column}
+#sketchView .cardHead{flex:0 0 auto}
+.sketchReferenceStage{
+  flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:11px;padding:18px 24px 22px;
+  background:linear-gradient(rgba(111,86,61,.018) 1px,transparent 1px),
+             linear-gradient(90deg,rgba(111,86,61,.018) 1px,transparent 1px),#FCF9F2;
+  background-size:30px 30px;
+}
+.sketchReferencePaper{
+  display:flex;align-items:center;justify-content:center;width:min(440px,70%);aspect-ratio:390/380;padding:10px;
+  background:#FCF9F2;border:1px solid #D7CCBE;border-radius:5px 8px 6px 4px;
+  box-shadow:0 10px 18px rgba(76,58,43,.13),0 2px 4px rgba(76,58,43,.08);transform:rotate(-.18deg);
+}
+#sketchCraftCabinetImage{display:block;width:100%;height:100%;object-fit:contain;filter:none!important;mix-blend-mode:normal!important;opacity:1!important}
+.sketchReferenceNote{
+  display:flex;align-items:center;gap:7px;max-width:440px;color:#6F675F;
+  font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;font-size:10px;line-height:1.45;transform:rotate(-.45deg)
+}
+.sketchReferenceArrow{font-size:15px;color:#A85F32}
+@media(max-width:760px){
+  .viewTabs{grid-template-columns:repeat(3,1fr)!important}
+  body:not(.page-home):not(.page-cut):not(.page-project) #sketchView{overflow:visible}
+  .sketchReferenceStage{min-height:430px;padding:16px 14px 20px}
+  .sketchReferencePaper{width:min(340px,92%);padding:8px}
+  .sketchReferenceNote{max-width:340px;font-size:9px}
+}
+
 </style>
 </head>
-<body data-build="ma-project-v80" class="page-home">
+<body data-build="ma-project-v81" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -3931,6 +3963,7 @@ input:focus,select:focus,textarea:focus{
   <button id="mobileMenuBtn" class="mobileMenuBtn" type="button" aria-label="メニュー" aria-expanded="false" aria-controls="mobileOverflowMenu">⋮</button>
 </header>
 <div id="mobileOverflowMenu" class="mobileOverflowMenu" hidden>
+  <button type="button" data-mobile-menu-action="sketch">スケッチを見る</button>
   <button type="button" data-mobile-menu-action="save">ユニットを保存</button>
   <button type="button" data-mobile-menu-action="project">案件へ戻る</button>
   <button type="button" data-mobile-menu-action="home">ホームへ戻る</button>
@@ -4205,6 +4238,7 @@ input:focus,select:focus,textarea:focus{
     <div class="toolbarRightGroup">
       <div class="viewTabs">
       <button data-view="diagram" class="active">構造図</button>
+      <button data-view="sketch">スケッチ</button>
       <button data-view="three">3D</button>
       </div>
       <button id="toggleRightSidebar" class="sidebarToggle sidebarToggleRight" type="button" aria-label="右サイドバーを隠す" title="右サイドバー">
@@ -4255,6 +4289,25 @@ input:focus,select:focus,textarea:focus{
 
         
 
+      </div>
+
+      <div id="sketchView" class="hidden">
+        <div class="cardHead">
+          <div>
+            <strong>スケッチ</strong>
+            <div class="handSub">the original sketch craft image.</div>
+          </div>
+          <span>参考イラスト / 計算とは独立</span>
+        </div>
+        <div class="sketchReferenceStage">
+          <div class="sketchReferencePaper">
+            <img id="sketchCraftCabinetImage" src="assets/sketch-craft-cabinet.jpg" alt="Sketch Craft 家具スケッチ">
+          </div>
+          <div class="sketchReferenceNote">
+            <span class="sketchReferenceArrow">↳</span>
+            <span>画像案で使った家具スケッチを、そのまま表示しています。</span>
+          </div>
+        </div>
       </div>
 
       <div id="threeView" class="hidden">
@@ -7366,7 +7419,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV80"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV81"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -7465,6 +7518,7 @@ document.querySelectorAll(".viewTabs button").forEach(btn=>btn.addEventListener(
   state.view=btn.dataset.view;
   document.querySelectorAll(".viewTabs button").forEach(b=>b.classList.toggle("active",b===btn));
   $("diagramView").classList.toggle("hidden",state.view!=="diagram");
+  $("sketchView").classList.toggle("hidden",state.view!=="sketch");
   $("threeView").classList.toggle("hidden",state.view!=="three");
   if(state.view==="three"){
     // 3Dを開くたびに固定視点「正面」から開始。
@@ -7507,7 +7561,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:80,
+    version:81,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
@@ -8999,6 +9053,10 @@ document.getElementById("mobileOverflowMenu")?.addEventListener("click",e=>{
   const action=e.target.closest("[data-mobile-menu-action]")?.dataset.mobileMenuAction;
   if(!action)return;
   closeMobileOverflowMenu();
+  if(action==="sketch"){
+    document.querySelector('.viewTabs [data-view="sketch"]')?.click();
+    return;
+  }
   if(action==="save"){
     document.getElementById("savePattern")?.click();
     return;
