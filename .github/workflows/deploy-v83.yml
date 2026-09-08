@@ -1,0 +1,35 @@
+name: Deploy v83
+on:
+  push:
+    paths:
+      - '.github/scripts/apply_v83.py'
+      - '.github/workflows/deploy-v83.yml'
+      - 'assets/btn-normal.svg'
+      - 'assets/btn-selected.svg'
+      - 'assets/btn-primary.svg'
+      - 'assets/btn-danger.svg'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply v83
+        run: python .github/scripts/apply_v83.py
+      - name: Verify v83
+        run: |
+          grep -q 'ma-project-v83' index.html
+          grep -q 'btn-primary.svg?v=83' index.html
+      - name: Commit v83
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Deploy v83: visibly rough Sketch Craft buttons'
+          git push
