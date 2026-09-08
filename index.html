@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v79</title>
+<title>ma.｜案件 v80</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -3633,9 +3633,279 @@ input:focus,select:focus,textarea:focus{outline:none!important;border-color:var(
 .desktopNav .shellNavBtn.active{color:var(--craft)!important;background:var(--craft-soft)!important;box-shadow:inset 0 0 0 1px rgba(168,95,50,.10)!important}.mobileBottomNav .shellNavBtn.active{color:var(--craft)!important}
 .centerSaveButton,.cutSaveButton{background:var(--craft-deep)!important;color:#FCF9F2!important;border-color:var(--craft-deep)!important;border-radius:var(--sketch-radius)!important;box-shadow:var(--shadow-craft)!important}.centerSaveButton:active,.cutSaveButton:active{transform:translateY(1px)!important}
 
+/* =========================================================
+   ma. v80 — Sketch Craft / full visual system
+   ========================================================= */
+:root{
+  --sc-paper:#F1ECE3;
+  --sc-surface:#FCF9F2;
+  --sc-surface-2:#F7F2E9;
+  --sc-line:#D7CCBE;
+  --sc-line-strong:#BFAE9A;
+  --sc-ink:#2D2925;
+  --sc-muted:#6F675F;
+  --sc-accent:#A85F32;
+  --sc-accent-deep:#874722;
+  --sc-accent-soft:#C7783D18;
+  --sc-selected:#E5CDB7;
+  --sc-danger:#B85C5C;
+  --sc-shadow-paper:0 9px 18px rgba(76,58,43,.09),0 2px 4px rgba(76,58,43,.07);
+  --sc-shadow-control:0 3px 6px rgba(76,58,43,.14),0 1px 1px rgba(76,58,43,.08);
+  --sc-pencil:rgba(71,59,48,.18);
+}
+
+/* Paper + graphite atmosphere */
+html,body{
+  background:var(--sc-paper)!important;
+  color:var(--sc-ink)!important;
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(circle at 12% 14%,rgba(100,75,50,.035) 0 1px,transparent 1.4px),
+    radial-gradient(circle at 83% 72%,rgba(100,75,50,.025) 0 1px,transparent 1.6px),
+    linear-gradient(90deg,rgba(110,85,60,.016),transparent 14%,rgba(110,85,60,.012) 55%,transparent);
+  background-size:27px 23px,33px 29px,100% 100%;
+  opacity:.72;
+}
+.paperTexture{opacity:.22!important;mix-blend-mode:multiply}
+
+/* App shell feels like layered sheets instead of SaaS chrome */
+.desktopNav{
+  background:#F4EEE4!important;
+  border-right:1px solid var(--sc-line)!important;
+  box-shadow:3px 0 12px rgba(76,58,43,.045)!important;
+}
+.left,.right{
+  background:rgba(252,249,242,.94)!important;
+  border-color:var(--sc-line)!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.3),var(--sc-shadow-paper)!important;
+}
+.toolbar{
+  background:rgba(252,249,242,.95)!important;
+  border-bottom:1px solid var(--sc-line)!important;
+  box-shadow:0 3px 10px rgba(76,58,43,.055)!important;
+}
+.metaRow{
+  background:rgba(252,249,242,.74)!important;
+  border-bottom:1px solid var(--sc-line)!important;
+}
+
+/* Logo / annotations */
+.maLogo,.logo{color:var(--sc-ink)!important}
+.handNote,.handSub,.sideHandLabel,.toolbarProjectLabel,.homeEyebrow,
+.workspaceDockHint,.threeHint,.cutEyebrow{
+  font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive!important;
+  color:#7C6451!important;
+  letter-spacing:.04em!important;
+  font-style:italic;
+}
+
+/* left/right sections: paper blocks, not flat separators */
+.left .section,.right .section{
+  position:relative;
+  background:rgba(252,249,242,.72)!important;
+  border:1px solid rgba(215,204,190,.86)!important;
+  border-radius:7px 5px 8px 4px!important;
+  box-shadow:0 3px 8px rgba(76,58,43,.055)!important;
+  margin-left:10px!important;
+  margin-right:10px!important;
+}
+.left .section::after,.right .section::after{
+  content:"";position:absolute;left:10px;right:18px;bottom:-2px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--sc-pencil),transparent);
+  transform:rotate(-.18deg);pointer-events:none;
+}
+
+/* Main drawing card = large sheet of drafting paper */
+.canvasWrap{background:var(--sc-paper)!important;padding:10px!important}
+.canvasWrap>.card{
+  position:relative;
+  background:var(--sc-surface)!important;
+  border:1px solid var(--sc-line)!important;
+  border-radius:8px 5px 9px 6px!important;
+  box-shadow:var(--sc-shadow-paper)!important;
+  overflow:hidden;
+}
+.canvasWrap>.card::before{
+  content:"";position:absolute;inset:6px;pointer-events:none;z-index:0;
+  border:1px solid rgba(137,113,91,.08);
+  border-radius:6px 4px 8px 5px;
+  transform:rotate(.035deg);
+}
+.canvasWrap>.card>*{position:relative;z-index:1}
+.cardHead{
+  border-bottom:1px solid var(--sc-line)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),transparent)!important;
+}
+.cardHead strong{
+  color:var(--sc-ink)!important;
+  letter-spacing:.015em;
+}
+
+/* Dock = a second sheet tucked under the drawing */
+.workspaceDock{
+  background:var(--sc-surface)!important;
+  border:1px solid var(--sc-line)!important;
+  border-radius:7px 5px 8px 4px!important;
+  box-shadow:0 -2px 4px rgba(76,58,43,.045),0 9px 20px rgba(76,58,43,.08)!important;
+}
+.workspaceDockHandle::after{
+  background:#A99B8B!important;
+  opacity:.65;
+}
+.workspaceDockBar{
+  border-bottom:1px solid var(--sc-line)!important;
+  background:rgba(247,242,233,.84)!important;
+}
+.workspaceDockPanel{
+  background:
+    linear-gradient(rgba(120,95,70,.012) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,95,70,.012) 1px,transparent 1px),
+    var(--sc-surface)!important;
+  background-size:28px 28px!important;
+}
+.dockIllustration,.dockSettingsPanel,.selectedBox,.innerBoxCard{
+  background:rgba(252,249,242,.86)!important;
+  border:1px solid var(--sc-line)!important;
+  border-radius:6px 4px 7px 5px!important;
+  box-shadow:0 2px 5px rgba(76,58,43,.045)!important;
+}
+
+/* Pencil-tab system */
+.sideTabs,.workspaceDockTabs{gap:3px!important}
+.sideTab,.workspaceDockTabs button,.viewTabs button,.fixedViews button{
+  background:transparent!important;
+  color:var(--sc-muted)!important;
+  border:0!important;
+  border-bottom:1px solid transparent!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.sideTab.active,.workspaceDockTabs button.active,.viewTabs button.active,.fixedViews button.active{
+  color:var(--sc-ink)!important;
+  background:rgba(199,120,61,.06)!important;
+  border-bottom:2px solid var(--sc-accent)!important;
+}
+
+/* Sketch-craft controls: paper tile + physical shadow */
+#workspaceDock .seg button,#workspaceDock .edgeBtn,#workspaceDock .toggleBtn,
+#workspaceDock .innerBoxButtons button,#workspaceDock .jointTextChoices button,#workspaceDock .step button,
+.left .seg button,.left .edgeBtn,.left .toggleBtn,.left .step button,
+.right .seg button,.right .edgeBtn,.right .toggleBtn,.right .step button,
+.mobileSidebar .seg button,.mobileSidebar .edgeBtn,.mobileSidebar .toggleBtn,.mobileSidebar .step button,
+.ghost{
+  background:var(--sc-surface)!important;
+  color:var(--sc-ink)!important;
+  border:1px solid var(--sc-line-strong)!important;
+  border-radius:5px 7px 4px 6px!important;
+  box-shadow:var(--sc-shadow-control)!important;
+}
+#workspaceDock .seg button.active,#workspaceDock .edgeBtn.on,#workspaceDock .toggleBtn.on,
+#workspaceDock .innerBoxButtons button.active,#workspaceDock .jointTextChoices button.active,
+.left .seg button.active,.left .edgeBtn.on,.left .toggleBtn.on,
+.right .seg button.active,.right .edgeBtn.on,.right .toggleBtn.on,
+.mobileSidebar .seg button.active,.mobileSidebar .edgeBtn.on,.mobileSidebar .toggleBtn.on{
+  color:var(--sc-accent-deep)!important;
+  border-color:var(--sc-accent)!important;
+  background-color:var(--sc-selected)!important;
+  background-image:repeating-linear-gradient(135deg,rgba(122,74,44,.07) 0 1px,transparent 1px 5px)!important;
+  box-shadow:0 3px 7px rgba(76,58,43,.16)!important;
+}
+
+/* Primary actions look like crafted outlined tools */
+#workspaceDock .addButtons button[id],
+.left button.structureAddButton,.mobileSidebar button.structureAddButton,
+#rightHistorySection button.historyAddPartButton,.homePrimaryAction,.projectPrimaryButton{
+  background:var(--sc-surface)!important;
+  color:var(--sc-accent-deep)!important;
+  border:1px solid var(--sc-accent)!important;
+  border-radius:5px 7px 4px 6px!important;
+  box-shadow:var(--sc-shadow-control)!important;
+}
+#workspaceDock .addButtons button[id]:hover,
+.left button.structureAddButton:hover,#rightHistorySection button.historyAddPartButton:hover{
+  background:var(--sc-accent-soft)!important;
+}
+.centerSaveButton,.cutSaveButton,.cutGenerateButton{
+  background:#9A6644!important;
+  color:#FFF9F1!important;
+  border:1px solid #7F5237!important;
+  border-radius:5px 7px 4px 6px!important;
+  box-shadow:0 4px 8px rgba(76,58,43,.20)!important;
+}
+button:active{transform:translateY(1px)!important}
+
+/* Inputs = lightly ruled drafting boxes */
+input,select,textarea{
+  background:rgba(252,249,242,.92)!important;
+  color:var(--sc-ink)!important;
+  border:1px solid var(--sc-line-strong)!important;
+  border-radius:4px 6px 5px 3px!important;
+  box-shadow:inset 0 1px 1px rgba(76,58,43,.035)!important;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none!important;border-color:var(--sc-accent)!important;
+  box-shadow:0 0 0 2px rgba(168,95,50,.09),inset 0 1px 1px rgba(76,58,43,.03)!important;
+}
+
+/* History/material rows = little paper slips */
+.historyItem,.materialCard,.compositionCard,.regionDimensionRow{
+  background:#FBF6ED!important;
+  border:1px solid var(--sc-line)!important;
+  border-radius:6px 4px 7px 5px!important;
+  box-shadow:0 2px 5px rgba(76,58,43,.055)!important;
+}
+.historyItem:nth-child(even),.materialCard:nth-child(even),.compositionCard:nth-child(even){
+  transform:rotate(-.055deg);
+}
+.historyItem:nth-child(odd),.materialCard:nth-child(odd),.compositionCard:nth-child(odd){
+  transform:rotate(.045deg);
+}
+.historyItem.active,.materialCard.active,.compositionCard.active{
+  background:#F0DFCF!important;
+  border-color:var(--sc-accent)!important;
+  box-shadow:0 3px 7px rgba(76,58,43,.11)!important;
+}
+
+/* Danger remains pencil-red and quiet */
+#workspaceDock .ghost.danger,#rightHistorySection .historyDeletePart,.projectDangerButton{
+  background:var(--sc-surface)!important;
+  color:var(--sc-danger)!important;
+  border:1px solid rgba(184,92,92,.60)!important;
+  box-shadow:0 2px 5px rgba(100,50,45,.06)!important;
+}
+
+/* Current page markers feel drawn rather than app-highlighted */
+.desktopNav .shellNavBtn.active{
+  background:#EDE0D0!important;
+  color:var(--sc-accent-deep)!important;
+  border:1px solid rgba(168,95,50,.14)!important;
+  box-shadow:0 2px 5px rgba(76,58,43,.06)!important;
+  transform:rotate(-.15deg);
+}
+.mobileBottomNav .shellNavBtn.active{color:var(--sc-accent)!important}
+
+/* Mobile carries the same paper-stack language */
+.mobileHeader,.mobileBottomNav,.mobileSidebar{
+  background:rgba(252,249,242,.97)!important;
+  border-color:var(--sc-line)!important;
+}
+.mobileSidebar{box-shadow:var(--sc-shadow-paper)!important}
+.mobileOverflowMenu{
+  background:var(--sc-surface)!important;border-color:var(--sc-line)!important;
+  box-shadow:var(--sc-shadow-paper)!important;
+}
+
+/* small sketch details without touching geometry */
+.structureSideHeading::after,.historyHeading h3::after,.dockPanelTitle strong::after{
+  content:"";display:block;width:42px;height:1px;margin-top:4px;
+  background:var(--sc-accent);opacity:.52;transform:rotate(-1.4deg);transform-origin:left center;
+}
 </style>
 </head>
-<body data-build="ma-project-v79" class="page-home">
+<body data-build="ma-project-v80" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -7096,7 +7366,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV79"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV80"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -7237,7 +7507,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:79,
+    version:80,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
