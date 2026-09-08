@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" preserveAspectRatio="none">
-<defs><filter id="s" x="-10%" y="-30%" width="120%" height="170%"><feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#64322D" flood-opacity=".13"/></filter></defs>
-<path filter="url(#s)" d="M30 25 L690 21 L695 148 L28 155 Z" fill="#FCF9F2" stroke="#B85C5C" stroke-width="3"/>
-<path d="M38 31 L682 29 L687 142 L36 148 Z" fill="none" stroke="#B85C5C" stroke-opacity=".28" stroke-width="2"/>
+<defs><filter id="s" x="-12%" y="-35%" width="124%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#64322D" flood-opacity=".16"/></filter><pattern id="p" width="34" height="34" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><line x1="0" y1="0" x2="0" y2="34" stroke="#B85C5C" stroke-opacity=".08" stroke-width="3"/></pattern></defs>
+<path filter="url(#s)" d="M34 29 Q94 18 170 26 L346 21 Q505 28 686 24 L695 145 Q609 154 491 148 L256 154 Q125 145 29 155 Z" fill="#FCF9F2" stroke="#B85C5C" stroke-width="5" stroke-linecap="round"/>
+<path d="M40 34 Q114 26 182 31 L352 27 Q520 32 679 30 L686 139 Q582 145 474 141 L248 147 Q119 139 37 148 Z" fill="url(#p)" stroke="#C97979" stroke-opacity=".48" stroke-width="2.5"/>
 </svg>
