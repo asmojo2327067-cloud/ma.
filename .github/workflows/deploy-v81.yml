@@ -1,0 +1,32 @@
+name: Deploy v81
+on:
+  push:
+    paths:
+      - '.github/scripts/apply_v81.py'
+      - '.github/workflows/deploy-v81.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply v81 patch
+        run: python .github/scripts/apply_v81.py
+      - name: Verify v81
+        run: |
+          grep -q 'ma-project-v81' index.html
+          grep -q 'data-view="sketch"' index.html
+          grep -q 'sketchCraftCabinetImage' index.html
+      - name: Commit v81
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Deploy v81: exact Sketch Craft reference image'
+          git push
