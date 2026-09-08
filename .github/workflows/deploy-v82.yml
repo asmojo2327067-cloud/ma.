@@ -1,0 +1,36 @@
+name: Deploy v82
+on:
+  push:
+    paths:
+      - '.github/scripts/apply_v82.py'
+      - '.github/workflows/deploy-v82.yml'
+      - 'assets/btn-*.svg'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply v82 patch
+        run: python .github/scripts/apply_v82.py
+      - name: Verify v82
+        run: |
+          grep -q 'ma-project-v82' index.html
+          grep -q 'v82 / image-button system' index.html
+          test -f assets/btn-normal.svg
+          test -f assets/btn-selected.svg
+          test -f assets/btn-primary.svg
+          test -f assets/btn-danger.svg
+      - name: Commit v82
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Deploy v82: image buttons'
+          git push
