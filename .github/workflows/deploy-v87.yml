@@ -1,0 +1,36 @@
+name: Deploy v87
+on:
+  push:
+    paths:
+      - '.github/scripts/apply_v87.py'
+      - '.github/workflows/deploy-v87.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore pre-image-button UI as v87
+        run: python .github/scripts/apply_v87.py
+      - name: Verify v87
+        run: |
+          grep -q 'ma-project-v87' index.html
+          ! grep -q 'v82 / image-button system' index.html
+          ! grep -q 'original Sketch Craft image buttons' index.html
+          ! grep -q 'btn-normal.png' index.html
+          ! grep -q 'btn-normal.svg' index.html
+      - name: Commit v87
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Deploy v87: revert image buttons'
+          git push
