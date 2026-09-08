@@ -1,0 +1,35 @@
+name: Deploy v89
+on:
+  push:
+    paths:
+      - '.github/scripts/apply_v89.py'
+      - '.github/workflows/deploy-v89.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply v89 inline mobile editor
+        run: python .github/scripts/apply_v89.py
+      - name: Verify v89
+        run: |
+          grep -q 'ma-project-v89' index.html
+          grep -q 'mobile inline editor, no bottom sheet' index.html
+          grep -q 'scrollIntoView' index.html
+          ! grep -q 'document.body.classList.add("mobileContextSheetOpen")' index.html
+      - name: Commit v89
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Deploy v89: remove mobile bottom sheet'
+          git push
