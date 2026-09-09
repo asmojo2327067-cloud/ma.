@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v91</title>
+<title>ma.｜案件 v92</title>
 <style>
 :root{
   --bg:#f3f2ee;
@@ -4229,7 +4229,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
 
 </style>
 </head>
-<body data-build="ma-project-v91" class="page-home">
+<body data-build="ma-project-v92" class="page-home">
 <div class="paperTexture" aria-hidden="true"></div>
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
@@ -4651,7 +4651,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
         </div>
         <div class="workspaceDockBar">
           <div class="workspaceDockTabs" role="tablist" aria-label="納まり">
-            <button type="button" class="active" data-workspace-dock-tab="box" role="tab">箱の構成</button>
+            <button type="button" class="active" data-workspace-dock-tab="box" role="tab">内板</button>
             <button type="button" data-workspace-dock-tab="region" role="tab">棚・束</button>
             <button type="button" data-workspace-dock-tab="joint" role="tab">四隅</button>
             <button type="button" data-workspace-dock-tab="plinth" role="tab">巾木</button>
@@ -7764,7 +7764,7 @@ $("innerBackFormula").addEventListener("input",()=>{
 });
 
 
-const WORKSPACE_DOCK_KEY="maWorkspaceDockV91"
+const WORKSPACE_DOCK_KEY="maWorkspaceDockV92"
 const workspaceDockState={tab:"box",height:345,collapsed:false,lastExpandedHeight:345,drag:null};
 
 function clampWorkspaceDockHeight(value){
@@ -7814,7 +7814,7 @@ function setWorkspaceDockTab(tab){
   if(workspaceDockState.collapsed)workspaceDockState.collapsed=false;
   applyWorkspaceDockState();
   saveWorkspaceDockState();
-  const labels={box:["箱の構成","内天板・内側板・内地板を設定します。"],region:["棚・束","選択中の区画に棚・束を追加・配置します。"],joint:["四隅","四隅の勝ち負けを1か所ずつ確認します。"],plinth:["巾木","巾木の有無・位置・寸法を編集します。"],backboard:["背板","背板の納まりを編集します。"]};
+  const labels={box:["内板","内天板・内側板・内地板を設定します。"],region:["棚・束","選択中の区画に棚・束を追加・配置します。"],joint:["四隅","四隅の勝ち負けを1か所ずつ確認します。"],plinth:["巾木","巾木の有無・位置・寸法を編集します。"],backboard:["背板","背板の納まりを編集します。"]};
   if(!state.selectedPartId){
     const v=labels[tab];
     const title=document.getElementById("dockContextTitle");
@@ -7917,7 +7917,7 @@ function snapshot(){
   readOuter();
   if(!currentUnitId)currentUnitId=makeUnitId();
   return{
-    version:91,
+    version:92,
     id:currentUnitId,
     savedAt:new Date().toISOString(),
     name:$("patternName").value.trim()||"ユニット 01",
