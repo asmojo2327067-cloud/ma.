@@ -1,0 +1,56 @@
+name: Deploy ma v92
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-v92.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Rename 箱の構成 to 内板 and bump v92
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          replacements=[
+            ('<title>ma.｜案件 v91</title>','<title>ma.｜案件 v92</title>'),
+            ('version:91,','version:92,'),
+            ('data-build="ma-project-v91"','data-build="ma-project-v92"'),
+            ('const WORKSPACE_DOCK_KEY="maWorkspaceDockV91"','const WORKSPACE_DOCK_KEY="maWorkspaceDockV92"'),
+            ('<button type="button" class="active" data-workspace-dock-tab="box" role="tab">箱の構成</button>','<button type="button" class="active" data-workspace-dock-tab="box" role="tab">内板</button>'),
+            ('box:["箱の構成","内天板・内側板・内地板を設定します。"]','box:["内板","内天板・内側板・内地板を設定します。"]'),
+          ]
+          for old,new in replacements:
+            if old not in s:
+              raise SystemExit(f'missing expected marker: {old}')
+            s=s.replace(old,new,1)
+          required=['data-build="ma-project-v92"','>内板</button>','>棚・束</button>','id="innerBackToggle"','pointer-events:none!important']
+          for marker in required:
+            if marker not in s:
+              raise SystemExit(f'missing verification marker: {marker}')
+          if '>箱の構成</button>' in s:
+            raise SystemExit('old tab label still present')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit v92
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Update ma. to v92'
+          git push
