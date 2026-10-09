@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v92</title>
+<title>make it fit｜案件</title>
+<link rel="stylesheet" href="assets/drawing-parts.css">
 <style>
 :root{
   --bg:#f3f2ee;
@@ -4234,7 +4235,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
   <div class="desktopBrand">
-    <div class="maLogo">ma.</div>
+    <div class="maLogo">make it fit</div>
     <div class="handNote">plan / cut / make</div>
   </div>
   <div class="desktopNavItems">
@@ -4247,7 +4248,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
 </nav>
 
 <header class="mobileHeader">
-  <div class="maLogo">ma.</div>
+  <div class="maLogo">make it fit</div>
   <div class="mobileHeaderCenter">
     <div class="mobilePageTitle">ホーム</div>
     <div id="mobileProjectName" class="mobileProjectName" hidden></div>
@@ -4338,6 +4339,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
 
     <div class="projectTabs">
       <button class="projectTab active" data-project-tab="units" type="button">ユニット</button>
+      <button class="projectTab" data-project-tab="drawings" type="button">図面・部材</button>
       <button class="projectTab" data-project-tab="patterns" type="button">材料パターン</button>
       <button class="projectTab" data-project-tab="cutting" type="button">木取り表</button>
     </div>
@@ -4349,6 +4351,10 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
       </div>
       <div id="projectUnits" class="projectUnitGrid"></div>
       <div id="projectUnitsEmpty" class="projectEmpty">まだユニットがありません。</div>
+    </section>
+
+    <section class="projectPanel projectPanelHidden" data-project-panel="drawings">
+      <div id="drawingPartsRoot" class="dp-root"></div>
     </section>
 
     <section class="projectPanel projectPanelHidden" data-project-panel="patterns">
@@ -7984,7 +7990,7 @@ function scheduleUnitAutoSave(){
 document.getElementById("addCustomPart")?.addEventListener("click",addCustomPart);
 $("savePattern").onclick=()=>saveCurrentUnit();
 document.getElementById("cutSaveButton")?.addEventListener("click",()=>saveCurrentUnit());
-$("patternName").addEventListener("input",()=>{document.title=`ma.｜${$("patternName").value.trim()||"ユニット 01"}`;scheduleUnitAutoSave()});
+$("patternName").addEventListener("input",()=>{document.title=`make it fit｜${$("patternName").value.trim()||"ユニット 01"}`;scheduleUnitAutoSave()});
 document.addEventListener("change",e=>{
   if(e.target.closest("#homeView"))return;
   if(e.target.matches("input,select,button"))scheduleUnitAutoSave();
@@ -8962,7 +8968,7 @@ function projectPatternFinishThickness(p,pat){
   [pat.face,pat.back].forEach(id=>{const m=projectMaterialById(p,id);if(m)total+=+m.thickness||0});
   return Math.round(total*100)/100;
 }
-function renderProjectView(){const p=activeProject();if(!p)return showHomePage();document.getElementById("projectNameInput").value=p.name;document.getElementById("projectMeta").textContent=`${p.units?.length||0} ユニット　/　${p.materialPatterns?.length||0} 材料パターン`;renderProjectUnits(p);renderProjectPatterns(p);document.getElementById("projectCutUnitCount").textContent=p.units?.length||0;document.getElementById("projectCutPatternCount").textContent=p.materialPatterns?.length||0;document.getElementById("projectCutLast").textContent=p.cutting?.lastResult?"生成済み":"未生成"}
+function renderProjectView(){const p=activeProject();if(!p)return showHomePage();document.getElementById("projectNameInput").value=p.name;document.getElementById("projectMeta").textContent=`${p.units?.length||0} ユニット　/　${p.materialPatterns?.length||0} 材料パターン`;renderProjectUnits(p);renderProjectPatterns(p);document.getElementById("projectCutUnitCount").textContent=p.units?.length||0;document.getElementById("projectCutPatternCount").textContent=p.materialPatterns?.length||0;document.getElementById("projectCutLast").textContent=p.cutting?.lastResult?"生成済み":"未生成";window.MakeItFitDrawingUI?.render(p)}
 function showProjectPage(tab="units"){document.documentElement.classList.remove("mobileStructureScrollLock");document.body.classList.remove("mobileThreeFullscreen");closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
 function openProject(id){currentProjectId=id;currentUnitId=null;showProjectPage("units")}
 function createNewProject(name){const p=createProjectObject(name);saveProject(p);currentProjectId=p.id;currentUnitId=null;showProjectPage("units")}
@@ -9890,5 +9896,7 @@ refreshProjectContext();
 
 update();
 </script>
+<script src="assets/drawing-parts-core.js"></script>
+<script src="assets/drawing-parts-ui.js"></script>
 </body>
 </html>
