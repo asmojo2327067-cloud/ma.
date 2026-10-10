@@ -1,0 +1,9 @@
+{
+  "name": "make-it-fit-drawing-parts-checks",
+  "private": true,
+  "scripts": {
+    "test": "node --test --test-isolation=none tests/*.test.cjs",
+    "test:browser": "python tests/drawing-parts-browser.py && python tests/drawing-native-browser.py"
+  },
+  "engines": { "node": ">=22" }
+}

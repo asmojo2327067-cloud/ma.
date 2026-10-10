@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>ma.｜案件 v92</title>
+<title>make it fit｜案件</title>
+<link rel="stylesheet" href="assets/drawing-parts.css">
 <style>
 :root{
   --bg:#f3f2ee;
@@ -4234,7 +4235,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
 
 <nav class="desktopNav" aria-label="メインナビゲーション">
   <div class="desktopBrand">
-    <div class="maLogo">ma.</div>
+    <div class="maLogo">make it fit</div>
     <div class="handNote">plan / cut / make</div>
   </div>
   <div class="desktopNavItems">
@@ -4247,7 +4248,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
 </nav>
 
 <header class="mobileHeader">
-  <div class="maLogo">ma.</div>
+  <div class="maLogo">make it fit</div>
   <div class="mobileHeaderCenter">
     <div class="mobilePageTitle">ホーム</div>
     <div id="mobileProjectName" class="mobileProjectName" hidden></div>
@@ -4338,6 +4339,7 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
 
     <div class="projectTabs">
       <button class="projectTab active" data-project-tab="units" type="button">ユニット</button>
+      <button class="projectTab" data-project-tab="drawings" type="button">図面・部材</button>
       <button class="projectTab" data-project-tab="patterns" type="button">材料パターン</button>
       <button class="projectTab" data-project-tab="cutting" type="button">木取り表</button>
     </div>
@@ -4349,6 +4351,10 @@ body:not(.page-home):not(.page-cut):not(.page-project) #sketchView:not(.hidden){
       </div>
       <div id="projectUnits" class="projectUnitGrid"></div>
       <div id="projectUnitsEmpty" class="projectEmpty">まだユニットがありません。</div>
+    </section>
+
+    <section class="projectPanel projectPanelHidden" data-project-panel="drawings">
+      <div id="drawingPartsRoot" class="dp-root"></div>
     </section>
 
     <section class="projectPanel projectPanelHidden" data-project-panel="patterns">
@@ -4983,6 +4989,7 @@ const state={
   selectedPartId:null,
   parts:[],
   customParts:[],
+  drawingLayout:null,
   nextCustomPart:1,
   partNames:{},
   partGrain:{},
@@ -5030,7 +5037,7 @@ function resolveOuterDimension(axis,formulas=state.outerFormula,stack=[]){
 function readOuter(){
   const formulas={W:$("W").value,H:$("H").value,D:$("D").value};
   state.outerFormula={...formulas};
-  ["W","H","D"].forEach(axis=>{const input=$(axis);const v=resolveOuterDimension(axis,formulas,[]);const valid=Number.isFinite(v)&&v>0;input.classList.toggle("formulaInvalid",!valid);input.setAttribute("aria-invalid",valid?"false":"true");input.title=valid?`計算結果 ${formatFinishedMm(v)} mm`:"計算式を確認してください";if(valid)state.outer[axis]=Math.round(v*1000)/1000});
+  ["W","H","D"].forEach(axis=>{const input=$(axis);const v=resolveOuterDimension(axis,formulas,[]);const valid=Number.isFinite(v)&&v>0;input.classList.toggle("formulaInvalid",!valid);input.setAttribute("aria-invalid",valid?"false":"true");input.title=valid?`計算結果 ${formatFinishedMm(v)} mm`:"計算式を確認してください";if(state.drawingLayout){state.outer.drawingKnownAxes=state.outer.drawingKnownAxes||{};state.outer.drawingKnownAxes[axis]=valid;}if(valid)state.outer[axis]=Math.round(v*1000)/1000});
 }
 function newRegion(){return{id:"R"+(state.nextRegion++),split:null,innerBackboard:null}}
 function findRegion(node,id,parent=null){
@@ -5384,6 +5391,7 @@ function regionContentParts(){
 }
 
 function formulas(){
+  if(state.drawingLayout)return state.customParts.map(p=>({...p,name:state.partNames[p.id]??p.name,grainMode:partGrainMode(p.id),...(state.overrides[p.id]||{})}));
   return[...outerParts(),...innerBoxParts(),...state.parts,...state.customParts,...regionContentParts(),...plinthPart(),...backboardPart(),...innerBackboardParts()].map(p=>{
     const o=state.overrides[p.id]||{};
     const defaultDepth=(p.kind==="divider"||p.kind==="shelf")?bodyDepthFormula():p.depthFormula;
@@ -5402,6 +5410,7 @@ function rawPartById(partId){
 }
 function partDimensionLabels(partOrId){
   const p=typeof partOrId==="string"?rawPartById(partOrId):partOrId;
+  if(p?.drawingSource)return{dim1:"長さ",dim2:"幅"};
   const id=p?.id||String(partOrId||"");
   if(id==="BACKBOARD"||id.startsWith("INNER_BACK_")||p?.kind==="innerBackboard"||p?.kind==="door"||p?.kind==="drawerFront")return{dim1:"幅",dim2:"高さ"};
   if(id==="LEFT"||id==="RIGHT"||id==="INNER_LEFT"||id==="INNER_RIGHT"||p?.kind==="divider"||p?.kind==="innerSide")return{dim1:"高さ",dim2:"奥行"};
@@ -5416,9 +5425,10 @@ function grainArrowForLabel(label){
   return "↔";
 }
 function partGrainMode(partId){
-  return state.partGrain[partId]||"dim1";
+  return state.partGrain[partId]||(rawPartById(partId)?.drawingSource?"unset":"dim1");
 }
 function grainLabelForPart(partOrId,mode=partGrainMode(typeof partOrId==="string"?partOrId:partOrId?.id)){
+  if(mode==="unset")return "未設定";
   if(mode==="none")return "指定なし";
   const labels=partDimensionLabels(partOrId);
   const label=mode==="dim2"?labels.dim2:labels.dim1;
@@ -5426,7 +5436,7 @@ function grainLabelForPart(partOrId,mode=partGrainMode(typeof partOrId==="string
 }
 function grainOptionsMarkup(partOrId,selected=partGrainMode(typeof partOrId==="string"?partOrId:partOrId?.id)){
   const labels=partDimensionLabels(partOrId);
-  return `<option value="dim1" ${selected==="dim1"?"selected":""}>${grainArrowForLabel(labels.dim1)} ${escapeAttr(labels.dim1)}方向</option>
+  return `${selected==="unset"?'<option value="unset" selected>未設定（方向を選択）</option>':""}<option value="dim1" ${selected==="dim1"?"selected":""}>${grainArrowForLabel(labels.dim1)} ${escapeAttr(labels.dim1)}方向</option>
     <option value="dim2" ${selected==="dim2"?"selected":""}>${grainArrowForLabel(labels.dim2)} ${escapeAttr(labels.dim2)}方向</option>
     <option value="none" ${selected==="none"?"selected":""}>指定なし</option>`;
 }
@@ -5454,7 +5464,7 @@ function groupGrainOptionsMarkup(group){
     <option value="none" ${group.value==="none"?"selected":""}>指定なし</option>`;
 }
 function partGrainAxis(partOrId,mode=partGrainMode(typeof partOrId==="string"?partOrId:partOrId?.id)){
-  if(mode==="none")return null;
+  if(mode==="none"||mode==="unset")return null;
   const p=typeof partOrId==="string"?rawPartById(partOrId):partOrId;
   const id=p?.id||String(partOrId||"");
   if(id==="BACKBOARD"||id.startsWith("INNER_BACK_")||p?.kind==="innerBackboard"||p?.kind==="door"||p?.kind==="drawerFront")return mode==="dim1"?"x":"y";
@@ -5847,6 +5857,7 @@ function placementLabel(split,regionW,regionH){
 }
 
 function renderCabinet(){
+  if(state.drawingLayout&&window.MakeItFitDrawingNativeUI)return window.MakeItFitDrawingNativeUI.renderFront();
   const g=$("cabinet");
   const {x,y,w,h,t}=cabinetPreviewFrame();
   const j=state.joints;
@@ -6562,11 +6573,13 @@ function findNodeByPartId(node,partId){
   return null;
 }
 function formulaReferenceThickness(partId,rows=formulas()){
+  const imported=rows.find(p=>p.id===partId&&p.drawingSource);if(imported)return window.MakeItFitDrawingNative?.evaluate(imported.thicknessFormula,rows,state.outer)??NaN;
   const actual=finishThicknessForPartId(partId,rows);
   if(Number.isFinite(actual)&&actual>0)return actual;
   return partId==="BACKBOARD"||String(partId).startsWith("INNER_BACK_")?4:18;
 }
 function sourceFormulaReferenceThickness(source,partId,rows){
+  const imported=rows.find(p=>p.id===partId&&p.drawingSource);if(imported)return window.MakeItFitDrawingNative?.evaluate(imported.thicknessFormula,rows,source.structure.outerPreview)??NaN;
   const actual=sourceFinishThicknessForPartId(source,partId,rows);
   if(Number.isFinite(actual)&&actual>0)return actual;
   return partId==="BACKBOARD"||String(partId).startsWith("INNER_BACK_")?4:18;
@@ -6607,6 +6620,7 @@ function insertTextAtCursor(input,text){
 }
 
 function historyFinishedSize(part){
+  if(part.drawingSource&&window.MakeItFitDrawingNative){const d=window.MakeItFitDrawingNative.dimensions(part,formulas(),state.outer);return{a:d[0],b:d[1],text:d.map((v,i)=>v==null?part[["lengthFormula","depthFormula","thicknessFormula"][i]]:formatFinishedMm(v)).join(" × ")+" mm"};}
   try{
     const rows=formulas();
     const row=rows.find(p=>p.id===part.id)||part;
@@ -6653,6 +6667,7 @@ function deleteCustomPart(partId){
   update();
 }
 function historyPartCategory(part){
+  if(part.drawingSource)return `図面取込 / ${part.drawingSource.zone}`;
   const id=part.id||"",kind=part.kind||"";
   if(["LEFT","RIGHT","TOP","BOTTOM"].includes(id))return "外箱";
   if(["INNER_TOP","INNER_LEFT","INNER_RIGHT","INNER_BOTTOM"].includes(id)||["innerTop","innerSide","innerBottom"].includes(kind))return "内板";
@@ -6926,6 +6941,11 @@ function renderHistoryEditor(){
     const syncCustomQty=e=>{
       const raw=state.customParts.find(p=>p.id===part.id);
       if(raw){
+        if(raw.drawingSource){
+          const valid=/^\d+$/.test(e.target.value.trim())&&window.MakeItFitDrawingNative.validQuantity(Number(e.target.value));
+          e.target.setAttribute("aria-invalid",valid?"false":"true");e.target.title=valid?"":"使用枚数は1〜1000000の整数にしてください";
+          if(!valid)return;
+        }
         raw.qty=Math.max(1,Math.floor(+e.target.value||1));
         invalidateCutResult();
         refreshActiveHistorySummary();
@@ -6935,6 +6955,7 @@ function renderHistoryEditor(){
     $("historyGenericQty")?.addEventListener("input",syncCustomQty);
     $("historyGenericQty")?.addEventListener("change",syncCustomQty);
     $("historyDeleteCustomPart")?.addEventListener("click",()=>deleteCustomPart(part.id));
+    window.MakeItFitDrawingNativeUI?.enhanceEditor(raw);
     return;
   }
 
@@ -7224,6 +7245,11 @@ function cuboid(x0,y0,z0,x1,y1,z1,type,partId=null){
 }
 function build3DParts(){
   readOuter();
+  if(state.drawingLayout&&window.MakeItFitDrawingNative){
+    const g=window.MakeItFitDrawingNative.geometry(formulas(),state.outer),scale=2.2/Math.max(state.outer.W,state.outer.H,state.outer.D);
+    const parts=g.solids.map(p=>({...p,...Object.fromEntries(["x0","y0","z0","x1","y1","z1"].map(k=>[k,p[k]*scale]))}));
+    return{parts,W:state.outer.W*scale,H:state.outer.H*scale,D:state.outer.D*scale,bodyD:state.outer.D*scale,issues:g.issues};
+  }
   const outerW=Math.max(1,state.outer.W),outerH=Math.max(1,state.outer.H),outerD=Math.max(1,state.outer.D);
   // W:H:D の比率を崩さず、最大寸法だけを2.2へ正規化してキャンバスへ自動フィットする。
   const modelScale=2.2/Math.max(outerW,outerH,outerD);
@@ -7515,6 +7541,7 @@ function draw3D(){
     ctx.restore();
   }
   model.parts.forEach(drawSelectedGrainGuide3D);
+  if(model.issues?.length){ctx.fillStyle="#8b5426";ctx.font="12px system-ui";ctx.fillText(`表示 ${model.parts.length}枚 / 要確認 ${model.issues.length}件（部材一覧で確認）`,18,24);}
   // axes-ish dimension label
   ctx.fillStyle="#6f6a62";ctx.font="12px system-ui";ctx.fillText(`${state.outer.W} × ${state.outer.H} × ${state.outer.D}`,18,height-18);
   // 前後を常時表示して、巾木の向きを確認しやすくする。
@@ -7682,6 +7709,7 @@ $("doorFit")?.addEventListener("click",e=>{const b=e.target.closest("button[data
 $("doorType")?.addEventListener("click",e=>{const b=e.target.closest("button[data-value]");if(b)mutateSelectedRegionContent(c=>c.door.type=b.dataset.value)});
 
 function update(){
+  document.body.classList.toggle("drawingUnit",!!state.drawingLayout);
   if(state.plinth.enabled&&state.plinth.sideDrop.left==="plinth")state.joints.bl="side";
   if(state.plinth.enabled&&state.plinth.sideDrop.right==="plinth")state.joints.br="side";
   renderJointControls();
@@ -7923,6 +7951,7 @@ function snapshot(){
     name:$("patternName").value.trim()||"ユニット 01",
     structure:{
       outerPreview:{...state.outer},
+      drawingLayout:state.drawingLayout?JSON.parse(JSON.stringify(state.drawingLayout)):null,
       outerFormula:{...state.outerFormula},
       variables:["W","H","D","左側板厚","右側板厚","天板厚","地板厚","内天板厚","左内側板厚","右内側板厚","内地板厚","束厚","棚板厚","巾木高さ","巾木厚","前巾木厚","左巾木厚","右巾木厚","後巾木厚","背板厚","内背板厚"],
       joints:{...state.joints},
@@ -7984,7 +8013,7 @@ function scheduleUnitAutoSave(){
 document.getElementById("addCustomPart")?.addEventListener("click",addCustomPart);
 $("savePattern").onclick=()=>saveCurrentUnit();
 document.getElementById("cutSaveButton")?.addEventListener("click",()=>saveCurrentUnit());
-$("patternName").addEventListener("input",()=>{document.title=`ma.｜${$("patternName").value.trim()||"ユニット 01"}`;scheduleUnitAutoSave()});
+$("patternName").addEventListener("input",()=>{document.title=`make it fit｜${$("patternName").value.trim()||"ユニット 01"}`;scheduleUnitAutoSave()});
 document.addEventListener("change",e=>{
   if(e.target.closest("#homeView"))return;
   if(e.target.matches("input,select,button"))scheduleUnitAutoSave();
@@ -8258,6 +8287,7 @@ function compactUnitSourceSnapshot(data){
     name:data.name||"ユニット",
     structure:{
       outerPreview:{...(s.outerPreview||{W:1800,H:900,D:450})},
+      drawingLayout:s.drawingLayout?JSON.parse(JSON.stringify(s.drawingLayout)):null,
       outerFormula:{W:String(s.outerPreview?.W??1800),H:String(s.outerPreview?.H??900),D:String(s.outerPreview?.D??450),...(s.outerFormula||{})},
       joints:{...(s.joints||{})},
       plinth:JSON.parse(JSON.stringify(s.plinth||{})),
@@ -8397,6 +8427,7 @@ function buildSourceRegionMap(source){
   return map;
 }
 function resolveSourceCutFormula(expr,source,regionMap=null,stack=[]){
+  if(source.structure?.drawingLayout&&window.MakeItFitDrawingNative)return window.MakeItFitDrawingNative.evaluate(expr,source.structure.parts||[],source.structure.outerPreview)??NaN;
   let e=String(expr??"").trim();
   if(!e)return NaN;
   const rows=source.structure.parts||[],outer=source.structure.outerPreview||{W:1800,H:900,D:450},pl=sourcePlinthPreview(source);
@@ -8442,6 +8473,7 @@ function expandSourceFinishedParts(sourceEntry){
   for(let unitIndex=0;unitIndex<unitQty;unitIndex++){
     rows.forEach(p=>{
       const l=resolveSourceCutFormula(p.lengthFormula,source,regionMap),w=resolveSourceCutFormula(p.depthFormula,source,regionMap),pat=sourceGetPattern(source,sourcePatternIdForPart(source,p));
+      if(p.drawingSource&&window.MakeItFitDrawingNative.cutIssue(p,rows,source.structure.outerPreview,sourcePatternFinishThickness(source,pat)))return;
       if(!Number.isFinite(l)||!Number.isFinite(w)||!pat)return;
       const qty=+p.qty||1;
       (pat.cores||[]).forEach((c,ci)=>{
@@ -8554,7 +8586,7 @@ function ensurePartPatternAssignments(rows){
   });
 }
 function finishThicknessForPartId(id,rows=formulas()){
-  const part=rows.find(p=>p.id===id);if(!part)return 0;ensurePartPatternAssignments(rows);return patternFinishThickness(getCutPattern(cutState.partPatterns[id]));
+  const part=rows.find(p=>p.id===id);if(!part)return 0;if(part.drawingSource)return window.MakeItFitDrawingNative?.evaluate(part.thicknessFormula,rows,state.outer)??NaN;ensurePartPatternAssignments(rows);return patternFinishThickness(getCutPattern(cutState.partPatterns[id]));
 }
 function cutThicknessVariableMap(rows=formulas()){
   ensurePartPatternAssignments(rows);
@@ -8600,6 +8632,7 @@ function buildCutRegionMap(rows=formulas()){
   walk(state.root,rootW,rootH);return map;
 }
 function resolveCutFormula(expr,rows=formulas(),regionMap=null,stack=[]){
+  if(state.drawingLayout&&window.MakeItFitDrawingNative)return window.MakeItFitDrawingNative.evaluate(expr,rows,state.outer)??NaN;
   let e=String(expr??"").trim();
   if(!e)return NaN;
   regionMap=regionMap||buildCutRegionMap(rows);
@@ -8716,6 +8749,14 @@ function renderCutList(){
   document.getElementById("cutPartKinds").textContent=allRows.length;
   document.getElementById("cutTotalQty").textContent=allRows.reduce((sum,r)=>sum+r.qty,0);
   document.getElementById("cutOuterStat").textContent=`${sources.length} units`;
+  const thicknessCell=r=>{
+    const p=r.part,material=sourcePatternFinishThickness(r.source,r.pattern);
+    if(!p.drawingSource)return r.pattern?`${material} mm`:"—";
+    const declared=window.MakeItFitDrawingNative.evaluate(p.thicknessFormula,r.source.structure.parts,r.source.structure.outerPreview);
+    const value=declared==null?escapeAttr(p.thicknessFormula):`${declared} mm`;
+    const issue=!r.pattern?"材料未設定":declared!=null&&Math.abs(declared-material)>.01?`材料構成 ${material} mm と不一致`:"";
+    return value+(issue?`<span class="cutDimError">${escapeAttr(issue)}</span>`:"");
+  };
 
   body.innerHTML=allRows.map((r,i)=>{
     const p=r.part,source=r.sourceEntry,th=sourcePatternFinishThickness(r.source,r.pattern);
@@ -8730,7 +8771,7 @@ function renderCutList(){
       <td>${r.qty}</td>
       <td><div class="cutFormula">${escapeAttr(p.lengthFormula||"—")}${Number.isFinite(r.length)?`<span class="cutResolved">${Math.round(r.length*10)/10} mm</span>`:`<span class="cutDimError">式を解決できません</span>`}</div></td>
       <td><div class="cutFormula">${escapeAttr(p.depthFormula||"—")}${Number.isFinite(r.width)?`<span class="cutResolved">${Math.round(r.width*10)/10} mm</span>`:`<span class="cutDimError">式を解決できません</span>`}</div></td>
-      <td><span class="cutThickness">${r.pattern?`${th} mm`:"—"}</span></td>
+      <td><span class="cutThickness">${thicknessCell(r)}</span></td>
     </tr>`;
   }).join("");
 
@@ -8747,7 +8788,7 @@ function renderCutList(){
         <div><label>長さ</label><code>${Number.isFinite(r.length)?Math.round(r.length*10)/10+" mm":escapeAttr(p.lengthFormula||"—")}</code></div>
         <div><label>${escapeAttr(p.dim2Label||"幅 / 奥行")}</label><code>${Number.isFinite(r.width)?Math.round(r.width*10)/10+" mm":escapeAttr(p.depthFormula||"—")}</code></div>
       </div>
-      <div class="cutCardFoot"><span>仕上厚 ${r.pattern?th+"mm":"—"}</span><span>木目 ${escapeAttr(grainLabelForPart(p,sourcePartGrainMode(r.source,p)))}</span></div>
+      <div class="cutCardFoot"><span>仕上厚 ${thicknessCell(r)}</span><span>木目 ${escapeAttr(grainLabelForPart(p,sourcePartGrainMode(r.source,p)))}</span></div>
     </article>`;
   }).join("");
 
@@ -8801,6 +8842,7 @@ function runCutting(){
   readOuter();
   ensurePartPatternAssignments(formulas());
   const combined=collectCombinedCutGroups(),results=[],errors=[];
+  combined.sources.forEach(entry=>{const source=entry.snapshot,rows=source.structure.parts||[];rows.filter(p=>p.drawingSource).forEach(p=>{const reason=window.MakeItFitDrawingNative.cutIssue(p,rows,source.structure.outerPreview,sourcePatternFinishThickness(source,sourceGetPattern(source,sourcePatternIdForPart(source,p))));if(reason)errors.push(`${p.name}: ${reason}`);});});
   for(const group of combined.groups){
     const mat=group.mat,pieces=group.pieces;
     if(!pieces.length)continue;
@@ -8962,14 +9004,14 @@ function projectPatternFinishThickness(p,pat){
   [pat.face,pat.back].forEach(id=>{const m=projectMaterialById(p,id);if(m)total+=+m.thickness||0});
   return Math.round(total*100)/100;
 }
-function renderProjectView(){const p=activeProject();if(!p)return showHomePage();document.getElementById("projectNameInput").value=p.name;document.getElementById("projectMeta").textContent=`${p.units?.length||0} ユニット　/　${p.materialPatterns?.length||0} 材料パターン`;renderProjectUnits(p);renderProjectPatterns(p);document.getElementById("projectCutUnitCount").textContent=p.units?.length||0;document.getElementById("projectCutPatternCount").textContent=p.materialPatterns?.length||0;document.getElementById("projectCutLast").textContent=p.cutting?.lastResult?"生成済み":"未生成"}
+function renderProjectView(){const p=activeProject();if(!p)return showHomePage();document.getElementById("projectNameInput").value=p.name;document.getElementById("projectMeta").textContent=`${p.units?.length||0} ユニット　/　${p.materialPatterns?.length||0} 材料パターン`;renderProjectUnits(p);renderProjectPatterns(p);document.getElementById("projectCutUnitCount").textContent=p.units?.length||0;document.getElementById("projectCutPatternCount").textContent=p.materialPatterns?.length||0;document.getElementById("projectCutLast").textContent=p.cutting?.lastResult?"生成済み":"未生成";window.MakeItFitDrawingUI?.render(p)}
 function showProjectPage(tab="units"){document.documentElement.classList.remove("mobileStructureScrollLock");document.body.classList.remove("mobileThreeFullscreen");closeMobileSidebars();closeMobileOverflowMenu();document.body.classList.remove("mobileStructurePreview","page-home","page-cut","page-project");document.body.classList.add("page-project");const t=document.querySelector(".mobilePageTitle");if(t)t.textContent="案件";setShellActive("home");setProjectTab(tab);renderProjectView();refreshProjectContext();window.scrollTo({top:0,behavior:"auto"})}
 function openProject(id){currentProjectId=id;currentUnitId=null;showProjectPage("units")}
 function createNewProject(name){const p=createProjectObject(name);saveProject(p);currentProjectId=p.id;currentUnitId=null;showProjectPage("units")}
 function createUnitForProject(){const p=activeProject();if(!p)return;const n=(p.units?.length||0)+1;resetUnitState();currentUnitId=makeUnitId();$("patternName").value=`ユニット ${String(n).padStart(2,"0")}`;cutState.materials=cloneMaterials(p.materials);cutState.patterns=clonePatterns(p.materialPatterns);cutState.additionalUnits=[];update();saveCurrentUnitIntoProject({silent:true});refreshProjectContext();showEditorPage("structure")}
 function openProjectUnit(id){const p=activeProject(),u=projectUnitById(p,id);if(!u)return;currentUnitId=id;applySnapshotToEditor(syncProjectMasterToUnit(p,JSON.parse(JSON.stringify(u))));refreshProjectContext();showEditorPage("structure")}
 function addProjectPattern(){const p=activeProject();if(!p)return;p.materialPatterns=p.materialPatterns||[];p.materialPatterns.push({id:`CP${Date.now()}`,name:`材料パターン ${p.materialPatterns.length+1}`,cores:[{materialId:"STD_lumber_18",count:1}],face:null,back:null});saveProject(p);setProjectTab("patterns");renderProjectView()}
-function showProjectCutting(target=""){const p=activeProject();if(!p)return;if(!p.units?.length){setProjectTab("units");renderProjectView();return}const base=p.units[0];currentUnitId=base.id;applySnapshotToEditor(syncProjectMasterToUnit(p,JSON.parse(JSON.stringify(base))));cutState.materials=cloneMaterials(p.materials);cutState.patterns=clonePatterns(p.materialPatterns);cutState.kerf=p.cutting?.kerf??3;cutState.trim=p.cutting?.trim??10;cutState.pasteAllowance=p.cutting?.pasteAllowance??10;cutState.currentQuantity=1;cutState.additionalUnits=(p.units||[]).slice(1).map(u=>({sourceId:u.id,name:u.name,quantity:1,snapshot:compactUnitSourceSnapshot(syncProjectMasterToUnit(p,JSON.parse(JSON.stringify(u))))}));showCutPage();if(target==="patterns")setTimeout(()=>document.getElementById("cutPatterns")?.scrollIntoView({behavior:"smooth",block:"start"}),50)}
+function showProjectCutting(target=""){const p=activeProject();if(!p)return;if(!p.units?.length){setProjectTab("units");renderProjectView();return}const base=p.units[0];currentUnitId=base.id;applySnapshotToEditor(syncProjectMasterToUnit(p,JSON.parse(JSON.stringify(base))));cutState.materials=cloneMaterials(p.materials);cutState.patterns=clonePatterns(p.materialPatterns);cutState.kerf=p.cutting?.kerf??3;cutState.trim=p.cutting?.trim??10;cutState.pasteAllowance=p.cutting?.pasteAllowance??10;cutState.currentQuantity=base.structure?.drawingLayout?.productionUnits||1;cutState.additionalUnits=(p.units||[]).slice(1).map(u=>({sourceId:u.id,name:u.name,quantity:u.structure?.drawingLayout?.productionUnits||1,snapshot:compactUnitSourceSnapshot(syncProjectMasterToUnit(p,JSON.parse(JSON.stringify(u))))}));showCutPage();if(target==="patterns")setTimeout(()=>document.getElementById("cutPatterns")?.scrollIntoView({behavior:"smooth",block:"start"}),50)}
 
 function currentUnitSummary(){
   readOuter();
@@ -9086,6 +9128,7 @@ function applySnapshotToEditor(data){
   state.innerBox={top:"none",sides:"none",bottom:"none",gapFormula:"0",...(s.innerBox||{})};
   state.regionContents=JSON.parse(JSON.stringify(s.regionContents||{}));
   state.horizontalRef=s.placementRefs?.horizontal||"left";state.verticalRef=s.placementRefs?.vertical||"top";state.root=s.regionTree||{id:"R1",split:null};
+  state.drawingLayout=s.drawingLayout?JSON.parse(JSON.stringify(s.drawingLayout)):null;
   state.customParts=Array.isArray(s.customParts)?s.customParts.map(p=>({...p})):[];state.nextCustomPart=Math.max(+s.nextCustomPart||1,...state.customParts.map(p=>(+String(p.id||"").replace(/^EXTRA_/,"")||0)+1));
   state.parts=Array.isArray(s.parts)?s.parts.filter(p=>/^P\d+$/.test(p.id||"")).map(p=>({...p})):[];state.partNames={...(s.partNames||{})};Object.entries(state.partNames).forEach(([id,name])=>{if(/^P\d+$/.test(id)&&/^(束|棚) P\d+$/.test(name||""))state.partNames[id]=String(name).replace(/ P\d+$/,"")});state.partGrain={...(s.partGrain||{})};state.overrides={};state.selected=state.root.id||"R1";state.historySelection="";state.selectedPartId=null;
   const counters=deriveNextCounters(state.root);state.nextRegion=counters.nextRegion;state.nextPart=counters.nextPart;state.nextHistory=counters.nextHistory;
@@ -9890,5 +9933,9 @@ refreshProjectContext();
 
 update();
 </script>
+<script src="assets/drawing-parts-core.js"></script>
+<script src="assets/drawing-native-core.js"></script>
+<script src="assets/drawing-native-ui.js"></script>
+<script src="assets/drawing-parts-ui.js"></script>
 </body>
 </html>

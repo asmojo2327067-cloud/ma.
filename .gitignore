@@ -1,0 +1,4 @@
+# Provided drawing data is included only in local deliverables.
+private-examples/
+__pycache__/
+*.pyc
