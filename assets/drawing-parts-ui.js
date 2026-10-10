@@ -44,6 +44,7 @@
       ${window.MakeItFitDrawingDemo ? '<button class="dp-button dp-demo" id="dpDemo" type="button">今回の図面を開く</button>' : ''}
       <button class="dp-button" id="dpImport" type="button">部材データを読み込む</button>
       <button class="dp-button" id="dpExport" type="button" ${b ? '' : 'disabled'}>部材データを保存</button>
+      <button class="dp-button primary" id="dpNativeImport" type="button" ${b ? '' : 'disabled'}>元アプリの設計で開く</button>
       </div><input id="drawingPartsFile" type="file" accept=".json,application/json" hidden></div>
       <div id="dpMessage" class="dp-message ${ui.error ? 'error' : ''}" role="status" aria-live="polite" ${ui.message ? '' : 'hidden'}>${esc(ui.message)}</div>
       ${b ? `<div class="dp-bundle-bar"><span>図面</span><select id="dpBundle" class="dp-select" aria-label="図面データ">${bundles.map(x => `<option value="${esc(x.id)}" ${x.id === b.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select><span class="dp-source-title">${esc(b.source.name)} · ${b.source.pages}ページ</span></div>
@@ -113,7 +114,7 @@
       if (!draftChanged()) { if (!silent) message('保存済みです。'); return true; }
       const b = bundle(), next = core.editPart(b, ui.partId, draft()), h = history();
       saveBundle(next);
-      h.past.push(copy(b.parts)); if (h.past.length > 50) h.past.shift(); h.future = [];
+      h.past.push({parts:copy(b.parts),design:copy(b.design||null)}); if (h.past.length > 50) h.past.shift(); h.future = [];
       renderSummary(); renderList(); renderInspector();
       if (!silent) message(`${ui.partId}の変更を案件に保存しました。`);
       return true;
@@ -133,9 +134,9 @@
     const h = history(), from = redo ? h.future : h.past, to = redo ? h.past : h.future;
     if (!from.length) return;
     try {
-      const b = bundle(), parts = from[from.length-1];
-      saveBundle({ ...b, parts: copy(parts) });
-      from.pop(); to.push(copy(b.parts));
+      const b = bundle(), previous = from[from.length-1];
+      saveBundle({ ...b, parts: copy(previous.parts), design: copy(previous.design) });
+      from.pop(); to.push({parts:copy(b.parts),design:copy(b.design||null)});
       renderSummary(); renderList(); renderInspector();
       message(redo ? '変更をやり直しました。' : '変更を元に戻しました。');
     } catch (error) { message(error.message, true); }
@@ -145,6 +146,7 @@
     try {
       if (file.size > 20000000) throw new Error('20MB以内の部材データを選んでください。');
       const data = JSON.parse(await file.text()), parsed = core.validateBundle(data);
+      window.MakeItFitDrawingNative.validateDesign(parsed);
       if (!applyPart(true)) return;
       const p = core.addBundle(activeProject(), parsed);
       saveProject(p);
@@ -169,7 +171,7 @@
       let p = loadProject(id);
       if (!p) { p = createProjectObject(b.name); p.id = id; p = core.addBundle(p, b); saveProject(p); }
       openProject(id); setProjectTab('drawings');
-      message('今回の図面を開きました。部材番号を選んで確認できます。');
+      window.MakeItFitDrawingNativeUI.openUnit(b);
     } catch (error) { message(error.message, true); }
   }
   root.addEventListener('click', event => {
@@ -181,6 +183,7 @@
     if (button.hasAttribute('data-dp-import') || button.id === 'dpImport') return document.getElementById('drawingPartsFile').click();
     if (button.id === 'dpDemo') return openDemo();
     if (button.id === 'dpExport') return exportBundle();
+    if (button.id === 'dpNativeImport') { if(applyPart(true)) try{window.MakeItFitDrawingNativeUI.openUnit(bundle(),ui.partId);}catch(error){message(error.message,true);} return; }
     if (button.id === 'dpUndo') return undo();
     if (button.id === 'dpRedo') return undo(true);
     if (button.id === 'dpZoomIn') ui.zoom = Math.min(3, ui.zoom + .25);
@@ -213,12 +216,15 @@
     if (event.target.matches('input, textarea')) return; // Keep native text undo inside a field.
     event.preventDefault(); event.stopPropagation(); undo(event.shiftKey || event.key.toLowerCase() === 'y');
   });
-  window.MakeItFitDrawingUI = { render, openDemo };
+  function openLinked(bundleId,partId){
+    showProjectPage('drawings');ui.bundleId=bundleId;ui.partId=partId;ui.viewId=null;renderProjectView();
+  }
+  window.MakeItFitDrawingUI = { render, openDemo, openLinked };
   if (window.MakeItFitDrawingDemo) {
     const host = document.getElementById('newProjectForm');
     if (host) {
       const link = document.createElement('button'); link.type = 'button'; link.className = 'dp-button dp-demo';
-      link.id = 'drawingDemoHome'; link.textContent = '今回のミニバー・ワードローブを開く →';
+      link.id = 'drawingDemoHome'; link.textContent = '今回の家具を元アプリで開く →';
       link.style.cssText = 'margin:18px 0;font-size:14px;padding:14px 18px';
       link.addEventListener('click', openDemo); host.before(link);
     }

@@ -136,13 +136,17 @@ with sync_playwright() as pw:
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.goto(url, wait_until='load')
         page.locator('#drawingDemoHome').click()
-        page.locator('[data-dp-part="G007"]').click()
-        assert page.locator('#dpWidth').input_value() == '545'
-        page.locator('#dpWidth').fill('530')
+        native_id = 'DW_' + fixture['source']['sha256'][:12] + '_G007'
+        page.locator('[data-history-key="part:' + native_id + '"]').click()
+        assert page.locator('#historyGenericDepth').input_value() == '545'
+        page.locator('#historyGenericDepth').fill('530')
+        page.locator('#historyNativeThickness').click()
+        page.locator('#nativeSourceDrawing').click()
         page.locator('#dpDemo').click()
-        assert page.locator('#dpWidth').input_value() == '530'
-        page.locator('#dpUndo').click()
-        assert page.locator('#dpWidth').input_value() == '545'
+        assert page.locator('#historyGenericDepth').input_value() == '530'
+        page.locator('#nativeUndo').click()
+        assert page.locator('#historyGenericDepth').input_value() == '545'
+        page.locator('#nativeSourceDrawing').click()
         page.locator('#dpWidth').fill('0')
         page.locator('#dpDemo').click()
         expect(page.locator('#dpMessage')).to_contain_text('正の数値')

@@ -25,7 +25,7 @@
     });
   }
 
-  function readDimension(value) {
+  function readDimension(value, options = {}) {
     const display = text(String(value), 250).trim();
     requireValue(display.length > 0, '寸法または式を入力してください。');
     const normalized = display.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
@@ -69,7 +69,7 @@
       return n;
     }
     const result = sum();
-    requireValue(index === tokens.length && Number.isFinite(result) && result > 0, '寸法の計算結果は正の数値にしてください。');
+    requireValue(index === tokens.length && Number.isFinite(result) && (options.coordinate || result > 0), '寸法の計算結果は正の数値にしてください。');
     const calculated = tokens.length > 1;
     return { display: calculated ? display : result, formula: calculated ? display : '', result, method: calculated ? '編集・寸法計算' : '編集値' };
   }
@@ -145,9 +145,16 @@
       if (String(d.display).trim() === String(patch.dimensions[i]).trim()) return d;
       return { ...d, ...readDimension(patch.dimensions[i]), editedAt: new Date().toISOString() };
     });
-    if (dims.every(d => d.result != null)) dims.sort((a, b) => b.result - a.result);
+    if (dims.every(d => d.result != null)) {
+      const order=[0,1,2].sort((a,b)=>dims[b].result-dims[a].result),original=dims.slice();
+      order.forEach((from,to)=>dims[to]=original[from]);
+      const placement=next.design?.parts?.[id];
+      if(placement?.axes){const axes=placement.axes.slice();placement.axes=order.map(i=>axes[i]);}
+    }
     if (!p.original) p.original = { dims: clone(p.dims), qty: p.qty, note: p.note || '' };
     p.dims = dims; p.qty = Number(qtyText); p.note = note; p.editedAt = new Date().toISOString();
+    const placement=next.design?.parts?.[id];
+    if(placement?.instances)placement.instances=placement.instances.slice(0,p.qty);
     return next;
   }
   return { validateBundle, addBundle, readDimension, editPart, markersFor, summary };

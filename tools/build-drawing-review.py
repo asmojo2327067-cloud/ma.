@@ -15,7 +15,7 @@ data=json.loads(data_path.read_text())
 html=(ROOT/'index.html').read_text()
 css=(ROOT/'assets/drawing-parts.css').read_text()
 html=html.replace('<link rel="stylesheet" href="assets/drawing-parts.css">','<style>\n'+css+'\n</style>')
-for filename in ['drawing-parts-core.js','drawing-parts-ui.js']:
+for filename in ['drawing-parts-core.js','drawing-native-core.js','drawing-native-ui.js','drawing-parts-ui.js']:
     code=(ROOT/'assets'/filename).read_text()
     if filename=='drawing-parts-ui.js':
         encoded=json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c').replace('\u2028','\\u2028').replace('\u2029','\\u2029')
